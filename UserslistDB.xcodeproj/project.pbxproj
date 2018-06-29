@@ -9,7 +9,6 @@
 /* Begin PBXBuildFile section */
 		C6BB927B20E5DB8D00A94CB8 /* UserslistDB.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C6BB927120E5DB8D00A94CB8 /* UserslistDB.framework */; };
 		C6BB928020E5DB8D00A94CB8 /* UserslistDBTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6BB927F20E5DB8D00A94CB8 /* UserslistDBTests.swift */; };
-		C6BB928220E5DB8D00A94CB8 /* UserslistDB.h in Headers */ = {isa = PBXBuildFile; fileRef = C6BB927420E5DB8D00A94CB8 /* UserslistDB.h */; settings = {ATTRIBUTES = (Public, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -24,7 +23,6 @@
 
 /* Begin PBXFileReference section */
 		C6BB927120E5DB8D00A94CB8 /* UserslistDB.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = UserslistDB.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		C6BB927420E5DB8D00A94CB8 /* UserslistDB.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UserslistDB.h; sourceTree = "<group>"; };
 		C6BB927520E5DB8D00A94CB8 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		C6BB927A20E5DB8D00A94CB8 /* UserslistDBTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = UserslistDBTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		C6BB927F20E5DB8D00A94CB8 /* UserslistDBTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserslistDBTests.swift; sourceTree = "<group>"; };
@@ -71,7 +69,6 @@
 		C6BB927320E5DB8D00A94CB8 /* UserslistDB */ = {
 			isa = PBXGroup;
 			children = (
-				C6BB927420E5DB8D00A94CB8 /* UserslistDB.h */,
 				C6BB927520E5DB8D00A94CB8 /* Info.plist */,
 			);
 			path = UserslistDB;
@@ -93,7 +90,6 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C6BB928220E5DB8D00A94CB8 /* UserslistDB.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -354,6 +350,7 @@
 					"@executable_path/../Frameworks",
 					"@loader_path/Frameworks",
 				);
+				MACOSX_DEPLOYMENT_TARGET = 10.10;
 				PRODUCT_BUNDLE_IDENTIFIER = tv.from.chajka.UserslistDB;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SKIP_INSTALL = YES;
@@ -380,6 +377,7 @@
 					"@executable_path/../Frameworks",
 					"@loader_path/Frameworks",
 				);
+				MACOSX_DEPLOYMENT_TARGET = 10.10;
 				PRODUCT_BUNDLE_IDENTIFIER = tv.from.chajka.UserslistDB;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SKIP_INSTALL = YES;
