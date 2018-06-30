@@ -9,6 +9,9 @@
 import XCTest
 @testable import UserslistDB
 
+private let user_session_value:String = "user_session_6347612_5bd6139de8350ccaada87bdd1cf9af9247b194d3819781c15e00bef5160c5023"
+let user_session:HTTPCookie = HTTPCookie(properties: [HTTPCookiePropertyKey.domain: "nicovideo.jp", HTTPCookiePropertyKey.path: "/", HTTPCookiePropertyKey.name: "user_session", HTTPCookiePropertyKey.value: user_session_value])!
+
 class UserslistDBTests: XCTestCase {
     
     override func setUp() {

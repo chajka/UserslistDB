@@ -20,9 +20,9 @@ class UserslistTests: XCTestCase {
         super.tearDown()
     }
 
-    func testExample() {
-        // This is an example of a functional test case.
-        // Use XCTAssert and related functions to verify your tests produce the correct results.
+    func test01_allocation() {
+		let db:Userslist = Userslist(jsonPath: "/Volumes/SharkWire/build/UserslistDB/UserslistDBTests/test.json", user_session:[user_session])
+		XCTAssertNotNil(db, "db can not allocate")
     }
 
     func testPerformanceExample() {
