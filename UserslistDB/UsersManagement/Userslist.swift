@@ -8,6 +8,10 @@
 
 import Cocoa
 
+public enum UserslistError:Error {
+	case unknownUser(String)
+}
+
 class Userslist: NSObject {
 	private let ownersDictionary:[String: [String: Any]]
 	private let usersDictionary:[String: Bool]
@@ -36,5 +40,13 @@ class Userslist: NSObject {
 			usersDictionary = Dictionary()
 		}// end try - catch open data and parse json to dictionary
 	}// end init
+
+	func user(identifier:String) throws -> Bool {
+		let user:Bool? = usersDictionary[identifier]
+		if let premium:Bool = user {
+			return premium
+		}// end if userid is entry in users
+		throw UserslistError.unknownUser(identifier)
+	}// end func user
 
 }// end class Userslist

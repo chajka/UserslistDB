@@ -25,6 +25,14 @@ class UserslistTests: XCTestCase {
 		XCTAssertNotNil(db, "db can not allocate")
     }
 
+	func test02_func_identifier() {
+		let db:Userslist = Userslist(jsonPath: "/Volumes/SharkWire/build/UserslistDB/UserslistDBTests/test.json", user_session:[user_session])
+		XCTAssertNoThrow(try db.user(identifier: "6347612"), "known user 6347612 is not found")
+		XCTAssertThrowsError(try db.user(identifier: "1234567"), "unknown user 1234567 found", { (error) in
+			print(error)
+		})
+	}
+
     func testPerformanceExample() {
         // This is an example of a performance test case.
         self.measure {
