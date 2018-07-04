@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		C60A355920EA4E7B002D96CF /* DeuxCheVaux.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C60A355820EA4E7B002D96CF /* DeuxCheVaux.framework */; };
+		C60A355A20EBAAC3002D96CF /* DeuxCheVaux.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C60A355820EA4E7B002D96CF /* DeuxCheVaux.framework */; };
+		C60A355C20EBAB0C002D96CF /* DeuxCheVaux.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = C60A355820EA4E7B002D96CF /* DeuxCheVaux.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		C676FEBE20E8EAEA00C90748 /* NicoLiveUser.swift in Sources */ = {isa = PBXBuildFile; fileRef = C676FEBD20E8EAEA00C90748 /* NicoLiveUser.swift */; };
 		C676FEBF20E8EAEA00C90748 /* NicoLiveUser.swift in Sources */ = {isa = PBXBuildFile; fileRef = C676FEBD20E8EAEA00C90748 /* NicoLiveUser.swift */; };
 		C676FEC120E8EB0100C90748 /* NicoLiveUserTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C676FEC020E8EB0100C90748 /* NicoLiveUserTests.swift */; };
@@ -27,7 +30,21 @@
 		};
 /* End PBXContainerItemProxy section */
 
+/* Begin PBXCopyFilesBuildPhase section */
+		C60A355B20EBAAFE002D96CF /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				C60A355C20EBAB0C002D96CF /* DeuxCheVaux.framework in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
+		C60A355820EA4E7B002D96CF /* DeuxCheVaux.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = DeuxCheVaux.framework; path = UserslistDB/DeuxCheVaux.framework; sourceTree = SOURCE_ROOT; };
 		C676FEBD20E8EAEA00C90748 /* NicoLiveUser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NicoLiveUser.swift; sourceTree = "<group>"; };
 		C676FEC020E8EB0100C90748 /* NicoLiveUserTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NicoLiveUserTests.swift; sourceTree = "<group>"; };
 		C6B78A7E20E63530001665C6 /* Userslist.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Userslist.swift; sourceTree = "<group>"; };
@@ -44,6 +61,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C60A355920EA4E7B002D96CF /* DeuxCheVaux.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -52,6 +70,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				C6BB927B20E5DB8D00A94CB8 /* UserslistDB.framework in Frameworks */,
+				C60A355A20EBAAC3002D96CF /* DeuxCheVaux.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -95,6 +114,7 @@
 		C6BB927320E5DB8D00A94CB8 /* UserslistDB */ = {
 			isa = PBXGroup;
 			children = (
+				C60A355820EA4E7B002D96CF /* DeuxCheVaux.framework */,
 				C676FEBC20E8EA1100C90748 /* UserInformation */,
 				C6B78A7D20E634FD001665C6 /* UsersManagement */,
 				C6BB927520E5DB8D00A94CB8 /* Info.plist */,
@@ -151,6 +171,7 @@
 				C6BB927620E5DB8D00A94CB8 /* Sources */,
 				C6BB927720E5DB8D00A94CB8 /* Frameworks */,
 				C6BB927820E5DB8D00A94CB8 /* Resources */,
+				C60A355B20EBAAFE002D96CF /* CopyFiles */,
 			);
 			buildRules = (
 			);
@@ -380,6 +401,11 @@
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)",
+					"$(PROJECT_DIR)/UserslistDB",
+				);
 				FRAMEWORK_VERSION = A;
 				INFOPLIST_FILE = UserslistDB/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
@@ -409,6 +435,11 @@
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)",
+					"$(PROJECT_DIR)/UserslistDB",
+				);
 				FRAMEWORK_VERSION = A;
 				INFOPLIST_FILE = UserslistDB/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
@@ -432,6 +463,10 @@
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				DEVELOPMENT_TEAM = G9SC48NK42;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/UserslistDB",
+				);
 				INFOPLIST_FILE = UserslistDBTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -451,6 +486,10 @@
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				DEVELOPMENT_TEAM = G9SC48NK42;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/UserslistDB",
+				);
 				INFOPLIST_FILE = UserslistDBTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",

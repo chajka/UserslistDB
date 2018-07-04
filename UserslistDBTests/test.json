@@ -1,38 +1,34 @@
 {
   "owners" : {
     "6347612" : {
-      "listener" : [
-        {
-          "6347612" : {
-            "nickname" : "Чайка",
-            "handle" : "ちゃいか",
-            "isPremium" : true
-          },
-          "666666" : {
-            "nickname" : "Чайка",
-            "handle" : "ちゃいか",
-            "isPremium" : true
-          }
+      "listener" : {
+        "6347612" : {
+          "nickname" : "Чайка",
+          "handle" : "ちゃいか",
+          "isPremium" : "yes"
+        },
+        "666666" : {
+          "nickname" : "Чайка",
+          "handle" : "ちゃいか",
+          "isPremium" : "yes"
         }
-      ],
+      },
       "speech" : false,
       "anonymous" : true
     },
     "666666" : {
-      "listener" : [
-        {
-          "6347612" : {
-            "nickname" : "Чайка",
-            "handle" : "ちゃいか",
-            "isPremium" : true
-          },
-          "666666" : {
-            "nickname" : "Чайка",
-            "handle" : "ちゃいか",
-            "isPremium" : true
-          }
+      "listener" : {
+        "6347612" : {
+          "nickname" : "Чайка",
+          "handle" : "ちゃいか",
+          "isPremium" : "yes"
+        },
+        "666666" : {
+          "nickname" : "Чайка",
+          "handle" : "ちゃいか",
+          "isPremium" : "yes"
         }
-      ],
+      },
       "speech" : false,
       "anonymous" : true
     }
