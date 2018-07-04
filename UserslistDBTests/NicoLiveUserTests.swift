@@ -12,7 +12,7 @@ import DeuxCheVaux
 class NicoLiveUserTests: XCTestCase {
 	var ownersDictionary:Dictionary<String, Any>?
 	var usersDictionary:Dictionary<String, Any>?
-	var user:Dictionary<String, String>?
+	var userEntry:Dictionary<String, String>?
 
     override func setUp() {
         super.setUp()
@@ -24,7 +24,7 @@ class NicoLiveUserTests: XCTestCase {
 			usersDictionary = jsonObj["users"] as! [String : Bool]
 			let owner:Dictionary<String, Any> = ownersDictionary!["6347612"]! as! Dictionary<String, Any>
 			let listenes:Dictionary<String, Dictionary<String, String>> = owner["listener"]! as! Dictionary<String, Dictionary>
-			user = listenes["6347612"]!
+			userEntry = listenes["6347612"]!
 		} catch {
 			print(error)
 		}// end try - catch open data and parse json to dictionary
@@ -35,20 +35,34 @@ class NicoLiveUserTests: XCTestCase {
         super.tearDown()
     }
 
-    func test01_allocation() {
-		let singleUser:NicoLiveUser = NicoLiveUser(user: user!, identifier: "6347612", anonymous: false, lang: UserLanguage.en)
-		XCTAssertNotNil(singleUser, "Single user can not initialize")
-		XCTAssertNotNil(singleUser.name.nickname, "user nickname can not correct")
-		XCTAssertNotNil(singleUser.name.nickname, "user handle can not correct")
-		XCTAssertNotNil(singleUser.name.nickname, "user id can not correct")
-		XCTAssertEqual(singleUser.isPremium, true, "user is premium but class is not")
-		XCTAssertEqual(singleUser.friendship, Friendship.met, "user friendship incorrect")
-		XCTAssertEqual(singleUser.language, UserLanguage.en, "user Language incorrect")
-		XCTAssertFalse(singleUser.lock, "user isn’t lock but instance is locked")
-		XCTAssertNil(singleUser.color, "user haven’t color but instance have color")
-		XCTAssertNil(singleUser.note, "user haven’t note but instance have note")
+    func test01_allocation_from_entry() {
+		let user:NicoLiveUser = NicoLiveUser(user: userEntry!, identifier: "6347612", anonymous: false, lang: UserLanguage.en)
+		XCTAssertNotNil(user, "Single user can not initialize")
+		XCTAssertNotNil(user.name.nickname, "user nickname can not correct")
+		XCTAssertNotNil(user.name.nickname, "user handle can not correct")
+		XCTAssertNotNil(user.name.nickname, "user id can not correct")
+		XCTAssertEqual(user.isPremium, true, "user is premium but class is not")
+		XCTAssertEqual(user.friendship, Friendship.met, "user friendship incorrect")
+		XCTAssertEqual(user.language, UserLanguage.en, "user Language incorrect")
+		XCTAssertFalse(user.lock, "user isn’t lock but instance is locked")
+		XCTAssertNil(user.color, "user haven’t color but instance have color")
+		XCTAssertNil(user.note, "user haven’t note but instance have note")
     }
 
+	func test02_allocation_from_argument() {
+		let user:NicoLiveUser = NicoLiveUser(nickname: "chajka", identifier: "6347612", premium: true, anonymous: false, lang: UserLanguage.en, met: Friendship.met)
+		XCTAssertNotNil(user, "Single user can not initialize")
+		XCTAssertNotNil(user.name.nickname, "user nickname can not correct")
+		XCTAssertNotNil(user.name.nickname, "user handle can not correct")
+		XCTAssertNotNil(user.name.nickname, "user id can not correct")
+		XCTAssertEqual(user.isPremium, true, "user is premium but class is not")
+		XCTAssertEqual(user.friendship, Friendship.met, "user friendship incorrect")
+		XCTAssertEqual(user.language, UserLanguage.en, "user Language incorrect")
+		XCTAssertFalse(user.lock, "user isn’t lock but instance is locked")
+		XCTAssertNil(user.color, "user haven’t color but instance have color")
+		XCTAssertNil(user.note, "user haven’t note but instance have note")
+	}
+	
     func testPerformanceExample() {
         // This is an example of a performance test case.
         self.measure {
