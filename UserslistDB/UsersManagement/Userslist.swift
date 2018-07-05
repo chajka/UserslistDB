@@ -19,6 +19,7 @@ public enum JSONKey {
 		case users = "users"
 	}// end enum toplevel
 	enum owner:String {
+		case listeners = "listener"
 		case speech = "speech"
 		case anonymous = "anonymous"
 	}// end enum owner
