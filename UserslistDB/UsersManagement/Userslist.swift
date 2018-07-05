@@ -7,10 +7,37 @@
 //
 
 import Cocoa
+import DeuxCheVaux
 
 public enum UserslistError:Error {
 	case unknownUser(String)
 }
+
+public enum JSONKey {
+	enum toplevel:String {
+		case owners = "owners"
+		case users = "users"
+	}// end enum toplevel
+	enum owner:String {
+		case speech = "speech"
+		case anonymous = "anonymous"
+	}// end enum owner
+	enum user:String {
+		case nickname = "nickname"
+		case handle = "handle"
+		case isPremium = "isPremium"
+		case language = "Language"
+		case friendship = "known"
+		case lock = "lock"
+		case color = "color"
+		case met = "lasstMet"
+		case note = "note"
+	}// end enum user
+}// end enum JSONKey
+
+extension JSONKey.toplevel: StringEnum { }
+extension JSONKey.owner: StringEnum { }
+extension JSONKey.user: StringEnum { }
 
 class Userslist: NSObject {
 	private let ownersDictionary:[String: [String: Any]]
@@ -32,8 +59,8 @@ class Userslist: NSObject {
 		do {
 			let data:NSData = try NSData(contentsOfFile: fullpath)
 			let jsonObj:[String: [String: Any]] = try JSONSerialization.jsonObject(with: data as Data, options: [JSONSerialization.ReadingOptions.mutableContainers, JSONSerialization.ReadingOptions.mutableLeaves]) as! [String : [String : Any]]
-			ownersDictionary = jsonObj["owners"] as! [String : [String : Any]]
-			usersDictionary = jsonObj["users"] as! [String : Bool]
+			ownersDictionary = jsonObj[JSONKey.toplevel.owners] as! [String : [String : Any]]
+			usersDictionary = jsonObj[JSONKey.toplevel.users] as! [String : Bool]
 		} catch {
 			print(error)
 			ownersDictionary = Dictionary()

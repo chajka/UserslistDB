@@ -22,22 +22,6 @@ public struct UserName {
 	var handle:String
 }// end struct UserName
 
-public enum JSONKey {
-	enum user:String {
-		case nickname = "nickname"
-		case handle = "handle"
-		case isPremium = "isPremium"
-		case language = "Language"
-		case friendship = "known"
-		case lock = "lock"
-		case color = "color"
-		case met = "lasstMet"
-		case note = "note"
-	}// end enum user
-}// end enum JSONKey
-
-extension JSONKey.user: StringEnum { }
-
 public class NicoLiveUser: NSObject {
 	public var name:UserName
 	private var handle:String {
