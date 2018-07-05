@@ -22,7 +22,7 @@ public struct UserName {
 	var handle:String
 }// end struct UserName
 
-enum JSONKey {
+public enum JSONKey {
 	enum user:String {
 		case nickname = "nickname"
 		case handle = "handle"
@@ -33,41 +33,43 @@ enum JSONKey {
 		case color = "color"
 		case met = "lasstMet"
 		case note = "note"
-	}
+	}// end enum user
 }// end enum JSONKey
 
 extension JSONKey.user: StringEnum { }
 
-class NicoLiveUser: NSObject {
-	public let name:UserName
+public class NicoLiveUser: NSObject {
+	public var name:UserName
+	private var handle:String {
+		get {
+			return name.handle
+		}// end get
+		set (newHandle) {
+			name.handle = newHandle
+			entry[JSONKey.user.handle] = newHandle
+		}// end set
+	}// end property handle
 	public let anonymous:Bool
 	public let isPremium:Bool
 	public let language:UserLanguage
 	public var friendship:Friendship
 	public var thumbnail:NSImage!
-	public var lock:Bool = false
+	public var lock:Bool = false {
+		didSet (newState) {
+			entry[JSONKey.user.lock] =  newState ? "yes" : nil
+		}// end didSet
+	}// end property lock
 	public let lastMet:Date
 	public var color:NSColor?
-	public var backgroundColor:String? {
-		willSet(newColor) {
-			guard let hexColor = newColor, hexColor.count == 7, hexColor.prefix(1) == "#" else { return }
-			entry[JSONKey.user.color] = hexColor
-			let redStr:String = hexColor[hexColor.index(hexColor.startIndex, offsetBy: 1) ... hexColor.index(hexColor.startIndex, offsetBy: 2)].description
-			let greenStr:String = hexColor[hexColor.index(hexColor.startIndex, offsetBy: 3) ... hexColor.index(hexColor.startIndex, offsetBy: 4)].description
-			let blueStr:String = hexColor[hexColor.index(hexColor.startIndex, offsetBy: 5) ..< hexColor.endIndex].description
-			
-			let red:CGFloat = CGFloat(Int(redStr)!) / 0xff
-			let green:CGFloat = CGFloat(Int(greenStr)!) / 0xff
-			let blue:CGFloat = CGFloat(Int(blueStr)!) / 0xff
-
-			color = NSColor(calibratedRed: red, green: green, blue: blue, alpha: 1.0)
-		}// end willSet
-	}// end computed property backgroundColor
-	public var note:String?
+	public var note:String? {
+		didSet (newNote) {
+			entry[JSONKey.user.note] = newNote
+		}// end didSet
+	}// end property note
 
 	private var entry:Dictionary<String, String>
 
-	init(nickname:String, identifier:String, premium:Bool, anonymous:Bool, lang:UserLanguage, met:Friendship) {
+	public init (nickname:String, identifier:String, premium:Bool, anonymous:Bool, lang:UserLanguage, met:Friendship) {
 		entry = Dictionary()
 		let handle:String = anonymous ? nickname : String(nickname.prefix(10))
 		name = UserName(identifier: identifier, nickname: nickname, handle: handle)
@@ -86,7 +88,7 @@ class NicoLiveUser: NSObject {
 		entry[JSONKey.user.met] = formatter.string(from: lastMet)
 	}// end init
 
-	init(user:[String: String], identifier:String, anonymous:Bool, lang:UserLanguage) {
+	public init (user:[String: String], identifier:String, anonymous:Bool, lang:UserLanguage) {
 		entry = user
 		self.anonymous = anonymous
 		language = lang
@@ -104,10 +106,55 @@ class NicoLiveUser: NSObject {
 		let lastMetString:String = entry[JSONKey.user.met] ?? formatter.string(from: Date())
 		lastMet = formatter.date(from: lastMetString)!
 		entry[JSONKey.user.met] = formatter.string(from: Date())
+		super.init()
 			// color
-		if let colorString:String = entry[JSONKey.user.color] { self.backgroundColor = colorString }
+		if let colorString:String = entry[JSONKey.user.color] {
+			color = hexcClorToColor(hexColor: colorString)
+		}// end if have color
 			// note
 		if let noteString:String = entry[JSONKey.user.note] { note = noteString }
 	}// end init from entry
 
+	public func setColor (hexColor:String) -> Void {
+		color = hexcClorToColor(hexColor: hexColor)
+		entry[JSONKey.user.color] = hexColor
+	}// end setColor
+
+	public func setColor (rgbColor: NSColor) -> Void {
+		color = rgbColor
+		entry[JSONKey.user.color] = rgbColorToHexColor(rgbColor: rgbColor)
+	}// end setColor
+	
+	public func addEntryTo (listensers:inout [String: [String: String]]) {
+		let identifier = name.identifier
+		listensers[identifier] = entry
+	}// end func addEntryTo
+
+	private func hexcClorToColor (hexColor:String) -> NSColor {
+		guard hexColor.count == 7, hexColor.prefix(1) == "#" else { return NSColor.white }
+		let redStr:String = hexColor[hexColor.index(hexColor.startIndex, offsetBy: 1) ... hexColor.index(hexColor.startIndex, offsetBy: 2)].description
+		let greenStr:String = hexColor[hexColor.index(hexColor.startIndex, offsetBy: 3) ... hexColor.index(hexColor.startIndex, offsetBy: 4)].description
+		let blueStr:String = hexColor[hexColor.index(hexColor.startIndex, offsetBy: 5) ..< hexColor.endIndex].description
+		
+		let red:CGFloat = CGFloat(Int(redStr)!) / 0xff
+		let green:CGFloat = CGFloat(Int(greenStr)!) / 0xff
+		let blue:CGFloat = CGFloat(Int(blueStr)!) / 0xff
+		
+		return NSColor(calibratedRed: red, green: green, blue: blue, alpha: 1.0)
+	}// end func hexColorToColor
+
+	private func rgbColorToHexColor (rgbColor: NSColor) -> String {
+		var red: CGFloat = 1.0
+		var green: CGFloat = 1.0
+		var blue: CGFloat = 1.0
+		var alpha: CGFloat = 1.0
+		rgbColor.getRed(&red, green: &green, blue: &blue, alpha: &alpha)
+
+		let intRed = Int(red * 0xff)
+		let intGreen = Int(green * 0xff)
+		let intBlue = Int(blue * 0xff)
+		let hexColor:String = String(format: "#%02x%02x%02x", intRed, intGreen, intBlue)
+
+		return hexColor
+	}// end func rgbColorToHexColor
 }// end class NicoLiveUser
