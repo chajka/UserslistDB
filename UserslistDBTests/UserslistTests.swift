@@ -31,12 +31,13 @@ class UserslistTests: XCTestCase {
 		XCTAssertThrowsError(try db.user(identifier: "1234567"), "unknown user 1234567 found", { (error) in
 			print(error)
 		})
+		XCTAssertEqual(db.nickname(identifier: "6347612"), "Чайка", "user id 6347612 is not me")
 	}
 
     func testPerformanceExample() {
-        // This is an example of a performance test case.
+		let db:Userslist = Userslist(jsonPath: "/Volumes/SharkWire/build/UserslistDB/UserslistDBTests/test.json", user_session:[user_session])
         self.measure {
-            // Put the code you want to measure the time of here.
+			_ = db.nickname(identifier: "6347612")
         }
     }
 

@@ -40,10 +40,16 @@ extension JSONKey.toplevel: StringEnum { }
 extension JSONKey.owner: StringEnum { }
 extension JSONKey.user: StringEnum { }
 
+private let NicknameAPIFormat: String = "http://seiga.nicovideo.jp/api/user/info?id="
+private let NicknameNodeName: String = "nickname"
+
 class Userslist: NSObject {
-	private let ownersDictionary:[String: [String: Any]]
-	private let usersDictionary:[String: Bool]
-	private let cookies:[HTTPCookie]
+	private let ownersDictionary: [String: [String: Any]]
+	private let usersDictionary: [String: Bool]
+	private let cookies: [HTTPCookie]
+
+	private let session: URLSession = URLSession(configuration: URLSessionConfiguration.default)
+	private var reqest: URLRequest
 	
 	init(jsonPath:String, user_session:[HTTPCookie]) {
 		cookies = user_session
@@ -67,6 +73,8 @@ class Userslist: NSObject {
 			ownersDictionary = Dictionary()
 			usersDictionary = Dictionary()
 		}// end try - catch open data and parse json to dictionary
+		reqest = URLRequest(url: URL(string: NicknameAPIFormat)!)
+		reqest.allHTTPHeaderFields = HTTPCookie.requestHeaderFields(with: cookies)
 	}// end init
 
 	func user(identifier:String) throws -> Bool {
@@ -77,4 +85,30 @@ class Userslist: NSObject {
 		throw UserslistError.unknownUser(identifier)
 	}// end func user
 
+	public func nickname (identifier: String) -> String {
+		if let url = URL(string: NicknameAPIFormat + identifier) {
+			var fetchData: Bool = false
+			var nickname: String = String()
+			reqest.url = url
+			let task:URLSessionDataTask = session.dataTask(with: reqest) { (dat, req, err) in
+				if let data:Data = dat {
+					do {
+						let resultXML: XMLDocument = try XMLDocument(data: data, options: XMLNode.Options.documentTidyXML)
+						let userNode = resultXML.children?.first?.children?.first
+						for child: XMLNode in (userNode?.children)! {
+							if child.name == NicknameNodeName { nickname = child.stringValue ?? "Not Found (Charleston)"}
+						}// end foreach
+					} catch {
+						print ("get nickname xml parse error" )
+					}// end try - catch parse XML document
+				}// end if data is there
+				fetchData = true
+			}// end closure for recieve data
+			task.resume()
+
+			while (!fetchData) { Thread.sleep(forTimeInterval: 0.001)}
+			return nickname
+		}// end optional binding url
+		return ""
+	}// end func nickname
 }// end class Userslist
