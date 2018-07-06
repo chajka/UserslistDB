@@ -12,8 +12,8 @@ import DeuxCheVaux
 public enum UserslistError:Error {
 	case entriedUser
 	case inDatabaseUser
+	case unknownUser
 	case notInListeners
-	case unknownUser(String)
 }
 
 public enum JSONKey {
@@ -85,7 +85,7 @@ class Userslist: NSObject {
 		if let premium:Bool = user {
 			return premium
 		}// end if userid is entry in users
-		throw UserslistError.unknownUser(identifier)
+		throw UserslistError.unknownUser
 	}// end func user
 
 	public func nickname (identifier: String) -> String {
