@@ -9,5 +9,13 @@
 import Cocoa
 
 class NicoLiveListeners: NSObject {
+	private var currentUsers: Dictionary<String, NicoLiveUser>
+	private var knownUsers: Dictionary<String, Dictionary<String, String>>
 
-}
+	init (listeners: [String: [String: String]]) {
+		currentUsers = Dictionary()
+		knownUsers = listeners
+	}// end init
+
+	
+}// end class NicoLiveListeners

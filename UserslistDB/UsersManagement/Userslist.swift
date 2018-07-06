@@ -10,6 +10,9 @@ import Cocoa
 import DeuxCheVaux
 
 public enum UserslistError:Error {
+	case entriedUser
+	case inDatabaseUser
+	case notInListeners
 	case unknownUser(String)
 }
 

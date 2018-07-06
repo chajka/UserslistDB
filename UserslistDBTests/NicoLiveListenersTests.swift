@@ -9,10 +9,25 @@
 import XCTest
 
 class NicoLiveListenersTests: XCTestCase {
+	var ownersDictionary:Dictionary<String, Any>?
+	var usersDictionary:Dictionary<String, Any>?
+	var userEntry:Dictionary<String, String>?
+	var listenes:Dictionary<String, Dictionary<String, String>>?
 
     override func setUp() {
         super.setUp()
-        // Put setup code here. This method is called before the invocation of each test method in the class.
+		do {
+			let fullpath:String = "/Volumes/SharkWire/build/UserslistDB/UserslistDBTests/test.json"
+			let data:NSData = try NSData(contentsOfFile: fullpath)
+			let jsonObj:[String: [String: Any]] = try JSONSerialization.jsonObject(with: data as Data, options: [JSONSerialization.ReadingOptions.mutableContainers, JSONSerialization.ReadingOptions.mutableLeaves]) as! [String : [String : Any]]
+			ownersDictionary = jsonObj["owners"] as! [String : [String : Any]]
+			usersDictionary = jsonObj["users"] as! [String : Bool]
+			let owner:Dictionary<String, Any> = ownersDictionary!["6347612"]! as! Dictionary<String, Any>
+			listenes = owner["listener"] as? Dictionary<String, Dictionary<String, String>>
+			userEntry = listenes!["6347612"]!
+		} catch {
+			print(error)
+		}// end try - catch open data and parse json to dictionary
     }
     
     override func tearDown() {
@@ -20,9 +35,9 @@ class NicoLiveListenersTests: XCTestCase {
         super.tearDown()
     }
 
-    func testExample() {
-        // This is an example of a functional test case.
-        // Use XCTAssert and related functions to verify your tests produce the correct results.
+    func test01_allocation() {
+		let nicloLiveListeners:NicoLiveListeners = NicoLiveListeners(listeners: listenes!)
+		XCTAssertNotNil(nicloLiveListeners, "nico live listeners can not initoalize")
     }
 
     func testPerformanceExample() {
