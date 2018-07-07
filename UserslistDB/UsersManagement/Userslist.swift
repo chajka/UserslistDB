@@ -70,8 +70,8 @@ class Userslist: NSObject {
 		do {
 			let data:NSData = try NSData(contentsOfFile: fullpath)
 			let jsonObj:NSMutableDictionary = try JSONSerialization.jsonObject(with: data as Data, options: [JSONSerialization.ReadingOptions.mutableContainers, JSONSerialization.ReadingOptions.mutableLeaves]) as! NSMutableDictionary
-			ownersDictionary = jsonObj.object(forKey: JSONKey.toplevel.owners.rawValue) as! NSMutableDictionary
-			usersDictionary = jsonObj.object(forKey: JSONKey.toplevel.users.rawValue) as! NSMutableDictionary
+			ownersDictionary = jsonObj[JSONKey.toplevel.owners] as? NSMutableDictionary ?? NSMutableDictionary()
+			usersDictionary = jsonObj[JSONKey.toplevel.users] as? NSMutableDictionary ?? NSMutableDictionary()
 		} catch {
 			print(error)
 			ownersDictionary = NSMutableDictionary()
@@ -82,7 +82,7 @@ class Userslist: NSObject {
 	}// end init
 
 	func userAnonymity(identifier:String) throws -> Bool {
-		guard let anonimity:Bool = usersDictionary.value(forKey: identifier) as? Bool else { throw UserslistError.unknownUser }
+		guard let anonimity: Bool = usersDictionary[identifier] as? Bool else { throw UserslistError.unknownUser }
 		return anonimity
 	}// end func user
 

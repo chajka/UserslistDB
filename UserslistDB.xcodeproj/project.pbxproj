@@ -8,8 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		C60A355920EA4E7B002D96CF /* DeuxCheVaux.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C60A355820EA4E7B002D96CF /* DeuxCheVaux.framework */; };
-		C60A355A20EBAAC3002D96CF /* DeuxCheVaux.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C60A355820EA4E7B002D96CF /* DeuxCheVaux.framework */; };
-		C60A355C20EBAB0C002D96CF /* DeuxCheVaux.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = C60A355820EA4E7B002D96CF /* DeuxCheVaux.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		C60A355E20EE393F002D96CF /* NicoLiveListeners.swift in Sources */ = {isa = PBXBuildFile; fileRef = C60A355D20EE393F002D96CF /* NicoLiveListeners.swift */; };
 		C60A355F20EE393F002D96CF /* NicoLiveListeners.swift in Sources */ = {isa = PBXBuildFile; fileRef = C60A355D20EE393F002D96CF /* NicoLiveListeners.swift */; };
 		C60A356120EE3960002D96CF /* NicoLiveListenersTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C60A356020EE3960002D96CF /* NicoLiveListenersTests.swift */; };
@@ -21,6 +19,10 @@
 		C6B78A8220E63555001665C6 /* UserslistTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6B78A8120E63555001665C6 /* UserslistTests.swift */; };
 		C6BB927B20E5DB8D00A94CB8 /* UserslistDB.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C6BB927120E5DB8D00A94CB8 /* UserslistDB.framework */; };
 		C6BB928020E5DB8D00A94CB8 /* UserslistDBTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6BB927F20E5DB8D00A94CB8 /* UserslistDBTests.swift */; };
+		C6E4C14C20F0AAF3001BBE51 /* NSMutableDictionary+StringEnum.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6E4C14B20F0AAF3001BBE51 /* NSMutableDictionary+StringEnum.swift */; };
+		C6E4C14D20F0AAF3001BBE51 /* NSMutableDictionary+StringEnum.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6E4C14B20F0AAF3001BBE51 /* NSMutableDictionary+StringEnum.swift */; };
+		C6E4C14F20F0DEAA001BBE51 /* DeuxCheVaux.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C60A355820EA4E7B002D96CF /* DeuxCheVaux.framework */; };
+		C6E4C15020F0DEB8001BBE51 /* DeuxCheVaux.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = C60A355820EA4E7B002D96CF /* DeuxCheVaux.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -40,14 +42,14 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				C60A355C20EBAB0C002D96CF /* DeuxCheVaux.framework in CopyFiles */,
+				C6E4C15020F0DEB8001BBE51 /* DeuxCheVaux.framework in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		C60A355820EA4E7B002D96CF /* DeuxCheVaux.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = DeuxCheVaux.framework; path = UserslistDB/DeuxCheVaux.framework; sourceTree = SOURCE_ROOT; };
+		C60A355820EA4E7B002D96CF /* DeuxCheVaux.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = DeuxCheVaux.framework; sourceTree = SOURCE_ROOT; };
 		C60A355D20EE393F002D96CF /* NicoLiveListeners.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NicoLiveListeners.swift; sourceTree = "<group>"; };
 		C60A356020EE3960002D96CF /* NicoLiveListenersTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NicoLiveListenersTests.swift; sourceTree = "<group>"; };
 		C676FEBD20E8EAEA00C90748 /* NicoLiveUser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NicoLiveUser.swift; sourceTree = "<group>"; };
@@ -59,6 +61,7 @@
 		C6BB927A20E5DB8D00A94CB8 /* UserslistDBTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = UserslistDBTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		C6BB927F20E5DB8D00A94CB8 /* UserslistDBTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserslistDBTests.swift; sourceTree = "<group>"; };
 		C6BB928120E5DB8D00A94CB8 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		C6E4C14B20F0AAF3001BBE51 /* NSMutableDictionary+StringEnum.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NSMutableDictionary+StringEnum.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -74,8 +77,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C6E4C14F20F0DEAA001BBE51 /* DeuxCheVaux.framework in Frameworks */,
 				C6BB927B20E5DB8D00A94CB8 /* UserslistDB.framework in Frameworks */,
-				C60A355A20EBAAC3002D96CF /* DeuxCheVaux.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -102,9 +105,11 @@
 		C6BB926720E5DB8D00A94CB8 = {
 			isa = PBXGroup;
 			children = (
+				C60A355820EA4E7B002D96CF /* DeuxCheVaux.framework */,
 				C6BB927320E5DB8D00A94CB8 /* UserslistDB */,
 				C6BB927E20E5DB8D00A94CB8 /* UserslistDBTests */,
 				C6BB927220E5DB8D00A94CB8 /* Products */,
+				C6E4C14E20F0DEAA001BBE51 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -120,7 +125,7 @@
 		C6BB927320E5DB8D00A94CB8 /* UserslistDB */ = {
 			isa = PBXGroup;
 			children = (
-				C60A355820EA4E7B002D96CF /* DeuxCheVaux.framework */,
+				C6E4C14B20F0AAF3001BBE51 /* NSMutableDictionary+StringEnum.swift */,
 				C676FEBC20E8EA1100C90748 /* UserInformation */,
 				C6B78A7D20E634FD001665C6 /* UsersManagement */,
 				C6BB927520E5DB8D00A94CB8 /* Info.plist */,
@@ -138,6 +143,13 @@
 				C6BB928120E5DB8D00A94CB8 /* Info.plist */,
 			);
 			path = UserslistDBTests;
+			sourceTree = "<group>";
+		};
+		C6E4C14E20F0DEAA001BBE51 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -252,6 +264,7 @@
 				C6B78A7F20E63530001665C6 /* Userslist.swift in Sources */,
 				C676FEBE20E8EAEA00C90748 /* NicoLiveUser.swift in Sources */,
 				C60A355E20EE393F002D96CF /* NicoLiveListeners.swift in Sources */,
+				C6E4C14C20F0AAF3001BBE51 /* NSMutableDictionary+StringEnum.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -266,6 +279,7 @@
 				C676FEBF20E8EAEA00C90748 /* NicoLiveUser.swift in Sources */,
 				C6B78A8020E63530001665C6 /* Userslist.swift in Sources */,
 				C6BB928020E5DB8D00A94CB8 /* UserslistDBTests.swift in Sources */,
+				C6E4C14D20F0AAF3001BBE51 /* NSMutableDictionary+StringEnum.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -476,6 +490,7 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/UserslistDB",
+					"$(PROJECT_DIR)",
 				);
 				INFOPLIST_FILE = UserslistDBTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -499,6 +514,7 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/UserslistDB",
+					"$(PROJECT_DIR)",
 				);
 				INFOPLIST_FILE = UserslistDBTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (

@@ -31,9 +31,10 @@ class NicoLiveListeners: NSObject {
 	}// end func user
 
 	func activateUser (identifier: String, anonymous: Bool, lang: UserLanguage) throws -> NicoLiveUser {
-		guard let entry: NSMutableDictionary = knownUsers.object(forKey: identifier) as? NSMutableDictionary else { throw UserslistError.canNotUserActivate }
+		guard let entry: NSMutableDictionary = knownUsers[identifier] as? NSMutableDictionary else { throw UserslistError.canNotUserActivate }
 		let user: NicoLiveUser = NicoLiveUser(user: entry, identifier: identifier, anonymous: anonymous, lang: lang)
 		allKnownUsers.setValue(anonymous, forKey: identifier)
+
 		return user
 	}// end func activateUser
 }// end class NicoLiveListeners

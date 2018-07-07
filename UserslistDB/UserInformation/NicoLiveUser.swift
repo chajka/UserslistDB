@@ -22,6 +22,8 @@ public struct UserName {
 	var handle: String
 }// end struct UserName
 
+private let True: String = "yes"
+
 public class NicoLiveUser: NSObject {
 	public var name: UserName
 	private var handle: String {
@@ -30,7 +32,7 @@ public class NicoLiveUser: NSObject {
 		}// end get
 		set (newHandle) {
 			name.handle = newHandle
-			entry.setValue(newHandle, forKey: JSONKey.user.handle.rawValue)
+			entry[JSONKey.user.handle] = newHandle
 		}// end set
 	}// end property handle
 	public let anonymous: Bool
@@ -40,14 +42,14 @@ public class NicoLiveUser: NSObject {
 	public var thumbnail: NSImage!
 	public var lock:Bool = false {
 		didSet (newState) {
-			entry.setValue(newState ? "yes" : nil, forKey: JSONKey.user.lock.rawValue)
+			entry[JSONKey.user.lock] = newState ? True : nil
 		}// end didSet
 	}// end property lock
 	public let lastMet: Date
 	public var color: NSColor?
 	public var note: String? {
 		didSet (newNote) {
-			entry.setValue(newNote, forKey: JSONKey.user.note.rawValue)
+			entry[JSONKey.user.note] = newNote
 		}// end didSet
 	}// end property note
 
@@ -63,40 +65,40 @@ public class NicoLiveUser: NSObject {
 		lastMet = Date()
 		language = lang
 			// set entry object
-		entry.setValue(nickname, forKey: JSONKey.user.nickname.rawValue)
-		entry.setValue(handle, forKey: JSONKey.user.handle.rawValue)
-		if isPremium { entry.setValue("yes", forKey: JSONKey.user.isPremium.rawValue) }
+		entry[JSONKey.user.nickname] = nickname
+		entry[JSONKey.user.handle] = handle
+		if isPremium { entry[JSONKey.user.isPremium] = True }
 		let formatter:DateFormatter = DateFormatter()
 		formatter.dateStyle = DateFormatter.Style.short
 		formatter.timeStyle = DateFormatter.Style.short
-		entry.setValue(formatter.string(from: lastMet), forKey: JSONKey.user.met.rawValue)
+		entry[JSONKey.user.met] = formatter.string(from: lastMet)
 	}// end init
 
 	public init (user: NSMutableDictionary, identifier:String, anonymous:Bool, lang:UserLanguage) {
 		entry = user
 		self.anonymous = anonymous
 		language = lang
-		var username:String = entry.value(forKey: JSONKey.user.nickname.rawValue) as! String
+		var username:String = entry[JSONKey.user.nickname] as! String
 		if anonymous { username = String(username.prefix(10)) }
-		let handlename:String = entry.value(forKey: JSONKey.user.handle.rawValue) as! String
+		let handlename:String = entry[JSONKey.user.handle] as! String
 		name = UserName(identifier: identifier, nickname: username, handle: handlename)
-		isPremium = entry.value(forKey: JSONKey.user.isPremium.rawValue) as? String == "yes" ? true : false
-		friendship = entry.value(forKey: JSONKey.user.friendship.rawValue) as? String == "yes" ? Friendship.known : Friendship.met
-		lock = entry.value(forKey: JSONKey.user.lock.rawValue) as? String == "yes" ? true : false
+		isPremium = entry[JSONKey.user.isPremium] as? String == True ? true : false
+		friendship = entry[JSONKey.user.friendship] as? String == True ? Friendship.known : Friendship.met
+		lock = entry[JSONKey.user.lock] as? String == True ? true : false
 			// update time
 		let formatter: DateFormatter = DateFormatter()
 		formatter.dateStyle = DateFormatter.Style.short
 		formatter.timeStyle = DateFormatter.Style.short
-		let lastMetString:String = entry.value(forKey: JSONKey.user.met.rawValue) as? String ?? formatter.string(from: Date())
+		let lastMetString:String = entry[JSONKey.user.met] as? String ?? formatter.string(from: Date())
 		lastMet = formatter.date(from: lastMetString)!
-		entry.setValue(formatter.string(from: Date()), forKey: JSONKey.user.met.rawValue)
+		entry[JSONKey.user.met] = formatter.string(from: Date())
 		super.init()
 			// color
-		if let colorString:String = entry.value(forKey: JSONKey.user.color.rawValue) as? String {
+		if let colorString:String = entry[JSONKey.user.color] as? String {
 			color = hexcClorToColor(hexColor: colorString)
 		}// end if have color
 			// note
-		if let noteString:String = entry.value(forKey: JSONKey.user.note.rawValue) as? String { note = noteString }
+		if let noteString:String = entry[JSONKey.user.note] as? String { note = noteString }
 	}// end init from entry
 
 	public func setColor (hexColor:String) -> Void {
