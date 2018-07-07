@@ -11,10 +11,10 @@ import DeuxCheVaux
 
 class NicoLiveListeners: NSObject {
 	private var currentUsers: Dictionary<String, NicoLiveUser>
-	private var knownUsers: Dictionary<String, Dictionary<String, String>>
-	private var allKnownUsers: Dictionary<String, Bool>
+	private var knownUsers: NSMutableDictionary
+	private var allKnownUsers: NSMutableDictionary
 
-	init (listeners: Dictionary<String, Dictionary<String, String>>, allKnownUsers:Dictionary<String, Bool>) {
+	init (listeners: NSMutableDictionary, allKnownUsers: NSMutableDictionary) {
 		currentUsers = Dictionary()
 		knownUsers = listeners
 		self.allKnownUsers = allKnownUsers
@@ -29,4 +29,11 @@ class NicoLiveListeners: NSObject {
 			else { throw UserslistError.unknownUser }
 		}// end if current user is in current users dictionary
 	}// end func user
+
+	func activateUser (identifier: String, anonymous: Bool, lang: UserLanguage) throws -> NicoLiveUser {
+		guard let entry: NSMutableDictionary = knownUsers.object(forKey: identifier) as? NSMutableDictionary else { throw UserslistError.canNotUserActivate }
+		let user: NicoLiveUser = NicoLiveUser(user: entry, identifier: identifier, anonymous: anonymous, lang: lang)
+		allKnownUsers.setValue(anonymous, forKey: identifier)
+		return user
+	}// end func activateUser
 }// end class NicoLiveListeners

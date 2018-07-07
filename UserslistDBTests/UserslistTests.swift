@@ -27,8 +27,8 @@ class UserslistTests: XCTestCase {
 
 	func test02_func_identifier() {
 		let db:Userslist = Userslist(jsonPath: "/Volumes/SharkWire/build/UserslistDB/UserslistDBTests/test.json", user_session:[user_session])
-		XCTAssertNoThrow(try db.user(identifier: "6347612"), "known user 6347612 is not found")
-		XCTAssertThrowsError(try db.user(identifier: "1234567"), "unknown user 1234567 found", { (error) in
+		XCTAssertNoThrow(try db.userAnonymity(identifier: "6347612"), "known user 6347612 is not found")
+		XCTAssertThrowsError(try db.userAnonymity(identifier: "1234567"), "unknown user 1234567 found", { (error) in
 			print(error)
 		})
 		XCTAssertEqual(db.nickname(identifier: "6347612"), "Чайка", "user id 6347612 is not me")

@@ -9,25 +9,20 @@
 import XCTest
 
 class NicoLiveListenersTests: XCTestCase {
-	var ownersDictionary:Dictionary<String, Any>?
-	var usersDictionary:Dictionary<String, Bool>?
-	var userEntry:Dictionary<String, String>?
-	var listenes:Dictionary<String, Dictionary<String, String>>?
+	var db: Userslist?
+	var ownersDictionary: NSMutableDictionary?
+	var usersDictionary: NSMutableDictionary?
+	var userEntry: NSMutableDictionary?
+	var listenes: NSMutableDictionary?
 
     override func setUp() {
         super.setUp()
-		do {
-			let fullpath:String = "/Volumes/SharkWire/build/UserslistDB/UserslistDBTests/test.json"
-			let data:NSData = try NSData(contentsOfFile: fullpath)
-			let jsonObj:[String: [String: Any]] = try JSONSerialization.jsonObject(with: data as Data, options: [JSONSerialization.ReadingOptions.mutableContainers, JSONSerialization.ReadingOptions.mutableLeaves]) as! [String : [String : Any]]
-			ownersDictionary = jsonObj["owners"] as! [String : [String : Any]]
-			usersDictionary = jsonObj["users"] as? [String : Bool]
-			let owner:Dictionary<String, Any> = ownersDictionary!["6347612"]! as! Dictionary<String, Any>
-			listenes = owner["listener"] as? Dictionary<String, Dictionary<String, String>>
-			userEntry = listenes!["6347612"]!
-		} catch {
-			print(error)
-		}// end try - catch open data and parse json to dictionary
+		let fullpath:String = "/Volumes/SharkWire/build/UserslistDB/UserslistDBTests/test.json"
+		db = Userslist(jsonPath: fullpath, user_session: [user_session])
+		ownersDictionary = db?.ownersDictionary
+		usersDictionary = db?.usersDictionary
+		let owner: NSMutableDictionary = ownersDictionary?.object(forKey: "6347612") as! NSMutableDictionary
+		listenes = owner.object(forKey: JSONKey.owner.listeners.rawValue) as? NSMutableDictionary
     }
     
     override func tearDown() {
@@ -39,6 +34,23 @@ class NicoLiveListenersTests: XCTestCase {
 		let nicloLiveListeners:NicoLiveListeners = NicoLiveListeners(listeners: listenes!, allKnownUsers: usersDictionary!)
 		XCTAssertNotNil(nicloLiveListeners, "nico live listeners can not initoalize")
     }
+
+	func test02_check_and_activate_user() {
+		let nicloLiveListeners:NicoLiveListeners = NicoLiveListeners(listeners: listenes!, allKnownUsers: usersDictionary!)
+		XCTAssertNotNil(nicloLiveListeners, "nico live listeners can not initoalize")
+		var user: NicoLiveUser
+		do {
+			XCTAssertThrowsError(try nicloLiveListeners.user(identifier: "6347612"), "unactivate user id : 6347612 is is there") { (error) in
+				print(error)
+			}
+			user = try nicloLiveListeners.activateUser(identifier: "6347612", anonymous: false, lang: .en)
+			XCTAssertNotNil(user, "instance for id 6347612 can not instatinate")
+			let entry: NSMutableDictionary = listenes?.object(forKey: "6347612") as! NSMutableDictionary
+			XCTAssertNotNil(entry.value(forKey: JSONKey.user.met.rawValue), "last met date not updated")
+		} catch {
+			print(error)
+		}
+	}
 
     func testPerformanceExample() {
         // This is an example of a performance test case.

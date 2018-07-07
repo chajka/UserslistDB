@@ -10,24 +10,20 @@ import XCTest
 import DeuxCheVaux
 
 class NicoLiveUserTests: XCTestCase {
-	var ownersDictionary:Dictionary<String, Any>?
-	var usersDictionary:Dictionary<String, Any>?
-	var userEntry:Dictionary<String, String>?
+	var db: Userslist?
+	var ownersDictionary: NSMutableDictionary?
+	var usersDictionary: NSMutableDictionary?
+	var userEntry: NSMutableDictionary?
 
     override func setUp() {
         super.setUp()
-		do {
-			let fullpath:String = "/Volumes/SharkWire/build/UserslistDB/UserslistDBTests/test.json"
-			let data:NSData = try NSData(contentsOfFile: fullpath)
-			let jsonObj:[String: [String: Any]] = try JSONSerialization.jsonObject(with: data as Data, options: [JSONSerialization.ReadingOptions.mutableContainers, JSONSerialization.ReadingOptions.mutableLeaves]) as! [String : [String : Any]]
-			ownersDictionary = jsonObj["owners"] as! [String : [String : Any]]
-			usersDictionary = jsonObj["users"] as! [String : Bool]
-			let owner:Dictionary<String, Any> = ownersDictionary!["6347612"]! as! Dictionary<String, Any>
-			let listenes:Dictionary<String, Dictionary<String, String>> = owner["listener"]! as! Dictionary<String, Dictionary>
-			userEntry = listenes["6347612"]!
-		} catch {
-			print(error)
-		}// end try - catch open data and parse json to dictionary
+		let fullpath:String = "/Volumes/SharkWire/build/UserslistDB/UserslistDBTests/test.json"
+		db = Userslist(jsonPath: fullpath, user_session: [user_session])
+		ownersDictionary = db?.ownersDictionary
+		usersDictionary = db?.usersDictionary
+		let owner: NSMutableDictionary = ownersDictionary?.object(forKey: "6347612") as! NSMutableDictionary
+		let listenes: NSMutableDictionary = owner.object(forKey: JSONKey.owner.listeners.rawValue) as! NSMutableDictionary
+		userEntry = listenes.object(forKey: "6347612") as? NSMutableDictionary
     }
     
     override func tearDown() {

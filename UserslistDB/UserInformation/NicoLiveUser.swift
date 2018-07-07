@@ -17,44 +17,44 @@ public enum Friendship {
 }// end enum Friendship
 
 public struct UserName {
-	let identifier:String
-	let nickname:String
-	var handle:String
+	let identifier: String
+	let nickname: String
+	var handle: String
 }// end struct UserName
 
 public class NicoLiveUser: NSObject {
-	public var name:UserName
-	private var handle:String {
+	public var name: UserName
+	private var handle: String {
 		get {
 			return name.handle
 		}// end get
 		set (newHandle) {
 			name.handle = newHandle
-			entry[JSONKey.user.handle] = newHandle
+			entry.setValue(newHandle, forKey: JSONKey.user.handle.rawValue)
 		}// end set
 	}// end property handle
-	public let anonymous:Bool
-	public let isPremium:Bool
-	public let language:UserLanguage
-	public var friendship:Friendship
-	public var thumbnail:NSImage!
+	public let anonymous: Bool
+	public let isPremium: Bool
+	public let language: UserLanguage
+	public var friendship: Friendship
+	public var thumbnail: NSImage!
 	public var lock:Bool = false {
 		didSet (newState) {
-			entry[JSONKey.user.lock] =  newState ? "yes" : nil
+			entry.setValue(newState ? "yes" : nil, forKey: JSONKey.user.lock.rawValue)
 		}// end didSet
 	}// end property lock
-	public let lastMet:Date
-	public var color:NSColor?
-	public var note:String? {
+	public let lastMet: Date
+	public var color: NSColor?
+	public var note: String? {
 		didSet (newNote) {
-			entry[JSONKey.user.note] = newNote
+			entry.setValue(newNote, forKey: JSONKey.user.note.rawValue)
 		}// end didSet
 	}// end property note
 
-	private var entry:Dictionary<String, String>
+	private var entry: NSMutableDictionary
 
 	public init (nickname:String, identifier:String, premium:Bool, anonymous:Bool, lang:UserLanguage, met:Friendship) {
-		entry = Dictionary()
+		entry = NSMutableDictionary()
 		let handle:String = anonymous ? nickname : String(nickname.prefix(10))
 		name = UserName(identifier: identifier, nickname: nickname, handle: handle)
 		isPremium = premium
@@ -63,55 +63,55 @@ public class NicoLiveUser: NSObject {
 		lastMet = Date()
 		language = lang
 			// set entry object
-		entry[JSONKey.user.nickname] = nickname
-		entry[JSONKey.user.handle] = handle
-		if isPremium { entry[JSONKey.user.isPremium] = "yes" }
+		entry.setValue(nickname, forKey: JSONKey.user.nickname.rawValue)
+		entry.setValue(handle, forKey: JSONKey.user.handle.rawValue)
+		if isPremium { entry.setValue("yes", forKey: JSONKey.user.isPremium.rawValue) }
 		let formatter:DateFormatter = DateFormatter()
 		formatter.dateStyle = DateFormatter.Style.short
 		formatter.timeStyle = DateFormatter.Style.short
-		entry[JSONKey.user.met] = formatter.string(from: lastMet)
+		entry.setValue(formatter.string(from: lastMet), forKey: JSONKey.user.met.rawValue)
 	}// end init
 
-	public init (user:[String: String], identifier:String, anonymous:Bool, lang:UserLanguage) {
+	public init (user: NSMutableDictionary, identifier:String, anonymous:Bool, lang:UserLanguage) {
 		entry = user
 		self.anonymous = anonymous
 		language = lang
-		var username:String = entry[JSONKey.user.nickname]!
+		var username:String = entry.value(forKey: JSONKey.user.nickname.rawValue) as! String
 		if anonymous { username = String(username.prefix(10)) }
-		let handlename:String = entry[JSONKey.user.handle]!
+		let handlename:String = entry.value(forKey: JSONKey.user.handle.rawValue) as! String
 		name = UserName(identifier: identifier, nickname: username, handle: handlename)
-		isPremium = entry[JSONKey.user.isPremium] == "yes" ? true : false
-		friendship = entry[JSONKey.user.friendship] == "yes" ? Friendship.known : Friendship.met
-		lock = entry[JSONKey.user.lock] == "yes" ? true : false
+		isPremium = entry.value(forKey: JSONKey.user.isPremium.rawValue) as? String == "yes" ? true : false
+		friendship = entry.value(forKey: JSONKey.user.friendship.rawValue) as? String == "yes" ? Friendship.known : Friendship.met
+		lock = entry.value(forKey: JSONKey.user.lock.rawValue) as? String == "yes" ? true : false
 			// update time
-		let formatter:DateFormatter = DateFormatter()
+		let formatter: DateFormatter = DateFormatter()
 		formatter.dateStyle = DateFormatter.Style.short
 		formatter.timeStyle = DateFormatter.Style.short
-		let lastMetString:String = entry[JSONKey.user.met] ?? formatter.string(from: Date())
+		let lastMetString:String = entry.value(forKey: JSONKey.user.met.rawValue) as? String ?? formatter.string(from: Date())
 		lastMet = formatter.date(from: lastMetString)!
-		entry[JSONKey.user.met] = formatter.string(from: Date())
+		entry.setValue(formatter.string(from: Date()), forKey: JSONKey.user.met.rawValue)
 		super.init()
 			// color
-		if let colorString:String = entry[JSONKey.user.color] {
+		if let colorString:String = entry.value(forKey: JSONKey.user.color.rawValue) as? String {
 			color = hexcClorToColor(hexColor: colorString)
 		}// end if have color
 			// note
-		if let noteString:String = entry[JSONKey.user.note] { note = noteString }
+		if let noteString:String = entry.value(forKey: JSONKey.user.note.rawValue) as? String { note = noteString }
 	}// end init from entry
 
 	public func setColor (hexColor:String) -> Void {
 		color = hexcClorToColor(hexColor: hexColor)
-		entry[JSONKey.user.color] = hexColor
+		entry.setValue(hexColor, forKey: JSONKey.user.color.rawValue)
 	}// end setColor
 
 	public func setColor (rgbColor: NSColor) -> Void {
 		color = rgbColor
-		entry[JSONKey.user.color] = rgbColorToHexColor(rgbColor: rgbColor)
+		entry.setValue(rgbColorToHexColor(rgbColor: rgbColor), forKey: JSONKey.user.color.rawValue)
 	}// end setColor
 	
-	public func addEntryTo (listensers:inout [String: [String: String]]) {
+	public func addEntryTo (listensers: NSMutableDictionary) {
 		let identifier = name.identifier
-		listensers[identifier] = entry
+		listensers.setValue(entry, forKey: identifier)
 	}// end func addEntryTo
 
 	private func hexcClorToColor (hexColor:String) -> NSColor {

@@ -14,6 +14,7 @@ public enum UserslistError:Error {
 	case inDatabaseUser
 	case unknownUser
 	case notInListeners
+	case canNotUserActivate
 }
 
 public enum JSONKey {
@@ -47,14 +48,14 @@ private let NicknameAPIFormat: String = "http://seiga.nicovideo.jp/api/user/info
 private let NicknameNodeName: String = "nickname"
 
 class Userslist: NSObject {
-	private let ownersDictionary: [String: [String: Any]]
-	private let usersDictionary: [String: Bool]
+	let ownersDictionary: NSMutableDictionary
+	let usersDictionary: NSMutableDictionary
 	private let cookies: [HTTPCookie]
 
 	private let session: URLSession = URLSession(configuration: URLSessionConfiguration.default)
 	private var reqest: URLRequest
 	
-	init(jsonPath:String, user_session:[HTTPCookie]) {
+	init (jsonPath: String, user_session: [HTTPCookie]) {
 		cookies = user_session
 		let fullpath:String = jsonPath.starts(with: "~") ? (jsonPath as NSString).expandingTildeInPath : jsonPath
 		let fm = FileManager.default
@@ -68,24 +69,21 @@ class Userslist: NSObject {
 		}// end if not exist Userslist.json
 		do {
 			let data:NSData = try NSData(contentsOfFile: fullpath)
-			let jsonObj:[String: [String: Any]] = try JSONSerialization.jsonObject(with: data as Data, options: [JSONSerialization.ReadingOptions.mutableContainers, JSONSerialization.ReadingOptions.mutableLeaves]) as! [String : [String : Any]]
-			ownersDictionary = jsonObj[JSONKey.toplevel.owners] as! [String : [String : Any]]
-			usersDictionary = jsonObj[JSONKey.toplevel.users] as! [String : Bool]
+			let jsonObj:NSMutableDictionary = try JSONSerialization.jsonObject(with: data as Data, options: [JSONSerialization.ReadingOptions.mutableContainers, JSONSerialization.ReadingOptions.mutableLeaves]) as! NSMutableDictionary
+			ownersDictionary = jsonObj.object(forKey: JSONKey.toplevel.owners.rawValue) as! NSMutableDictionary
+			usersDictionary = jsonObj.object(forKey: JSONKey.toplevel.users.rawValue) as! NSMutableDictionary
 		} catch {
 			print(error)
-			ownersDictionary = Dictionary()
-			usersDictionary = Dictionary()
+			ownersDictionary = NSMutableDictionary()
+			usersDictionary = NSMutableDictionary()
 		}// end try - catch open data and parse json to dictionary
 		reqest = URLRequest(url: URL(string: NicknameAPIFormat)!)
 		reqest.allHTTPHeaderFields = HTTPCookie.requestHeaderFields(with: cookies)
 	}// end init
 
-	func user(identifier:String) throws -> Bool {
-		let user:Bool? = usersDictionary[identifier]
-		if let premium:Bool = user {
-			return premium
-		}// end if userid is entry in users
-		throw UserslistError.unknownUser
+	func userAnonymity(identifier:String) throws -> Bool {
+		guard let anonimity:Bool = usersDictionary.value(forKey: identifier) as? Bool else { throw UserslistError.unknownUser }
+		return anonimity
 	}// end func user
 
 	public func nickname (identifier: String) -> String {
