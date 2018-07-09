@@ -149,8 +149,7 @@ class Userslist: NSObject {
 		case .inDatabaseUser:
 			let nickname: String = anonymous ? String(identifier.prefix(10)) : fetchNickname(identifier: identifier)
 			user = listeners.newUser(nickname: nickname, identifier: identifier, premium: premium, anonymous: anonymous, lang: Lang, met: Friendship.metOther)
-		case .unknownUser:
-			fallthrough
+		case .unknownUser: fallthrough
 		default:
 			let nickname: String = anonymous ? String(identifier.prefix(10)) : fetchNickname(identifier: identifier)
 			user = listeners.newUser(nickname: nickname, identifier: identifier, premium: premium, anonymous: anonymous, lang: Lang, met: Friendship.new)

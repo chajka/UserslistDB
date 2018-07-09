@@ -81,6 +81,37 @@ class UserslistTests: XCTestCase {
 		XCTAssertNoThrow(user = try db.user(identifier: testID, for: testID), "activate user not found")
 	}
 
+	func test05_create_user() {
+		let db: Userslist = Userslist(jsonPath: testDBPath, user_session:[user_session])
+		let _ = db.start(owner: testID, speechDefault: false, commentDefault: false, observer: self)
+		var user:NicoLiveUser = NicoLiveUser(nickname: "abc", identifier: "cakd8ddkhdic7ed9dkahd", premium: true, anonymous: true, lang: .ja, met: .new)
+		XCTAssertThrowsError(user = try db.user(identifier: "4582246", for: testID), "user 4582246 is not activate but no error") { (error) in
+			print(error)
+		}// end closure
+		do {
+			do {
+				user = try db.user(identifier: "4582246", for: testID)
+			} catch UserslistError.entriedUser {
+				XCTAssert(false, "user \("4582246") reach here is correct")
+				user = try db.user(identifier: "4582246", premium: true, anonymous: false, Lang: .en, forOwner: testID, with: .entriedUser)
+			} catch UserslistError.inDatabaseUser {
+				XCTAssert(false, "user \("4582246") reach here is incorrect")
+				user = try db.user(identifier: "4582246", premium: true, anonymous: false, Lang: .en, forOwner: testID, with: .inactiveOwnner)
+			} catch UserslistError.unknownUser {
+				XCTAssert(true, "user \("4582246") reach here is incorrect")
+				user = try db.user(identifier: "4582246", premium: true, anonymous: false, Lang: .en, forOwner: testID, with: .unknownUser)
+			} catch {
+				XCTAssert(false, "user \("4582246") reach here is incorrect")
+			}
+		} catch UserslistError.inactiveOwnner {
+			XCTAssert(false, "owner not avilable in active owners")
+		} catch {
+			XCTAssert(false, "unknown error")
+		}
+		XCTAssertNotNil(user, "user \("4582246") can not initialize")
+		XCTAssertNoThrow(user = try db.user(identifier: "4582246", for: testID), "activate user not found")
+	}
+	
     func testPerformanceExample() {
 		let db: Userslist = Userslist(jsonPath: "/Volumes/SharkWire/build/UserslistDB/UserslistDBTests/test.json", user_session:[user_session])
         self.measure {
