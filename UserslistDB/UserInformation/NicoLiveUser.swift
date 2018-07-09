@@ -39,7 +39,7 @@ public class NicoLiveUser: NSObject {
 	public let isPremium: Bool
 	public let language: UserLanguage
 	public var friendship: Friendship
-	public var thumbnail: NSImage!
+	@objc public dynamic var thumbnail: NSImage!
 	public var lock:Bool = false {
 		didSet (newState) {
 			entry[JSONKey.user.lock] = newState ? True : nil
@@ -74,7 +74,7 @@ public class NicoLiveUser: NSObject {
 		entry[JSONKey.user.met] = formatter.string(from: lastMet)
 	}// end init
 
-	public init (user: NSMutableDictionary, identifier:String, anonymous:Bool, lang:UserLanguage) {
+	public init (user: NSMutableDictionary, identifier:String, premium:Bool, anonymous:Bool, lang:UserLanguage) {
 		entry = user
 		self.anonymous = anonymous
 		language = lang
@@ -82,7 +82,7 @@ public class NicoLiveUser: NSObject {
 		if anonymous { username = String(username.prefix(10)) }
 		let handlename:String = entry[JSONKey.user.handle] as! String
 		name = UserName(identifier: identifier, nickname: username, handle: handlename)
-		isPremium = entry[JSONKey.user.isPremium] as? String == True ? true : false
+		isPremium = premium
 		friendship = entry[JSONKey.user.friendship] as? String == True ? Friendship.known : Friendship.met
 		lock = entry[JSONKey.user.lock] as? String == True ? true : false
 			// update time

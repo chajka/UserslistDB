@@ -32,7 +32,7 @@ class NicoLiveUserTests: XCTestCase {
     }
 
     func test01_allocation_from_entry() {
-		let user:NicoLiveUser = NicoLiveUser(user: userEntry!, identifier: "6347612", anonymous: false, lang: UserLanguage.en)
+		let user: NicoLiveUser = NicoLiveUser(user: userEntry!, identifier: "6347612", premium: true, anonymous: false, lang: .en)
 		XCTAssertNotNil(user, "Single user can not initialize")
 		XCTAssertNotNil(user.name.nickname, "user nickname can not correct")
 		XCTAssertNotNil(user.name.nickname, "user handle can not correct")

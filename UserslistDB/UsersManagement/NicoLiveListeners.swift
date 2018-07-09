@@ -30,11 +30,20 @@ class NicoLiveListeners: NSObject {
 		}// end if current user is in current users dictionary
 	}// end func user
 
-	func activateUser (identifier: String, anonymous: Bool, lang: UserLanguage) throws -> NicoLiveUser {
-		guard let entry: NSMutableDictionary = knownUsers[identifier] as? NSMutableDictionary else { throw UserslistError.canNotUserActivate }
-		let user: NicoLiveUser = NicoLiveUser(user: entry, identifier: identifier, anonymous: anonymous, lang: lang)
-		allKnownUsers.setValue(anonymous, forKey: identifier)
+	func activateUser (identifier: String, premium: Bool, anonymous: Bool, lang: UserLanguage) throws -> NicoLiveUser {
+		guard let entry: NSMutableDictionary = knownUsers[identifier] as? NSMutableDictionary else { throw UserslistError.canNotActivateUser }
+		let user: NicoLiveUser = NicoLiveUser(user: entry, identifier: identifier, premium: premium, anonymous: anonymous, lang: lang)
+		currentUsers[identifier] = user
+		allKnownUsers[identifier] = anonymous
 
 		return user
 	}// end func activateUser
+
+	func newUser (nickname:String, identifier:String, premium:Bool, anonymous:Bool, lang:UserLanguage, met: Friendship) -> NicoLiveUser {
+		let user: NicoLiveUser = NicoLiveUser(nickname: nickname, identifier: identifier, premium: premium, anonymous: anonymous, lang: lang, met: met)
+		currentUsers[identifier] = user
+		allKnownUsers[identifier] = anonymous
+
+		return user
+	}// end func newUser
 }// end class NicoLiveListeners
