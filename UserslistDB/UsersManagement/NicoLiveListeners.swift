@@ -39,10 +39,11 @@ class NicoLiveListeners: NSObject {
 		return user
 	}// end func activateUser
 
-	func newUser (nickname:String, identifier:String, premium:Bool, anonymous:Bool, lang:UserLanguage, met: Friendship) -> NicoLiveUser {
+	func newUser (nickname: String, identifier: String, premium: Bool, anonymous: Bool, lang: UserLanguage, met: Friendship) -> NicoLiveUser {
 		let user: NicoLiveUser = NicoLiveUser(nickname: nickname, identifier: identifier, premium: premium, anonymous: anonymous, lang: lang, met: met)
 		currentUsers[identifier] = user
 		allKnownUsers[identifier] = anonymous
+		knownUsers[identifier] = user.entry
 
 		return user
 	}// end func newUser

@@ -9,7 +9,7 @@
 import Cocoa
 import DeuxCheVaux
 
-public enum UserslistError:Error {
+public enum UserslistError: Error {
 	case entriedUser
 	case inDatabaseUser
 	case unknownUser
@@ -19,16 +19,16 @@ public enum UserslistError:Error {
 }// end enum UsersListError
 
 public enum JSONKey {
-	enum toplevel:String {
+	enum toplevel: String {
 		case owners = "owners"
 		case users = "users"
 	}// end enum toplevel
-	enum owner:String {
+	enum owner: String {
 		case listeners = "listener"
 		case speech = "speech"
 		case anonymous = "anonymous"
 	}// end enum owner
-	enum user:String {
+	enum user: String {
 		case nickname = "nickname"
 		case handle = "handle"
 		case isPremium = "isPremium"
@@ -69,7 +69,7 @@ class Userslist: NSObject {
 		observers = Dictionary()
 		cookies = user_session
 		databasePath = jsonPath.starts(with: "~") ? (jsonPath as NSString).expandingTildeInPath : jsonPath
-		let fm = FileManager.default
+		let fm: FileManager = FileManager.default
 		if !fm.fileExists(atPath: databasePath) {
 			let defaultJasonPath:String = Bundle.main.path(forResource: "Userslist", ofType: "json")!
 			do {
@@ -93,6 +93,10 @@ class Userslist: NSObject {
 		reqest.allHTTPHeaderFields = HTTPCookie.requestHeaderFields(with: cookies)
 	}// end init
 
+	deinit {
+		let _ = updateDatabaseFile()
+	}// end deinit
+
 	func updateDatabaseFile () -> Bool {
 		do {
 			let jsonData: Data = try JSONSerialization.data(withJSONObject: jsonDatabase, options: JSONSerialization.WritingOptions.prettyPrinted)
@@ -104,7 +108,7 @@ class Userslist: NSObject {
 		}// end
 	}// end updateDatabaseFile
 
-	func start (owner: String, speechDefault: Bool, commentDefault: Bool, observer: NSObject? = nil) -> (speech: Bool, comment: Bool){
+	func start (owner: String, speechDefault: Bool, commentDefault: Bool, observer: NSObject? = nil) -> (speech: Bool, comment: Bool) {
 		let ownerInfo: NSMutableDictionary = ownersDictionary[owner] as? NSMutableDictionary ?? NSMutableDictionary()
 		let speech:Bool = ownerInfo[JSONKey.owner.speech] as? Bool ?? speechDefault
 		let comment:Bool = ownerInfo[JSONKey.owner.anonymous] as? Bool ?? commentDefault
@@ -122,16 +126,17 @@ class Userslist: NSObject {
 
 	func end (owner: String) -> Void {
 		currentOwners.removeValue(forKey: owner)
+		if observers[owner] != nil { observers.removeValue(forKey: owner) }
 	}// end func end
 
-	func update (owner: String, speech:Bool) -> Void {
+	func update (speech :Bool, forOwner owner: String) -> Void {
 		guard let ownerInfo: NSMutableDictionary = ownersDictionary[owner] as? NSMutableDictionary else { return }
 		ownerInfo[JSONKey.owner.speech] = speech
 	}// end func update owner, speech
 
-	func update (owner: String, comment:Bool) -> Void {
+	func update (anonymousComment: Bool, forOwner owner: String) -> Void {
 		guard let ownerInfo: NSMutableDictionary = ownersDictionary[owner] as? NSMutableDictionary else { return }
-		ownerInfo[JSONKey.owner.anonymous] = comment
+		ownerInfo[JSONKey.owner.anonymous] = anonymousComment
 	}// end func update owner, speech
 
 	func user (identifier: String, for owner: String) throws -> NicoLiveUser {
@@ -140,7 +145,7 @@ class Userslist: NSObject {
 		return user
 	}// end func user
 
-	func user (identifier: String, premium: Bool, anonymous: Bool, Lang:UserLanguage, forOwner owner: String, with error: UserslistError) throws -> NicoLiveUser {
+	func user (identifier: String, premium: Bool, anonymous: Bool, Lang: UserLanguage, forOwner owner: String, with error: UserslistError) throws -> NicoLiveUser {
 		guard let listeners: NicoLiveListeners = currentOwners[owner] else { throw UserslistError.inactiveOwnner }
 		var user: NicoLiveUser
 		switch error {
@@ -154,9 +159,11 @@ class Userslist: NSObject {
 			let nickname: String = anonymous ? String(identifier.prefix(10)) : fetchNickname(identifier: identifier)
 			user = listeners.newUser(nickname: nickname, identifier: identifier, premium: premium, anonymous: anonymous, lang: Lang, met: Friendship.new)
 		}// end switch case by exception name
+
 		if let observer = observers[owner] {
 			user.addObserver(observer, forKeyPath: "thumbnail", options: [.new], context: nil)
 		}// end if need observe thumbnail
+
 			// get thumbnail
 		let thumbURL: URL = thumbnailURL(identifier: identifier)
 		reqest.url = thumbURL
@@ -166,7 +173,7 @@ class Userslist: NSObject {
 			}// end if data is valid
 		}// end closure when recieve data
 		task.resume()
-		
+
 		return user
 	}// end func user
 	
