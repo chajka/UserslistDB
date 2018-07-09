@@ -8,6 +8,9 @@
 
 import XCTest
 
+let testID: String = "6347612"
+let testDBPath: String = "/Volumes/SharkWire/build/UserslistDB/UserslistDBTests/test.json"
+
 class UserslistTests: XCTestCase {
 
     override func setUp() {
@@ -21,22 +24,98 @@ class UserslistTests: XCTestCase {
     }
 
     func test01_allocation() {
-		let db:Userslist = Userslist(jsonPath: "/Volumes/SharkWire/build/UserslistDB/UserslistDBTests/test.json", user_session:[user_session])
+		let db: Userslist = Userslist(jsonPath: testDBPath, user_session:[user_session])
 		XCTAssertNotNil(db, "db can not allocate")
     }
 
 	func test02_func_identifier() {
-		let db:Userslist = Userslist(jsonPath: "/Volumes/SharkWire/build/UserslistDB/UserslistDBTests/test.json", user_session:[user_session])
-		XCTAssertNoThrow(try db.user(identifier: "6347612"), "known user 6347612 is not found")
-		XCTAssertThrowsError(try db.user(identifier: "1234567"), "unknown user 1234567 found", { (error) in
+		let db: Userslist = Userslist(jsonPath: testDBPath, user_session:[user_session])
+		XCTAssertNoThrow(try db.userAnonymity(identifier: testID), "known user 6347612 is not found")
+		XCTAssertThrowsError(try db.userAnonymity(identifier: "1234567"), "unknown user 1234567 found", { (error) in
 			print(error)
 		})
+		XCTAssertEqual(db.fetchNickname(identifier: testID), "Чайка", "user id 6347612 is not me")
 	}
 
+	func test03_setup_for_owner() {
+		let db: Userslist = Userslist(jsonPath: testDBPath, user_session:[user_session])
+		XCTAssertEqual(db.activeOwners().count, 0)
+		let result = db.start(owner: testID, speechDefault: false, commentDefault: false)
+		XCTAssertFalse(result.speech, "Owner 6347612 enable speech")
+		XCTAssertTrue(result.comment, "Owner 6347612 disable annonymous comment")
+		XCTAssertEqual(db.activeOwners().count, 1)
+		db.end(owner: testID)
+		XCTAssertEqual(db.activeOwners().count, 0)
+		let success: Bool = db.updateDatabaseFile()
+		XCTAssertNoThrow(success, "update database json file failed")
+	}
+
+	func test04_activate_user() {
+		let db: Userslist = Userslist(jsonPath: testDBPath, user_session:[user_session])
+		let _ = db.start(owner: testID, speechDefault: false, commentDefault: false, observer: self)
+		var user:NicoLiveUser = NicoLiveUser(nickname: "abc", identifier: "cakd8ddkhdic7ed9dkahd", premium: true, anonymous: true, lang: .ja, met: .new)
+		XCTAssertThrowsError(user = try db.user(identifier: testID, for: testID), "user 6347612 is not activate but no error") { (error) in
+			print(error)
+		}// end closure
+		do {
+			do {
+				user = try db.user(identifier: testID, for: testID)
+			} catch UserslistError.entriedUser {
+				XCTAssert(true, "user \(testID) reach here is correct")
+				user = try db.user(identifier: testID, premium: true, anonymous: false, Lang: .en, forOwner: testID, with: .entriedUser)
+			} catch UserslistError.inDatabaseUser {
+				XCTAssert(false, "user \(testID) reach here is incorrect")
+				user = try db.user(identifier: testID, premium: true, anonymous: false, Lang: .en, forOwner: testID, with: .inactiveOwnner)
+			} catch UserslistError.unknownUser {
+				XCTAssert(false, "user \(testID) reach here is incorrect")
+				user = try db.user(identifier: testID, premium: true, anonymous: false, Lang: .en, forOwner: testID, with: .unknownUser)
+			} catch {
+				XCTAssert(false, "user \(testID) reach here is incorrect")
+			}
+		} catch UserslistError.inactiveOwnner {
+			XCTAssert(false, "owner not avilable in active owners")
+		} catch {
+			XCTAssert(false, "unknown error")
+		}
+		XCTAssertNotNil(user, "user \(testID) can not initialize")
+		XCTAssertNoThrow(user = try db.user(identifier: testID, for: testID), "activate user not found")
+	}
+
+	func test05_create_user() {
+		let db: Userslist = Userslist(jsonPath: testDBPath, user_session:[user_session])
+		let _ = db.start(owner: testID, speechDefault: false, commentDefault: false, observer: self)
+		var user:NicoLiveUser = NicoLiveUser(nickname: "abc", identifier: "cakd8ddkhdic7ed9dkahd", premium: true, anonymous: true, lang: .ja, met: .new)
+		XCTAssertThrowsError(user = try db.user(identifier: "4582246", for: testID), "user 4582246 is not activate but no error") { (error) in
+			print(error)
+		}// end closure
+		do {
+			do {
+				user = try db.user(identifier: "4582246", for: testID)
+			} catch UserslistError.entriedUser {
+				XCTAssert(false, "user \("4582246") reach here is correct")
+				user = try db.user(identifier: "4582246", premium: true, anonymous: false, Lang: .en, forOwner: testID, with: .entriedUser)
+			} catch UserslistError.inDatabaseUser {
+				XCTAssert(false, "user \("4582246") reach here is incorrect")
+				user = try db.user(identifier: "4582246", premium: true, anonymous: false, Lang: .en, forOwner: testID, with: .inactiveOwnner)
+			} catch UserslistError.unknownUser {
+				XCTAssert(true, "user \("4582246") reach here is incorrect")
+				user = try db.user(identifier: "4582246", premium: true, anonymous: false, Lang: .en, forOwner: testID, with: .unknownUser)
+			} catch {
+				XCTAssert(false, "user \("4582246") reach here is incorrect")
+			}
+		} catch UserslistError.inactiveOwnner {
+			XCTAssert(false, "owner not avilable in active owners")
+		} catch {
+			XCTAssert(false, "unknown error")
+		}
+		XCTAssertNotNil(user, "user \("4582246") can not initialize")
+		XCTAssertNoThrow(user = try db.user(identifier: "4582246", for: testID), "activate user not found")
+	}
+	
     func testPerformanceExample() {
-        // This is an example of a performance test case.
+		let db: Userslist = Userslist(jsonPath: "/Volumes/SharkWire/build/UserslistDB/UserslistDBTests/test.json", user_session:[user_session])
         self.measure {
-            // Put the code you want to measure the time of here.
+			_ = db.fetchNickname(identifier: testID)
         }
     }
 
