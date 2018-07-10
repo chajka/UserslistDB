@@ -11,6 +11,9 @@
 		C60A355E20EE393F002D96CF /* NicoLiveListeners.swift in Sources */ = {isa = PBXBuildFile; fileRef = C60A355D20EE393F002D96CF /* NicoLiveListeners.swift */; };
 		C60A355F20EE393F002D96CF /* NicoLiveListeners.swift in Sources */ = {isa = PBXBuildFile; fileRef = C60A355D20EE393F002D96CF /* NicoLiveListeners.swift */; };
 		C60A356120EE3960002D96CF /* NicoLiveListenersTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C60A356020EE3960002D96CF /* NicoLiveListenersTests.swift */; };
+		C643329420F4C31E007B972B /* DatabaseConverter.swift in Sources */ = {isa = PBXBuildFile; fileRef = C643329320F4C31E007B972B /* DatabaseConverter.swift */; };
+		C643329520F4C31E007B972B /* DatabaseConverter.swift in Sources */ = {isa = PBXBuildFile; fileRef = C643329320F4C31E007B972B /* DatabaseConverter.swift */; };
+		C643329720F4C356007B972B /* DatabaseConverterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C643329620F4C356007B972B /* DatabaseConverterTests.swift */; };
 		C676FEBE20E8EAEA00C90748 /* NicoLiveUser.swift in Sources */ = {isa = PBXBuildFile; fileRef = C676FEBD20E8EAEA00C90748 /* NicoLiveUser.swift */; };
 		C676FEBF20E8EAEA00C90748 /* NicoLiveUser.swift in Sources */ = {isa = PBXBuildFile; fileRef = C676FEBD20E8EAEA00C90748 /* NicoLiveUser.swift */; };
 		C676FEC120E8EB0100C90748 /* NicoLiveUserTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C676FEC020E8EB0100C90748 /* NicoLiveUserTests.swift */; };
@@ -52,6 +55,8 @@
 		C60A355820EA4E7B002D96CF /* DeuxCheVaux.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = DeuxCheVaux.framework; sourceTree = SOURCE_ROOT; };
 		C60A355D20EE393F002D96CF /* NicoLiveListeners.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NicoLiveListeners.swift; sourceTree = "<group>"; };
 		C60A356020EE3960002D96CF /* NicoLiveListenersTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NicoLiveListenersTests.swift; sourceTree = "<group>"; };
+		C643329320F4C31E007B972B /* DatabaseConverter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatabaseConverter.swift; sourceTree = "<group>"; };
+		C643329620F4C356007B972B /* DatabaseConverterTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatabaseConverterTests.swift; sourceTree = "<group>"; };
 		C676FEBD20E8EAEA00C90748 /* NicoLiveUser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NicoLiveUser.swift; sourceTree = "<group>"; };
 		C676FEC020E8EB0100C90748 /* NicoLiveUserTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NicoLiveUserTests.swift; sourceTree = "<group>"; };
 		C6B78A7E20E63530001665C6 /* Userslist.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Userslist.swift; sourceTree = "<group>"; };
@@ -85,6 +90,14 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		C643329220F45ACE007B972B /* ConvertDatabase */ = {
+			isa = PBXGroup;
+			children = (
+				C643329320F4C31E007B972B /* DatabaseConverter.swift */,
+			);
+			path = ConvertDatabase;
+			sourceTree = "<group>";
+		};
 		C676FEBC20E8EA1100C90748 /* UserInformation */ = {
 			isa = PBXGroup;
 			children = (
@@ -128,6 +141,7 @@
 				C6E4C14B20F0AAF3001BBE51 /* NSMutableDictionary+StringEnum.swift */,
 				C676FEBC20E8EA1100C90748 /* UserInformation */,
 				C6B78A7D20E634FD001665C6 /* UsersManagement */,
+				C643329220F45ACE007B972B /* ConvertDatabase */,
 				C6BB927520E5DB8D00A94CB8 /* Info.plist */,
 			);
 			path = UserslistDB;
@@ -140,6 +154,7 @@
 				C6B78A8120E63555001665C6 /* UserslistTests.swift */,
 				C676FEC020E8EB0100C90748 /* NicoLiveUserTests.swift */,
 				C60A356020EE3960002D96CF /* NicoLiveListenersTests.swift */,
+				C643329620F4C356007B972B /* DatabaseConverterTests.swift */,
 				C6BB928120E5DB8D00A94CB8 /* Info.plist */,
 			);
 			path = UserslistDBTests;
@@ -261,6 +276,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C643329420F4C31E007B972B /* DatabaseConverter.swift in Sources */,
 				C6B78A7F20E63530001665C6 /* Userslist.swift in Sources */,
 				C676FEBE20E8EAEA00C90748 /* NicoLiveUser.swift in Sources */,
 				C60A355E20EE393F002D96CF /* NicoLiveListeners.swift in Sources */,
@@ -274,10 +290,12 @@
 			files = (
 				C60A356120EE3960002D96CF /* NicoLiveListenersTests.swift in Sources */,
 				C6B78A8220E63555001665C6 /* UserslistTests.swift in Sources */,
+				C643329520F4C31E007B972B /* DatabaseConverter.swift in Sources */,
 				C676FEC120E8EB0100C90748 /* NicoLiveUserTests.swift in Sources */,
 				C60A355F20EE393F002D96CF /* NicoLiveListeners.swift in Sources */,
 				C676FEBF20E8EAEA00C90748 /* NicoLiveUser.swift in Sources */,
 				C6B78A8020E63530001665C6 /* Userslist.swift in Sources */,
+				C643329720F4C356007B972B /* DatabaseConverterTests.swift in Sources */,
 				C6BB928020E5DB8D00A94CB8 /* UserslistDBTests.swift in Sources */,
 				C6E4C14D20F0AAF3001BBE51 /* NSMutableDictionary+StringEnum.swift in Sources */,
 			);
