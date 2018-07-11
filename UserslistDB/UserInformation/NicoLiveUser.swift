@@ -65,20 +65,18 @@ public class NicoLiveUser: NSObject {
 		lastMet = Date()
 		language = lang
 			// set entry object
-		entry[JSONKey.user.nickname] = nickname
 		entry[JSONKey.user.handle] = handle
-		if isPremium { entry[JSONKey.user.isPremium] = True }
 		let formatter:DateFormatter = DateFormatter()
 		formatter.dateStyle = DateFormatter.Style.short
 		formatter.timeStyle = DateFormatter.Style.short
 		entry[JSONKey.user.met] = formatter.string(from: lastMet)
 	}// end init
 
-	public init (user: NSMutableDictionary, identifier: String, premium: Bool, anonymous: Bool, lang: UserLanguage) {
+	public init (user: NSMutableDictionary, nickname: String, identifier: String, premium: Bool, anonymous: Bool, lang: UserLanguage) {
 		entry = user
 		self.anonymous = anonymous
 		language = lang
-		let username: String = anonymous ? String((entry[JSONKey.user.nickname] as! String).prefix(10)) : entry[JSONKey.user.nickname] as! String
+		let username: String = anonymous ? String(identifier.prefix(10)) : nickname
 		let handlename: String = entry[JSONKey.user.handle] as? String ?? username
 		name = UserName(identifier: identifier, nickname: username, handle: handlename)
 		isPremium = premium
