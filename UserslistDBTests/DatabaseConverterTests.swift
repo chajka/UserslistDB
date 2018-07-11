@@ -20,9 +20,14 @@ class DatabaseConverterTests: XCTestCase {
         super.tearDown()
     }
 
-    func testExample() {
-        // This is an example of a functional test case.
-        // Use XCTAssert and related functions to verify your tests produce the correct results.
+    func test01_debug() {
+		do {
+			let converter: DatabaseConverter = try DatabaseConverter(databasePath: "~/Library/Application Support/Charleston")
+			let success = converter.parse()
+			XCTAssertTrue(success, "parser parse fail")
+		} catch {
+			XCTFail("database can not read")
+		}
     }
 
     func testPerformanceExample() {

@@ -18,7 +18,7 @@ public extension NSMutableDictionary {
 			return self.object(forKey: enumKey.rawValue)
 		}// end computed property get
 		set {
-			self.setObject(newValue!, forKey: enumKey.rawValue as NSCopying)
+			self.setObject(newValue ?? nil!, forKey: enumKey.rawValue as NSCopying)
 		}// end computed property set
 	}// end override subscript
 }// end extension Dictionary
