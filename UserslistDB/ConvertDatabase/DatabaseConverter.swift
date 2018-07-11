@@ -65,7 +65,7 @@ extension Attribute.user.value: StringEnum { }
 extension Attribute.handle.name: StringEnum { }
 extension Attribute.handle.value: StringEnum { }
 
-class DatabaseConverter: NSObject , XMLParserDelegate {
+public class DatabaseConverter: NSObject , XMLParserDelegate {
 	private var owners: NSMutableDictionary = NSMutableDictionary()
 	private var users: Dictionary<String, Bool> = Dictionary()
 	private let date: String
@@ -81,7 +81,7 @@ class DatabaseConverter: NSObject , XMLParserDelegate {
 
 	private let parser:XMLParser
 
-	init (databasePath: String, databaseFile :String = "userslist") throws {
+	public init (databasePath: String, databaseFile :String = "userslist") throws {
 		let databaseFullpath: String = databasePath.prefix(1) == "~" ? (databasePath as NSString).expandingTildeInPath : databasePath
 		let databaseXMLFilePath :String = databaseFullpath + "/" + databaseFile + ".xml"
 		databaseJSONFilePath = databaseFullpath + "/" + databaseFile + ".json"
@@ -93,7 +93,7 @@ class DatabaseConverter: NSObject , XMLParserDelegate {
 		date = dateFormatter.string(from: Date())
 	}// end init
 
-	func parse() -> Bool {
+	public func parse() -> Bool {
 		parser.delegate = self
 		let succcess: Bool = parser.parse()
 		do {
@@ -108,7 +108,7 @@ class DatabaseConverter: NSObject , XMLParserDelegate {
 		return succcess
 	}// end func parse
 
-	func writeJson() -> Bool {
+	public func writeJson() -> Bool {
 		do {
 			try (serializedData as NSData).write(toFile: databaseJSONFilePath, options: NSData.WritingOptions.atomicWrite)
 			return true
