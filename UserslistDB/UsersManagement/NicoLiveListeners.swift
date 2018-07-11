@@ -9,18 +9,18 @@
 import Cocoa
 import DeuxCheVaux
 
-class NicoLiveListeners: NSObject {
+public class NicoLiveListeners: NSObject {
 	private var currentUsers: Dictionary<String, NicoLiveUser>
 	private var knownUsers: NSMutableDictionary
 	private var allKnownUsers: NSMutableDictionary
 
-	init (listeners: NSMutableDictionary, allKnownUsers: NSMutableDictionary) {
+	public init (listeners: NSMutableDictionary, allKnownUsers: NSMutableDictionary) {
 		currentUsers = Dictionary()
 		knownUsers = listeners
 		self.allKnownUsers = allKnownUsers
 	}// end init
 
-	func user (identifier: String) throws -> NicoLiveUser {
+	public func user (identifier: String) throws -> NicoLiveUser {
 		if let user:NicoLiveUser = currentUsers[identifier] {
 			return user
 		} else {
@@ -30,7 +30,7 @@ class NicoLiveListeners: NSObject {
 		}// end if current user is in current users dictionary
 	}// end func user
 
-	func activateUser (nickname: String, identifier: String, premium: Bool, anonymous: Bool, lang: UserLanguage) throws -> NicoLiveUser {
+	public func activateUser (nickname: String, identifier: String, premium: Bool, anonymous: Bool, lang: UserLanguage) throws -> NicoLiveUser {
 		guard let entry: NSMutableDictionary = knownUsers[identifier] as? NSMutableDictionary else { throw UserslistError.canNotActivateUser }
 		let user: NicoLiveUser = NicoLiveUser(user: entry, nickname: nickname, identifier: identifier, premium: premium, anonymous: anonymous, lang: lang)
 		currentUsers[identifier] = user
@@ -39,7 +39,7 @@ class NicoLiveListeners: NSObject {
 		return user
 	}// end func activateUser
 
-	func newUser (nickname: String, identifier: String, premium: Bool, anonymous: Bool, lang: UserLanguage, met: Friendship) -> NicoLiveUser {
+	public func newUser (nickname: String, identifier: String, premium: Bool, anonymous: Bool, lang: UserLanguage, met: Friendship) -> NicoLiveUser {
 		let user: NicoLiveUser = NicoLiveUser(nickname: nickname, identifier: identifier, premium: premium, anonymous: anonymous, lang: lang, met: met)
 		currentUsers[identifier] = user
 		allKnownUsers[identifier] = anonymous

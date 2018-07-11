@@ -50,7 +50,7 @@ private let NoImageThumbnailURL: String = "https://secure-dcdn.cdn.nimg.jp/nicoa
 private let NicknameAPIFormat: String = "http://seiga.nicovideo.jp/api/user/info?id="
 private let NicknameNodeName: String = "nickname"
 
-class Userslist: NSObject {
+public class Userslist: NSObject {
 	let jsonDatabase: NSMutableDictionary
 	let ownersDictionary: NSMutableDictionary
 	let usersDictionary: NSMutableDictionary
@@ -64,7 +64,7 @@ class Userslist: NSObject {
 	private let session: URLSession = URLSession(configuration: URLSessionConfiguration.default)
 	private var reqest: URLRequest
 	
-	init (jsonPath: String, user_session: [HTTPCookie]) {
+	public init (jsonPath: String, user_session: [HTTPCookie]) {
 		currentOwners = Dictionary()
 		observers = Dictionary()
 		cookies = user_session
@@ -97,7 +97,7 @@ class Userslist: NSObject {
 		let _ = updateDatabaseFile()
 	}// end deinit
 
-	func updateDatabaseFile () -> Bool {
+	public func updateDatabaseFile () -> Bool {
 		do {
 			let jsonData: Data = try JSONSerialization.data(withJSONObject: jsonDatabase, options: JSONSerialization.WritingOptions.prettyPrinted)
 			try (jsonData as NSData).write(toFile: databasePath, options: NSData.WritingOptions.atomicWrite)
@@ -108,7 +108,7 @@ class Userslist: NSObject {
 		}// end
 	}// end updateDatabaseFile
 
-	func start (owner: String, speechDefault: Bool, commentDefault: Bool, observer: NSObject? = nil) -> (speech: Bool, comment: Bool) {
+	public func start (owner: String, speechDefault: Bool, commentDefault: Bool, observer: NSObject? = nil) -> (speech: Bool, comment: Bool) {
 		let ownerInfo: NSMutableDictionary = ownersDictionary[owner] as? NSMutableDictionary ?? NSMutableDictionary()
 		let speech:Bool = ownerInfo[JSONKey.owner.speech] as? Bool ?? speechDefault
 		let comment:Bool = ownerInfo[JSONKey.owner.anonymous] as? Bool ?? commentDefault
@@ -120,32 +120,37 @@ class Userslist: NSObject {
 		return (speech, comment)
 	}// end func start
 
-	func activeOwners () -> Dictionary<String, NicoLiveListeners>.Keys {
-		return currentOwners.keys
+	public func activeOwners () -> Array<String> {
+		var result: Array<String> = Array()
+		for key: String in currentOwners.keys {
+			result.append(key)
+		}// end foreach allkeys
+
+		return result
 	}// end func activeOwners
 
-	func end (owner: String) -> Void {
+	public func end (owner: String) -> Void {
 		currentOwners.removeValue(forKey: owner)
 		if observers[owner] != nil { observers.removeValue(forKey: owner) }
 	}// end func end
 
-	func update (speech :Bool, forOwner owner: String) -> Void {
+	public func update (speech :Bool, forOwner owner: String) -> Void {
 		guard let ownerInfo: NSMutableDictionary = ownersDictionary[owner] as? NSMutableDictionary else { return }
 		ownerInfo[JSONKey.owner.speech] = speech
 	}// end func update owner, speech
 
-	func update (anonymousComment: Bool, forOwner owner: String) -> Void {
+	public func update (anonymousComment: Bool, forOwner owner: String) -> Void {
 		guard let ownerInfo: NSMutableDictionary = ownersDictionary[owner] as? NSMutableDictionary else { return }
 		ownerInfo[JSONKey.owner.anonymous] = anonymousComment
 	}// end func update owner, speech
 
-	func user (identifier: String, for owner: String) throws -> NicoLiveUser {
+	public func user (identifier: String, for owner: String) throws -> NicoLiveUser {
 		guard let listeners: NicoLiveListeners = currentOwners[owner] else { throw UserslistError.inactiveOwnner }
 		let user: NicoLiveUser = try listeners.user(identifier: identifier)
 		return user
 	}// end func user
 
-	func user (identifier: String, premium: Bool, anonymous: Bool, Lang: UserLanguage, forOwner owner: String, with error: UserslistError) throws -> NicoLiveUser {
+	public func user (identifier: String, premium: Bool, anonymous: Bool, Lang: UserLanguage, forOwner owner: String, with error: UserslistError) throws -> NicoLiveUser {
 		guard let listeners: NicoLiveListeners = currentOwners[owner] else { throw UserslistError.inactiveOwnner }
 		var user: NicoLiveUser
 		let nickname: String = anonymous ? String(identifier.prefix(10)) : fetchNickname(identifier: identifier)
@@ -177,7 +182,7 @@ class Userslist: NSObject {
 		return user
 	}// end func user
 	
-	func userAnonymity (identifier: String) throws -> Bool {
+	public func userAnonymity (identifier: String) throws -> Bool {
 		guard let anonimity: Bool = usersDictionary[identifier] as? Bool else { throw UserslistError.unknownUser }
 		return anonimity
 	}// end func user
