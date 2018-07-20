@@ -50,9 +50,12 @@ public class NicoLiveUser: NSObject {
 	}// end property handle
 	public let anonymous: Bool
 	public let isPremium: Bool
+	public let isPrivilege: Bool
+	public let isVIP : Bool
+	public var isOwner: Bool = false
 	public let language: UserLanguage
 	public var friendship: Friendship
-	@objc public dynamic var thumbnail: NSImage!
+	@objc public dynamic var thumbnail: NSImage?
 	public var lock: Bool = false {
 		didSet (newState) {
 			entry[JSONKey.user.lock] = newState ? True : nil
@@ -68,11 +71,13 @@ public class NicoLiveUser: NSObject {
 
 	private(set) var entry: NSMutableDictionary
 
-	public init (nickname: String, identifier: String, premium: Bool, anonymous: Bool, lang: UserLanguage, met: Friendship) {
+	public init (nickname: String, identifier: String, premium: Int, anonymous: Bool, lang: UserLanguage, met: Friendship) {
 		entry = NSMutableDictionary()
 		name = anonymous ? UserName(identifier: identifier) : UserName(identifier: identifier, nickname: nickname)
 		let handle = name.handle
-		isPremium = premium
+		isPremium = (premium & (0x01 << 0)) != 0x00 ? false : true
+		isPrivilege = (premium & (0x01 << 1)) != 0x00 ? false : true
+		isVIP = (premium & (0x01 << 2)) != 0x00 ? false : true
 		self.anonymous = anonymous
 		friendship = met
 		lastMet = Date()
@@ -85,13 +90,15 @@ public class NicoLiveUser: NSObject {
 		entry[JSONKey.user.met] = formatter.string(from: lastMet)
 	}// end init
 
-	public init (user: NSMutableDictionary, nickname: String, identifier: String, premium: Bool, anonymous: Bool, lang: UserLanguage) {
+	public init (user: NSMutableDictionary, nickname: String, identifier: String, premium: Int, anonymous: Bool, lang: UserLanguage) {
 		entry = user
 		self.anonymous = anonymous
 		language = lang
 		let handlename: String = entry[JSONKey.user.handle] as? String ?? ""
 		name = UserName(identifier: identifier, nickname: nickname, handle: handlename)
-		isPremium = premium
+		isPremium = (premium & (0x01 << 0)) != 0x00 ? false : true
+		isPrivilege = (premium & (0x01 << 1)) != 0x00 ? false : true
+		isVIP = (premium & (0x01 << 2)) != 0x00 ? false : true
 		friendship = entry[JSONKey.user.friendship] as? String == True ? Friendship.known : Friendship.met
 		lock = entry[JSONKey.user.lock] as? String == True ? true : false
 			// update time

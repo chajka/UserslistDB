@@ -30,7 +30,7 @@ public class NicoLiveListeners: NSObject {
 		}// end if current user is in current users dictionary
 	}// end func user
 
-	public func activateUser (nickname: String, identifier: String, premium: Bool, anonymous: Bool, lang: UserLanguage) throws -> NicoLiveUser {
+	public func activateUser (nickname: String, identifier: String, premium: Int, anonymous: Bool, lang: UserLanguage) throws -> NicoLiveUser {
 		guard let entry: NSMutableDictionary = knownUsers[identifier] as? NSMutableDictionary else { throw UserslistError.canNotActivateUser }
 		let user: NicoLiveUser = NicoLiveUser(user: entry, nickname: nickname, identifier: identifier, premium: premium, anonymous: anonymous, lang: lang)
 		currentUsers[identifier] = user
@@ -39,7 +39,7 @@ public class NicoLiveListeners: NSObject {
 		return user
 	}// end func activateUser
 
-	public func newUser (nickname: String, identifier: String, premium: Bool, anonymous: Bool, lang: UserLanguage, met: Friendship) -> NicoLiveUser {
+	public func newUser (nickname: String, identifier: String, premium: Int, anonymous: Bool, lang: UserLanguage, met: Friendship) -> NicoLiveUser {
 		let user: NicoLiveUser = NicoLiveUser(nickname: nickname, identifier: identifier, premium: premium, anonymous: anonymous, lang: lang, met: met)
 		currentUsers[identifier] = user
 		allKnownUsers[identifier] = anonymous

@@ -150,7 +150,7 @@ public class Userslist: NSObject {
 		return user
 	}// end func user
 
-	public func user (identifier: String, premium: Bool, anonymous: Bool, Lang: UserLanguage, forOwner owner: String, with error: UserslistError) throws -> NicoLiveUser {
+	public func user (identifier: String, premium: Int, anonymous: Bool, Lang: UserLanguage, forOwner owner: String, with error: UserslistError) throws -> NicoLiveUser {
 		guard let listeners: NicoLiveListeners = currentOwners[owner] else { throw UserslistError.inactiveOwnner }
 		var user: NicoLiveUser
 		let nickname: String = anonymous ? "" : fetchNickname(identifier: identifier)
