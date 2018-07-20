@@ -50,6 +50,7 @@ private let NoImageThumbnailURL: String = "https://secure-dcdn.cdn.nimg.jp/nicoa
 private let NicknameAPIFormat: String = "http://seiga.nicovideo.jp/api/user/info?id="
 private let NicknameNodeName: String = "nickname"
 private let informationUserIdentifier: String = "900000000"
+private let informationUserName: String = "Information"
 
 public class Userslist: NSObject {
 	let jsonDatabase: NSMutableDictionary
@@ -169,6 +170,8 @@ public class Userslist: NSObject {
 		var nickname: String = ""
 		if !anonymous { nickname = fetchNickname(identifier: identifier) }
 		else if premium == 0x11 { nickname = fetchNickname(identifier: owner) }
+		else if identifier == informationUserIdentifier { nickname = informationUserName }
+
 		switch error {
 		case .entriedUser:
 			user = try listeners.activateUser(nickname: nickname, identifier: identifier, premium: premium, anonymous: anonymous, lang: Lang)
