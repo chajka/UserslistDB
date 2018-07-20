@@ -45,10 +45,11 @@ extension JSONKey.toplevel: StringEnum { }
 extension JSONKey.owner: StringEnum { }
 extension JSONKey.user: StringEnum { }
 
-private let ThumbnailAPIFormat: String = "https://secure-dcdn.cdn.nimg.jp/nicoaccount/usericon/%d/%d.jpg"
+private let ThumbnailAPIFormat: String = "https://secure-dcdn.cdn.nimg.jp/nicoaccount/usericon/%@/%@.jpg"
 private let NoImageThumbnailURL: String = "https://secure-dcdn.cdn.nimg.jp/nicoaccount/usericon/defaults/blank.jpg"
 private let NicknameAPIFormat: String = "http://seiga.nicovideo.jp/api/user/info?id="
 private let NicknameNodeName: String = "nickname"
+private let informationUserIdentifier: String = "900000000"
 
 public class Userslist: NSObject {
 	let jsonDatabase: NSMutableDictionary
@@ -63,7 +64,12 @@ public class Userslist: NSObject {
 
 	private let session: URLSession = URLSession(configuration: URLSessionConfiguration.default)
 	private var reqest: URLRequest
-	
+
+	private var noImageUserImage: NSImage?
+	private var anonymousImage: NSImage?
+	private var offificalUserImage: NSImage?
+	private var cruiseUserImage: NSImage?
+
 	public init (jsonPath: String, user_session: [HTTPCookie]) {
 		currentOwners = Dictionary()
 		observers = Dictionary()
@@ -71,7 +77,7 @@ public class Userslist: NSObject {
 		databasePath = jsonPath.starts(with: "~") ? (jsonPath as NSString).expandingTildeInPath : jsonPath
 		let fm: FileManager = FileManager.default
 		if !fm.fileExists(atPath: databasePath) {
-			let defaultJasonPath:String = Bundle.main.path(forResource: "Userslist", ofType: "json")!
+			let defaultJasonPath:String = Bundle.main.path(forResource: "userslist", ofType: "json")!
 			do {
 				try fm.moveItem(atPath: defaultJasonPath, toPath: databasePath)
 			} catch let err {
@@ -97,6 +103,13 @@ public class Userslist: NSObject {
 		let _ = updateDatabaseFile()
 	}// end deinit
 
+	public func setDefaultThumbnails(defaultUser: NSImage, anonymousUser: NSImage, officialUser: NSImage, cruiseUser: NSImage) {
+		noImageUserImage = defaultUser
+		anonymousImage = anonymousUser
+		offificalUserImage = officialUser
+		cruiseUserImage = cruiseUser
+	}// end setDefaultThumbnails
+	
 	public func updateDatabaseFile () -> Bool {
 		do {
 			let jsonData: Data = try JSONSerialization.data(withJSONObject: jsonDatabase, options: JSONSerialization.WritingOptions.prettyPrinted)
@@ -153,7 +166,9 @@ public class Userslist: NSObject {
 	public func user (identifier: String, premium: Int, anonymous: Bool, Lang: UserLanguage, forOwner owner: String, with error: UserslistError) throws -> NicoLiveUser {
 		guard let listeners: NicoLiveListeners = currentOwners[owner] else { throw UserslistError.inactiveOwnner }
 		var user: NicoLiveUser
-		let nickname: String = anonymous ? "" : fetchNickname(identifier: identifier)
+		var nickname: String = ""
+		if !anonymous { nickname = fetchNickname(identifier: identifier) }
+		else if premium == 0x11 { nickname = fetchNickname(identifier: owner) }
 		switch error {
 		case .entriedUser:
 			user = try listeners.activateUser(nickname: nickname, identifier: identifier, premium: premium, anonymous: anonymous, lang: Lang)
@@ -165,19 +180,24 @@ public class Userslist: NSObject {
 			user = listeners.newUser(nickname: nickname, identifier: identifier, premium: premium, anonymous: anonymous, lang: Lang, met: Friendship.new)
 		}// end switch case by exception name
 
-		if let observer = observers[owner] {
-			user.addObserver(observer, forKeyPath: "thumbnail", options: [.new], context: nil)
-		}// end if need observe thumbnail
-
-			// get thumbnail
-		let thumbURL: URL = thumbnailURL(identifier: identifier)
-		reqest.url = thumbURL
-		let task: URLSessionDataTask = session.dataTask(with: reqest) { (dat, resp, err) in
-			if let data = dat, let image: NSImage = NSImage(data: data) {
-				user.thumbnail = image
-			}// end if data is valid
-		}// end closure when recieve data
-		task.resume()
+		if !anonymous {
+			let thumbURL: URL = thumbnailURL(identifier: identifier)
+			if let observer = observers[owner] {
+				user.addObserver(observer, forKeyPath: "thumbnail", options: [], context: nil)
+			}// end if need observe thumbnail
+			
+			reqest.url = thumbURL
+			let task: URLSessionDataTask = session.dataTask(with: reqest) { (dat, resp, err) in
+				if let data = dat, let image: NSImage = NSImage(data: data) {
+					user.thumbnail = image
+				} else {
+					user.thumbnail = self.noImageUserImage
+				}// end if data is valid
+			}// end closure when recieve data
+			task.resume()
+		} else {
+			user.thumbnail = anonymousImage
+		}// end !anonymous
 
 		return user
 	}// end func user
@@ -196,12 +216,12 @@ public class Userslist: NSObject {
 			if let data:Data = dat {
 				do {
 					let resultXML: XMLDocument = try XMLDocument(data: data, options: XMLNode.Options.documentTidyXML)
-					let userNode = resultXML.children?.first?.children?.first
-					for child: XMLNode in (userNode?.children)! {
-						if child.name == NicknameNodeName { nickname = child.stringValue ?? "Not Found (Charleston)"}
+					guard let userNode = resultXML.children?.first?.children?.first else { throw NSError(domain: "could not parse", code: 0, userInfo: nil)}
+					for child: XMLNode in (userNode.children)! {
+						if child.name == NicknameNodeName { nickname = child.stringValue ?? "No Nickname (Charleston)"}
 					}// end foreach
 				} catch {
-					print ("get nickname xml parse error" )
+					nickname = "No Nickname (Charleston)"
 				}// end try - catch parse XML document
 			}// end if data is there
 			fetchData = true
@@ -213,9 +233,8 @@ public class Userslist: NSObject {
 	}// end func fetchNickname
 
 	private func thumbnailURL(identifier: String) -> URL {
-		let id: Int = Int(identifier)!
-		let prefix: Int = id / 1000
-		let urlString: String = String(format: ThumbnailAPIFormat, prefix, id)
+		let prefix: String = String(identifier.prefix(identifier.count - 4))
+		let urlString: String = String(format: ThumbnailAPIFormat, prefix, identifier)
 		let url: URL = URL(string: urlString) ?? URL(string: NoImageThumbnailURL)!
 
 		return url
