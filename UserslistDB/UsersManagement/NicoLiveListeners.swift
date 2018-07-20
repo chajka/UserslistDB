@@ -32,7 +32,13 @@ public class NicoLiveListeners: NSObject {
 
 	public func activateUser (nickname: String, identifier: String, premium: Int, anonymous: Bool, lang: UserLanguage) throws -> NicoLiveUser {
 		guard let entry: NSMutableDictionary = knownUsers[identifier] as? NSMutableDictionary else { throw UserslistError.canNotActivateUser }
-		let user: NicoLiveUser = NicoLiveUser(user: entry, nickname: nickname, identifier: identifier, premium: premium, anonymous: anonymous, lang: lang)
+		var user: NicoLiveUser
+		if premium ^ 0x011 == 0 {
+			user = NicoLiveUser(user: entry, nickname: nickname, identifier: identifier, premium: premium, anonymous: anonymous, lang: lang)
+			user.isOwner = true
+		} else {
+			user = NicoLiveUser(user: entry, nickname: nickname, identifier: identifier, premium: premium, anonymous: anonymous, lang: lang)
+		}// end if premium flags is owner
 		currentUsers[identifier] = user
 		allKnownUsers[identifier] = anonymous
 
