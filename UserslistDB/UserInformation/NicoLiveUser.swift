@@ -16,10 +16,23 @@ public enum Friendship {
 	case metOther
 }// end enum Friendship
 
-public struct UserName {
-	let identifier: String
-	let nickname: String
-	var handle: String
+public class UserName {
+	public let identifier: String
+	public let nickname: String
+	public var handle: String
+
+	init (identifier: String, nickname: String = "", handle: String = "") {
+		self.identifier = identifier
+		self.nickname = nickname.isEmpty ? String(identifier.prefix(10)) : nickname
+		self.handle = handle.isEmpty ? nickname : handle
+	}// end init
+
+	init (identifier: String, nickname: String = "") {
+		self.identifier = identifier
+		if nickname.isEmpty { self.nickname = String(identifier.prefix(10)) }
+		else { self.nickname = nickname }
+		self.handle = nickname
+	}// end init
 }// end struct UserName
 
 private let True: String = "yes"
@@ -37,9 +50,12 @@ public class NicoLiveUser: NSObject {
 	}// end property handle
 	public let anonymous: Bool
 	public let isPremium: Bool
+	public let isPrivilege: Bool
+	public let isVIP : Bool
+	public var isOwner: Bool = false
 	public let language: UserLanguage
 	public var friendship: Friendship
-	@objc public dynamic var thumbnail: NSImage!
+	@objc public dynamic var thumbnail: NSImage?
 	public var lock: Bool = false {
 		didSet (newState) {
 			entry[JSONKey.user.lock] = newState ? True : nil
@@ -55,11 +71,13 @@ public class NicoLiveUser: NSObject {
 
 	private(set) var entry: NSMutableDictionary
 
-	public init (nickname: String, identifier: String, premium: Bool, anonymous: Bool, lang: UserLanguage, met: Friendship) {
+	public init (nickname: String, identifier: String, premium: Int, anonymous: Bool, lang: UserLanguage, met: Friendship) {
 		entry = NSMutableDictionary()
-		let handle: String = anonymous ? nickname : String(nickname.prefix(10))
-		name = UserName(identifier: identifier, nickname: nickname, handle: handle)
-		isPremium = premium
+		name = anonymous ? UserName(identifier: identifier) : UserName(identifier: identifier, nickname: nickname)
+		let handle = name.handle
+		isPremium = (premium & (0x01 << 0)) != 0x00 ? false : true
+		isPrivilege = (premium & (0x01 << 1)) != 0x00 ? false : true
+		isVIP = (premium & (0x01 << 2)) != 0x00 ? false : true
 		self.anonymous = anonymous
 		friendship = met
 		lastMet = Date()
@@ -72,14 +90,15 @@ public class NicoLiveUser: NSObject {
 		entry[JSONKey.user.met] = formatter.string(from: lastMet)
 	}// end init
 
-	public init (user: NSMutableDictionary, nickname: String, identifier: String, premium: Bool, anonymous: Bool, lang: UserLanguage) {
+	public init (user: NSMutableDictionary, nickname: String, identifier: String, premium: Int, anonymous: Bool, lang: UserLanguage) {
 		entry = user
 		self.anonymous = anonymous
 		language = lang
-		let username: String = anonymous ? String(identifier.prefix(10)) : nickname
-		let handlename: String = entry[JSONKey.user.handle] as? String ?? username
-		name = UserName(identifier: identifier, nickname: username, handle: handlename)
-		isPremium = premium
+		let handlename: String = entry[JSONKey.user.handle] as? String ?? ""
+		name = UserName(identifier: identifier, nickname: nickname, handle: handlename)
+		isPremium = (premium & (0x01 << 0)) != 0x00 ? false : true
+		isPrivilege = (premium & (0x01 << 1)) != 0x00 ? false : true
+		isVIP = (premium & (0x01 << 2)) != 0x00 ? false : true
 		friendship = entry[JSONKey.user.friendship] as? String == True ? Friendship.known : Friendship.met
 		lock = entry[JSONKey.user.lock] as? String == True ? true : false
 			// update time
