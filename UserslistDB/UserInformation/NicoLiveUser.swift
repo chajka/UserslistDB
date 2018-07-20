@@ -16,10 +16,23 @@ public enum Friendship {
 	case metOther
 }// end enum Friendship
 
-public struct UserName {
-	let identifier: String
-	let nickname: String
-	var handle: String
+public class UserName {
+	public let identifier: String
+	public let nickname: String
+	public var handle: String
+
+	init (identifier: String, nickname: String = "", handle: String = "") {
+		self.identifier = identifier
+		self.nickname = nickname.isEmpty ? String(identifier.prefix(10)) : nickname
+		self.handle = handle.isEmpty ? nickname : handle
+	}// end init
+
+	init (identifier: String, nickname: String = "") {
+		self.identifier = identifier
+		if nickname.isEmpty { self.nickname = String(identifier.prefix(10)) }
+		else { self.nickname = nickname }
+		self.handle = nickname
+	}// end init
 }// end struct UserName
 
 private let True: String = "yes"
@@ -57,8 +70,8 @@ public class NicoLiveUser: NSObject {
 
 	public init (nickname: String, identifier: String, premium: Bool, anonymous: Bool, lang: UserLanguage, met: Friendship) {
 		entry = NSMutableDictionary()
-		let handle: String = anonymous ? nickname : String(nickname.prefix(10))
-		name = UserName(identifier: identifier, nickname: nickname, handle: handle)
+		name = anonymous ? UserName(identifier: identifier) : UserName(identifier: identifier, nickname: nickname)
+		let handle = name.handle
 		isPremium = premium
 		self.anonymous = anonymous
 		friendship = met
@@ -76,9 +89,8 @@ public class NicoLiveUser: NSObject {
 		entry = user
 		self.anonymous = anonymous
 		language = lang
-		let username: String = anonymous ? String(identifier.prefix(10)) : nickname
-		let handlename: String = entry[JSONKey.user.handle] as? String ?? username
-		name = UserName(identifier: identifier, nickname: username, handle: handlename)
+		let handlename: String = entry[JSONKey.user.handle] as? String ?? ""
+		name = UserName(identifier: identifier, nickname: nickname, handle: handlename)
 		isPremium = premium
 		friendship = entry[JSONKey.user.friendship] as? String == True ? Friendship.known : Friendship.met
 		lock = entry[JSONKey.user.lock] as? String == True ? true : false

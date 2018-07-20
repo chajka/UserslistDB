@@ -153,7 +153,7 @@ public class Userslist: NSObject {
 	public func user (identifier: String, premium: Bool, anonymous: Bool, Lang: UserLanguage, forOwner owner: String, with error: UserslistError) throws -> NicoLiveUser {
 		guard let listeners: NicoLiveListeners = currentOwners[owner] else { throw UserslistError.inactiveOwnner }
 		var user: NicoLiveUser
-		let nickname: String = anonymous ? String(identifier.prefix(10)) : fetchNickname(identifier: identifier)
+		let nickname: String = anonymous ? "" : fetchNickname(identifier: identifier)
 		switch error {
 		case .entriedUser:
 			user = try listeners.activateUser(nickname: nickname, identifier: identifier, premium: premium, anonymous: anonymous, lang: Lang)
@@ -161,7 +161,7 @@ public class Userslist: NSObject {
 			user = listeners.newUser(nickname: nickname, identifier: identifier, premium: premium, anonymous: anonymous, lang: Lang, met: Friendship.metOther)
 		case .unknownUser: fallthrough
 		default:
-			let nickname: String = anonymous ? String(identifier.prefix(10)) : fetchNickname(identifier: identifier)
+			let nickname: String = anonymous ? "" : fetchNickname(identifier: identifier)
 			user = listeners.newUser(nickname: nickname, identifier: identifier, premium: premium, anonymous: anonymous, lang: Lang, met: Friendship.new)
 		}// end switch case by exception name
 
