@@ -24,14 +24,14 @@ public class UserName {
 	init (identifier: String, nickname: String = "", handle: String = "") {
 		self.identifier = identifier
 		self.nickname = nickname.isEmpty ? String(identifier.prefix(10)) : nickname
-		self.handle = handle.isEmpty ? nickname : handle
+		self.handle = handle.isEmpty ? self.nickname : handle
 	}// end init
 
 	init (identifier: String, nickname: String = "") {
 		self.identifier = identifier
 		if nickname.isEmpty { self.nickname = String(identifier.prefix(10)) }
 		else { self.nickname = nickname }
-		self.handle = nickname
+		self.handle = self.nickname
 	}// end init
 }// end struct UserName
 
