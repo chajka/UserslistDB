@@ -24,23 +24,24 @@ class UserslistTests: XCTestCase {
     }
 
     func test01_allocation() {
-		let db: Userslist = Userslist(jsonPath: testDBPath, user_session:[user_session])
+		let db: Userslist = Userslist(jsonPath: testDBPath)
 		XCTAssertNotNil(db, "db can not allocate")
     }
 
 	func test02_func_identifier() {
-		let db: Userslist = Userslist(jsonPath: testDBPath, user_session:[user_session])
+		let db: Userslist = Userslist(jsonPath: testDBPath)
 		XCTAssertNoThrow(try db.userAnonymity(identifier: testID), "known user 6347612 is not found")
 		XCTAssertThrowsError(try db.userAnonymity(identifier: "1234567"), "unknown user 1234567 found", { (error) in
 			print(error)
 		})
-		XCTAssertEqual(db.fetchNickname(identifier: testID), "Чайка", "user id 6347612 is not me")
 	}
 
 	func test03_setup_for_owner() {
-		let db: Userslist = Userslist(jsonPath: testDBPath, user_session:[user_session])
+		let db: Userslist = Userslist(jsonPath: testDBPath)
+		let img: NSImage = NSImage(size: NSMakeSize(64, 64))
+		db.setDefaultThumbnails(defaultUser: img, anonymousUser: img, officialUser: img, cruiseUser: img)
 		XCTAssertEqual(db.activeOwners().count, 0)
-		let result = db.start(owner: testID, speechDefault: false, commentDefault: false)
+		let result = db.start(owner: testID, speechDefault: false, commentDefault: false, cookies: [user_session])
 		XCTAssertFalse(result.speech, "Owner 6347612 enable speech")
 		XCTAssertTrue(result.comment, "Owner 6347612 disable annonymous comment")
 		XCTAssertEqual(db.activeOwners().count, 1)
@@ -51,9 +52,11 @@ class UserslistTests: XCTestCase {
 	}
 
 	func test04_activate_user() {
-		let db: Userslist = Userslist(jsonPath: testDBPath, user_session:[user_session])
-		let _ = db.start(owner: testID, speechDefault: false, commentDefault: false, observer: self)
-		var user:NicoLiveUser = NicoLiveUser(nickname: "abc", identifier: "cakd8ddkhdic7ed9dkahd", premium: true, anonymous: true, lang: .ja, met: .new)
+		let db: Userslist = Userslist(jsonPath: testDBPath)
+		let img: NSImage = NSImage(size: NSMakeSize(64, 64))
+		db.setDefaultThumbnails(defaultUser: img, anonymousUser: img, officialUser: img, cruiseUser: img)
+		let _ = db.start(owner: testID, speechDefault: false, commentDefault: false, cookies: [user_session], observer: self)
+		var user:NicoLiveUser = NicoLiveUser(nickname: "abc", identifier: "cakd8ddkhdic7ed9dkahd", premium: 1, anonymous: true, lang: .ja, met: .new)
 		XCTAssertThrowsError(user = try db.user(identifier: testID, for: testID), "user 6347612 is not activate but no error") { (error) in
 			print(error)
 		}// end closure
@@ -62,13 +65,13 @@ class UserslistTests: XCTestCase {
 				user = try db.user(identifier: testID, for: testID)
 			} catch UserslistError.entriedUser {
 				XCTAssert(true, "user \(testID) reach here is correct")
-				user = try db.user(identifier: testID, premium: true, anonymous: false, Lang: .en, forOwner: testID, with: .entriedUser)
+				user = try db.user(identifier: testID, premium: 1, anonymous: false, Lang: .en, forOwner: testID, with: .entriedUser)
 			} catch UserslistError.inDatabaseUser {
 				XCTAssert(false, "user \(testID) reach here is incorrect")
-				user = try db.user(identifier: testID, premium: true, anonymous: false, Lang: .en, forOwner: testID, with: .inactiveOwnner)
+				user = try db.user(identifier: testID, premium: 1, anonymous: false, Lang: .en, forOwner: testID, with: .inactiveOwnner)
 			} catch UserslistError.unknownUser {
 				XCTAssert(false, "user \(testID) reach here is incorrect")
-				user = try db.user(identifier: testID, premium: true, anonymous: false, Lang: .en, forOwner: testID, with: .unknownUser)
+				user = try db.user(identifier: testID, premium: 1, anonymous: false, Lang: .en, forOwner: testID, with: .unknownUser)
 			} catch {
 				XCTAssert(false, "user \(testID) reach here is incorrect")
 			}
@@ -82,9 +85,11 @@ class UserslistTests: XCTestCase {
 	}
 
 	func test05_create_user() {
-		let db: Userslist = Userslist(jsonPath: testDBPath, user_session:[user_session])
-		let _ = db.start(owner: testID, speechDefault: false, commentDefault: false, observer: self)
-		var user:NicoLiveUser = NicoLiveUser(nickname: "abc", identifier: "cakd8ddkhdic7ed9dkahd", premium: true, anonymous: true, lang: .ja, met: .new)
+		let db: Userslist = Userslist(jsonPath: testDBPath)
+		let img: NSImage = NSImage(size: NSMakeSize(64, 64))
+		db.setDefaultThumbnails(defaultUser: img, anonymousUser: img, officialUser: img, cruiseUser: img)
+		let _ = db.start(owner: testID, speechDefault: false, commentDefault: false, cookies: [user_session], observer: self)
+		var user:NicoLiveUser = NicoLiveUser(nickname: "abc", identifier: "cakd8ddkhdic7ed9dkahd", premium: 1, anonymous: true, lang: .ja, met: .new)
 		XCTAssertThrowsError(user = try db.user(identifier: "4582246", for: testID), "user 4582246 is not activate but no error") { (error) in
 			print(error)
 		}// end closure
@@ -93,13 +98,13 @@ class UserslistTests: XCTestCase {
 				user = try db.user(identifier: "4582246", for: testID)
 			} catch UserslistError.entriedUser {
 				XCTAssert(false, "user \("4582246") reach here is correct")
-				user = try db.user(identifier: "4582246", premium: true, anonymous: false, Lang: .en, forOwner: testID, with: .entriedUser)
+				user = try db.user(identifier: "4582246", premium: 1, anonymous: false, Lang: .en, forOwner: testID, with: .entriedUser)
 			} catch UserslistError.inDatabaseUser {
 				XCTAssert(false, "user \("4582246") reach here is incorrect")
-				user = try db.user(identifier: "4582246", premium: true, anonymous: false, Lang: .en, forOwner: testID, with: .inactiveOwnner)
+				user = try db.user(identifier: "4582246", premium: 1, anonymous: false, Lang: .en, forOwner: testID, with: .inactiveOwnner)
 			} catch UserslistError.unknownUser {
 				XCTAssert(true, "user \("4582246") reach here is incorrect")
-				user = try db.user(identifier: "4582246", premium: true, anonymous: false, Lang: .en, forOwner: testID, with: .unknownUser)
+				user = try db.user(identifier: "4582246", premium: 1, anonymous: false, Lang: .en, forOwner: testID, with: .unknownUser)
 			} catch {
 				XCTAssert(false, "user \("4582246") reach here is incorrect")
 			}
@@ -112,11 +117,4 @@ class UserslistTests: XCTestCase {
 		XCTAssertNoThrow(user = try db.user(identifier: "4582246", for: testID), "activate user not found")
 	}
 	
-    func testPerformanceExample() {
-		let db: Userslist = Userslist(jsonPath: "/Volumes/SharkWire/build/UserslistDB/UserslistDBTests/test.json", user_session:[user_session])
-        self.measure {
-			_ = db.fetchNickname(identifier: testID)
-        }
-    }
-
 }

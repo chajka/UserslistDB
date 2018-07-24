@@ -18,7 +18,7 @@ class NicoLiveUserTests: XCTestCase {
     override func setUp() {
         super.setUp()
 		let fullpath:String = "/Volumes/SharkWire/build/UserslistDB/UserslistDBTests/test.json"
-		db = Userslist(jsonPath: fullpath, user_session: [user_session])
+		db = Userslist(jsonPath: fullpath)
 		ownersDictionary = db?.ownersDictionary
 		usersDictionary = db?.usersDictionary
 		let owner: NSMutableDictionary = ownersDictionary?.object(forKey: "6347612") as! NSMutableDictionary
@@ -32,7 +32,7 @@ class NicoLiveUserTests: XCTestCase {
     }
 
     func test01_allocation_from_entry() {
-		let user: NicoLiveUser = NicoLiveUser(user: userEntry!, nickname: "Чайка", identifier: "6347612", premium: true, anonymous: false, lang: .en)
+		let user: NicoLiveUser = NicoLiveUser(user: userEntry!, nickname: "Чайка", identifier: "6347612", premium: 1, anonymous: false, lang: .en)
 		XCTAssertNotNil(user, "Single user can not initialize")
 		XCTAssertNotNil(user.name.nickname, "user nickname can not correct")
 		XCTAssertNotNil(user.name.nickname, "user handle can not correct")
@@ -46,7 +46,7 @@ class NicoLiveUserTests: XCTestCase {
     }
 
 	func test02_allocation_from_argument() {
-		let user:NicoLiveUser = NicoLiveUser(nickname: "chajka", identifier: "6347612", premium: true, anonymous: false, lang: UserLanguage.en, met: Friendship.met)
+		let user:NicoLiveUser = NicoLiveUser(nickname: "chajka", identifier: "6347612", premium: 1, anonymous: false, lang: UserLanguage.en, met: Friendship.met)
 		XCTAssertNotNil(user, "Single user can not initialize")
 		XCTAssertNotNil(user.name.nickname, "user nickname can not correct")
 		XCTAssertNotNil(user.name.nickname, "user handle can not correct")
