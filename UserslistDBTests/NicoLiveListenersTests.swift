@@ -18,7 +18,7 @@ class NicoLiveListenersTests: XCTestCase {
     override func setUp() {
         super.setUp()
 		let fullpath:String = "/Volumes/SharkWire/build/UserslistDB/UserslistDBTests/test.json"
-		db = Userslist(jsonPath: fullpath, user_session: [user_session])
+		db = Userslist(jsonPath: fullpath)
 		ownersDictionary = db?.ownersDictionary
 		usersDictionary = db?.usersDictionary
 		let owner: NSMutableDictionary = ownersDictionary?.object(forKey: "6347612") as! NSMutableDictionary
@@ -31,19 +31,19 @@ class NicoLiveListenersTests: XCTestCase {
     }
 
     func test01_allocation() {
-		let nicloLiveListeners:NicoLiveListeners = NicoLiveListeners(listeners: listenes!, allKnownUsers: usersDictionary!)
-		XCTAssertNotNil(nicloLiveListeners, "nico live listeners can not initoalize")
+		let nicoLiveListeners: NicoLiveListeners = NicoLiveListeners(owner: "6347612", for: listenes!, and: usersDictionary!, user_session: [user_session])
+		XCTAssertNotNil(nicoLiveListeners, "nico live listeners can not initoalize")
     }
 
 	func test02_check_and_activate_user() {
-		let nicloLiveListeners:NicoLiveListeners = NicoLiveListeners(listeners: listenes!, allKnownUsers: usersDictionary!)
-		XCTAssertNotNil(nicloLiveListeners, "nico live listeners can not initoalize")
+		let nicoLiveListeners: NicoLiveListeners = NicoLiveListeners(owner: "6347612", for: listenes!, and: usersDictionary!, user_session: [user_session])
+		XCTAssertNotNil(nicoLiveListeners, "nico live listeners can not initoalize")
 		var user: NicoLiveUser
 		do {
-			XCTAssertThrowsError(try nicloLiveListeners.user(identifier: "6347612"), "unactivate user id : 6347612 is is there") { (error) in
+			XCTAssertThrowsError(try nicoLiveListeners.user(identifier: "6347612"), "unactivate user id : 6347612 is is there") { (error) in
 				print(error)
 			}
-			user = try nicloLiveListeners.activateUser(nickname: "Чайка", identifier: "6347612", premium: true, anonymous: false, lang: .en)
+			user = try nicoLiveListeners.activateUser(identifier: "6347612", premium: 3, anonymous: false, lang: .en)
 			XCTAssertNotNil(user, "instance for id 6347612 can not instatinate")
 			let entry: NSMutableDictionary = listenes?.object(forKey: "6347612") as! NSMutableDictionary
 			XCTAssertNotNil(entry.value(forKey: JSONKey.user.met.rawValue), "last met date not updated")

@@ -54,11 +54,8 @@ public class Userslist: NSObject {
 	private var currentOwners: Dictionary<String, NicoLiveListeners>
 	private var images: Images!
 	
-	private let cookies: [HTTPCookie]
-
-	public init (jsonPath: String, user_session: [HTTPCookie]) {
+	public init (jsonPath: String) {
 		currentOwners = Dictionary()
-		cookies = user_session
 		databasePath = jsonPath.starts(with: "~") ? (jsonPath as NSString).expandingTildeInPath : jsonPath
 		let fm: FileManager = FileManager.default
 		if !fm.fileExists(atPath: databasePath) {
