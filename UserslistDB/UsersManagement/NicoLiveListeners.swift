@@ -75,6 +75,7 @@ public class NicoLiveListeners: NSObject {
 		} else {
 			user = NicoLiveUser(user: entry, nickname: nickname, identifier: identifier, premium: premium, anonymous: anonymous, lang: lang)
 		}// end if premium flags is owner
+		fetchThumbnail(user: user, identifier: identifier, anonymous: anonymous)
 		currentUsers[identifier] = user
 		allKnownUsers[identifier] = anonymous
 
@@ -88,6 +89,7 @@ public class NicoLiveListeners: NSObject {
 		else if identifier == informationUserIdentifier { nickname = informationUserName }
 		
 		let user: NicoLiveUser = NicoLiveUser(nickname: nickname, identifier: identifier, premium: premium, anonymous: anonymous, lang: lang, met: met)
+		fetchThumbnail(user: user, identifier: identifier, anonymous: anonymous)
 		currentUsers[identifier] = user
 		allKnownUsers[identifier] = anonymous
 		knownUsers[identifier] = user.entry
