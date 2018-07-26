@@ -75,9 +75,9 @@ public class NicoLiveUser: NSObject {
 		entry = NSMutableDictionary()
 		name = anonymous ? UserName(identifier: identifier) : UserName(identifier: identifier, nickname: nickname)
 		let handle = name.handle
-		isPremium = (premium & (0x01 << 0)) != 0x00 ? false : true
-		isPrivilege = (premium & (0x01 << 1)) != 0x00 ? false : true
-		isVIP = (premium & (0x01 << 2)) != 0x00 ? false : true
+		isPremium = (premium & (0x01 << 0)) != 0x00 ? true : false
+		isPrivilege = (premium & (0x01 << 1)) != 0x00 ? true : false
+		isVIP = (premium & (0x01 << 2)) != 0x00 ? true : false
 		self.anonymous = anonymous
 		friendship = met
 		lastMet = Date()
@@ -96,9 +96,9 @@ public class NicoLiveUser: NSObject {
 		language = lang
 		let handlename: String = entry[JSONKey.user.handle] as? String ?? ""
 		name = UserName(identifier: identifier, nickname: nickname, handle: handlename)
-		isPremium = (premium & (0x01 << 0)) != 0x00 ? false : true
-		isPrivilege = (premium & (0x01 << 1)) != 0x00 ? false : true
-		isVIP = (premium & (0x01 << 2)) != 0x00 ? false : true
+		isPremium = (premium & (0x01 << 0)) != 0x00 ? true : false
+		isPrivilege = (premium & (0x01 << 1)) != 0x00 ? true : false
+		isVIP = (premium & (0x01 << 2)) != 0x00 ? true : false
 		friendship = entry[JSONKey.user.friendship] as? String == True ? Friendship.known : Friendship.met
 		lock = entry[JSONKey.user.lock] as? String == True ? true : false
 			// update time
