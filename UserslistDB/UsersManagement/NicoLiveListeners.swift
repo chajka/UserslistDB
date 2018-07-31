@@ -21,6 +21,8 @@ private let NoImageThumbnailURL: String = "https://secure-dcdn.cdn.nimg.jp/nicoa
 private let NicknameAPIFormat: String = "http://seiga.nicovideo.jp/api/user/info?id="
 private let NicknameNodeName: String = "nickname"
 
+private let cruiseUserIdentifier: String = "394"
+private let cruiseUserName: String = "Cruise"
 private let informationUserIdentifier: String = "900000000"
 private let informationUserName: String = "Information"
 
@@ -35,7 +37,7 @@ public class NicoLiveListeners: NSObject {
 	private let cookies: Array<HTTPCookie>
 	private let session: URLSession = URLSession(configuration: URLSessionConfiguration.default)
 	private var reqest: URLRequest
-	
+
 	public init (owner: String, for listeners: NSMutableDictionary, and allKnownUsers: NSMutableDictionary, user_session: [HTTPCookie], observer: NSObject? = nil) {
 		ownerIdentifier = owner
 		currentUsers = Dictionary()
@@ -66,6 +68,7 @@ public class NicoLiveListeners: NSObject {
 		var nickname: String = ""
 		if !anonymous { nickname = fetchNickname(identifier: identifier) }
 		else if premium == 0x11 { nickname = fetchNickname(identifier: ownerIdentifier) }
+		else if identifier == cruiseUserIdentifier { nickname = cruiseUserName }
 		else if identifier == informationUserIdentifier { nickname = informationUserName }
 
 		var user: NicoLiveUser
@@ -75,6 +78,7 @@ public class NicoLiveListeners: NSObject {
 		} else {
 			user = NicoLiveUser(user: entry, nickname: nickname, identifier: identifier, premium: premium, anonymous: anonymous, lang: lang)
 		}// end if premium flags is owner
+
 		fetchThumbnail(user: user, identifier: identifier, anonymous: anonymous)
 		currentUsers[identifier] = user
 		allKnownUsers[identifier] = anonymous
@@ -123,7 +127,13 @@ public class NicoLiveListeners: NSObject {
 	}// end func fetchNickname
 
 	private func fetchThumbnail (user: NicoLiveUser, identifier: String, anonymous: Bool) {
-		if !anonymous {
+		if identifier == cruiseUserIdentifier {
+			user.thumbnail = self.images.cruise
+		} else if identifier == informationUserIdentifier {
+			user.thumbnail = self.images.offifical
+		} else if anonymous {
+			user.thumbnail = self.images.anonymous
+		} else {
 			let thumbURL: URL = thumbnailURL(identifier: identifier)
 			if let observer = observer {
 				user.addObserver(observer, forKeyPath: "thumbnail", options: [], context: nil)
@@ -138,11 +148,7 @@ public class NicoLiveListeners: NSObject {
 				}// end if data is valid
 			}// end closure when recieve data
 			task.resume()
-		} else {
-			user.thumbnail = self.images.anonymous
 		}// end !anonymous
-		
-
 	}// end fetchThumbnail
 	
 	private func thumbnailURL(identifier: String) -> URL {
