@@ -113,7 +113,6 @@ public class NicoLiveListeners: NSObject {
 						if child.name == NicknameNodeName { nickname = child.stringValue ?? "No Nickname (Charleston)"}
 					}// end foreach
 				} catch {
-					nickname = "No Nickname (Charleston)"
 				}// end try - catch parse XML document
 			}// end if data is there
 			fetchData = true
