@@ -38,7 +38,7 @@ public class NicoLiveListeners: NSObject {
 	private let cookies: Array<HTTPCookie>
 	private let session: URLSession = URLSession(configuration: URLSessionConfiguration.default)
 	private var reqest: URLRequest
-	
+
 	public init (owner: String, for listeners: NSMutableDictionary, and allKnownUsers: NSMutableDictionary, user_session: [HTTPCookie], observer: NSObject? = nil) {
 		ownerIdentifier = owner
 		currentUsers = Dictionary()
@@ -69,6 +69,7 @@ public class NicoLiveListeners: NSObject {
 		var nickname: String = ""
 		if !anonymous { nickname = fetchNickname(identifier: identifier) }
 		else if premium == 0x11 { nickname = fetchNickname(identifier: ownerIdentifier) }
+		else if identifier == cruiseUserIdentifier { nickname = cruiseUserName }
 		else if identifier == informationUserIdentifier { nickname = informationUserName }
 
 		var user: NicoLiveUser
@@ -78,6 +79,7 @@ public class NicoLiveListeners: NSObject {
 		} else {
 			user = NicoLiveUser(user: entry, nickname: nickname, identifier: identifier, premium: premium, anonymous: anonymous, lang: lang)
 		}// end if premium flags is owner
+
 		fetchThumbnail(user: user, identifier: identifier, anonymous: anonymous)
 		currentUsers[identifier] = user
 		allKnownUsers[identifier] = anonymous
