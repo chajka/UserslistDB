@@ -87,8 +87,8 @@ public class NicoLiveListeners: NSObject {
 
 	public func newUser (identifier: String, premium: Int, anonymous: Bool, lang: UserLanguage, met: Friendship) -> NicoLiveUser {
 		var nickname: String = ""
-		if !anonymous { nickname = fetchNickname(identifier: identifier) }
-		else if premium == 0x11 { nickname = fetchNickname(identifier: ownerIdentifier) }
+		if !anonymous { nickname = fetchNickname(fromVitaAPI: identifier) }
+		else if premium == 0x11 { nickname = fetchNickname(fromVitaAPI: ownerIdentifier) }
 		else if identifier == informationUserIdentifier { nickname = informationUserName }
 		
 		let user: NicoLiveUser = NicoLiveUser(nickname: nickname, identifier: identifier, premium: premium, anonymous: anonymous, lang: lang, met: met)
