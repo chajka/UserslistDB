@@ -21,6 +21,8 @@ private let NoImageThumbnailURL: String = "https://secure-dcdn.cdn.nimg.jp/nicoa
 private let NicknameAPIFormat: String = "http://seiga.nicovideo.jp/api/user/info?id="
 private let NicknameNodeName: String = "nickname"
 
+private let cruiseUserIdentifier: String = "394"
+private let cruiseUserName: String = "Cruise"
 private let informationUserIdentifier: String = "900000000"
 private let informationUserName: String = "Information"
 
@@ -123,7 +125,13 @@ public class NicoLiveListeners: NSObject {
 	}// end func fetchNickname
 
 	private func fetchThumbnail (user: NicoLiveUser, identifier: String, anonymous: Bool) {
-		if !anonymous {
+		if identifier == cruiseUserIdentifier {
+			user.thumbnail = self.images.cruise
+		} else if identifier == informationUserIdentifier {
+			user.thumbnail = self.images.offifical
+		} else if anonymous {
+			user.thumbnail = self.images.anonymous
+		} else {
 			let thumbURL: URL = thumbnailURL(identifier: identifier)
 			if let observer = observer {
 				user.addObserver(observer, forKeyPath: "thumbnail", options: [], context: nil)
@@ -138,11 +146,7 @@ public class NicoLiveListeners: NSObject {
 				}// end if data is valid
 			}// end closure when recieve data
 			task.resume()
-		} else {
-			user.thumbnail = self.images.anonymous
 		}// end !anonymous
-		
-
 	}// end fetchThumbnail
 	
 	private func thumbnailURL(identifier: String) -> URL {
