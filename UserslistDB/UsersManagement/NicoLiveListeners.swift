@@ -19,6 +19,7 @@ public struct Images {
 private let ThumbnailAPIFormat: String = "https://secure-dcdn.cdn.nimg.jp/nicoaccount/usericon/%@/%@.jpg"
 private let NoImageThumbnailURL: String = "https://secure-dcdn.cdn.nimg.jp/nicoaccount/usericon/defaults/blank.jpg"
 private let NicknameAPIFormat: String = "http://seiga.nicovideo.jp/api/user/info?id="
+private let VitaAPIFormat: String = "http://api.ce.nicovideo.jp/api/v1/user.info?user_id="
 private let NicknameNodeName: String = "nickname"
 
 private let cruiseUserIdentifier: String = "394"
@@ -86,8 +87,8 @@ public class NicoLiveListeners: NSObject {
 
 	public func newUser (identifier: String, premium: Int, anonymous: Bool, lang: UserLanguage, met: Friendship) -> NicoLiveUser {
 		var nickname: String = ""
-		if !anonymous { nickname = fetchNickname(identifier: identifier) }
-		else if premium == 0x11 { nickname = fetchNickname(identifier: ownerIdentifier) }
+		if !anonymous { nickname = fetchNickname(fromVitaAPI: identifier) }
+		else if premium == 0x11 { nickname = fetchNickname(fromVitaAPI: ownerIdentifier) }
 		else if identifier == informationUserIdentifier { nickname = informationUserName }
 		
 		let user: NicoLiveUser = NicoLiveUser(nickname: nickname, identifier: identifier, premium: premium, anonymous: anonymous, lang: lang, met: met)
@@ -113,7 +114,6 @@ public class NicoLiveListeners: NSObject {
 						if child.name == NicknameNodeName { nickname = child.stringValue ?? "No Nickname (Charleston)"}
 					}// end foreach
 				} catch {
-					nickname = "No Nickname (Charleston)"
 				}// end try - catch parse XML document
 			}// end if data is there
 			fetchData = true
@@ -123,6 +123,33 @@ public class NicoLiveListeners: NSObject {
 		while (!fetchData) { Thread.sleep(forTimeInterval: 0.001)}
 		return nickname
 	}// end func fetchNickname
+
+	private func fetchNickname(fromVitaAPI identifier: String) -> String {
+		guard let url = URL(string: VitaAPIFormat + identifier) else { return "" }
+		var fetchData: Bool = false
+		var nickname: String = String()
+		reqest.url = url
+		let task:URLSessionDataTask = session.dataTask(with: reqest) { (dat, req, err) in
+			if let data:Data = dat {
+				do {
+					let resultXML: XMLDocument = try XMLDocument(data: data, options: XMLNode.Options.documentTidyXML)
+					guard let userNode = resultXML.children?.first?.children?.first else { throw NSError(domain: "could not parse", code: 0, userInfo: nil)}
+					for child: XMLNode in (userNode.children)! {
+						if child.name == NicknameNodeName { nickname = child.stringValue ?? "No Nickname (Charleston)"}
+					}// end foreach
+				} catch {
+					nickname = "No Nickname (Charleston)"
+					Swift.print(identifier)
+					Swift.print(String(data: data, encoding: .utf8)!)
+				}// end try - catch parse XML document
+			}// end if data is there
+			fetchData = true
+		}// end closure for recieve data
+		task.resume()
+		
+		while (!fetchData) { Thread.sleep(forTimeInterval: 0.001)}
+		return nickname
+	}// end fetchNickname fromVitaAPI
 
 	private func fetchThumbnail (user: NicoLiveUser, identifier: String, anonymous: Bool) {
 		if identifier == cruiseUserIdentifier {
