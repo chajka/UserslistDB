@@ -124,6 +124,33 @@ public class NicoLiveListeners: NSObject {
 		return nickname
 	}// end func fetchNickname
 
+	private func fetchNickname(fromVitaAPI identifier: String) -> String {
+		guard let url = URL(string: VitaAPIFormat + identifier) else { return "" }
+		var fetchData: Bool = false
+		var nickname: String = String()
+		reqest.url = url
+		let task:URLSessionDataTask = session.dataTask(with: reqest) { (dat, req, err) in
+			if let data:Data = dat {
+				do {
+					let resultXML: XMLDocument = try XMLDocument(data: data, options: XMLNode.Options.documentTidyXML)
+					guard let userNode = resultXML.children?.first?.children?.first else { throw NSError(domain: "could not parse", code: 0, userInfo: nil)}
+					for child: XMLNode in (userNode.children)! {
+						if child.name == NicknameNodeName { nickname = child.stringValue ?? "No Nickname (Charleston)"}
+					}// end foreach
+				} catch {
+					nickname = "No Nickname (Charleston)"
+					Swift.print(identifier)
+					Swift.print(String(data: data, encoding: .utf8)!)
+				}// end try - catch parse XML document
+			}// end if data is there
+			fetchData = true
+		}// end closure for recieve data
+		task.resume()
+		
+		while (!fetchData) { Thread.sleep(forTimeInterval: 0.001)}
+		return nickname
+	}// end fetchNickname fromVitaAPI
+
 	private func fetchThumbnail (user: NicoLiveUser, identifier: String, anonymous: Bool) {
 		if identifier == cruiseUserIdentifier {
 			user.thumbnail = self.images.cruise
