@@ -36,6 +36,7 @@ public enum JSONKey {
 		case friendship = "known"
 		case lock = "lock"
 		case color = "color"
+		case voice = "voice"
 		case met = "lasstMet"
 		case note = "note"
 	}// end enum user

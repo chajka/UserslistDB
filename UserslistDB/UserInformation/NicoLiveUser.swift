@@ -63,6 +63,11 @@ public class NicoLiveUser: NSObject {
 	}// end property lock
 	public let lastMet: Date
 	public var color: NSColor?
+	public var voice: String? {
+		didSet (newVoice) {
+			entry[JSONKey.user.voice] = newVoice
+		}// end didSet
+	}// end property voice
 	public var note: String? {
 		didSet (newNote) {
 			entry[JSONKey.user.note] = newNote
@@ -109,11 +114,8 @@ public class NicoLiveUser: NSObject {
 		lastMet = formatter.date(from: lastMetString)!
 		entry[JSONKey.user.met] = formatter.string(from: Date())
 		super.init()
-			// color
-		if let colorString: String = entry[JSONKey.user.color] as? String {
-			color = hexcClorToColor(hexColor: colorString)
-		}// end if have color
-			// note
+		if let colorString: String = entry[JSONKey.user.color] as? String { color = hexcClorToColor(hexColor: colorString) }
+		if let voiceName: String = entry[JSONKey.user.voice] as? String { voice = voiceName }
 		if let noteString: String = entry[JSONKey.user.note] as? String { note = noteString }
 	}// end init from entry
 
