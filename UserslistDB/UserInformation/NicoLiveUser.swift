@@ -39,7 +39,7 @@ private let True: String = "yes"
 
 public class NicoLiveUser: NSObject {
 	public var name: UserName
-	private var handle: String {
+	public var handle: String {
 		get {
 			return name.handle
 		}// end get
