@@ -57,20 +57,20 @@ public class NicoLiveUser: NSObject {
 	public var friendship: Friendship
 	@objc public dynamic var thumbnail: NSImage?
 	public var lock: Bool = false {
-		didSet (newState) {
-			entry[JSONKey.user.lock] = newState ? True : nil
+		didSet {
+			entry[JSONKey.user.lock] = lock
 		}// end didSet
 	}// end property lock
 	public let lastMet: Date
 	public var color: NSColor?
 	public var voice: String? {
-		didSet (newVoice) {
-			entry[JSONKey.user.voice] = newVoice
+		didSet {
+			entry[JSONKey.user.voice] = voice
 		}// end didSet
 	}// end property voice
 	public var note: String? {
-		didSet (newNote) {
-			entry[JSONKey.user.note] = newNote
+		didSet {
+			entry[JSONKey.user.note] = note
 		}// end didSet
 	}// end property note
 
