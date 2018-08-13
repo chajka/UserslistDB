@@ -57,20 +57,20 @@ public class NicoLiveUser: NSObject {
 	public var friendship: Friendship
 	@objc public dynamic var thumbnail: NSImage?
 	public var lock: Bool = false {
-		didSet (newState) {
-			entry[JSONKey.user.lock] = newState ? True : nil
+		didSet {
+			entry[JSONKey.user.lock] = lock
 		}// end didSet
 	}// end property lock
 	public let lastMet: Date
 	public var color: NSColor?
 	public var voice: String? {
-		didSet (newVoice) {
-			entry[JSONKey.user.voice] = newVoice
+		didSet {
+			entry[JSONKey.user.voice] = voice
 		}// end didSet
 	}// end property voice
 	public var note: String? {
-		didSet (newNote) {
-			entry[JSONKey.user.note] = newNote
+		didSet {
+			entry[JSONKey.user.note] = note
 		}// end didSet
 	}// end property note
 
@@ -82,7 +82,8 @@ public class NicoLiveUser: NSObject {
 		let handle = name.handle
 		isPremium = (premium & (0x01 << 0)) != 0x00 ? true : false
 		isPrivilege = (premium & (0x01 << 1)) != 0x00 ? true : false
-		isVIP = (premium & (0x01 << 2)) != 0x00 ? true : false
+		isOwner = (premium & 0b11) == 0b11 ? true : false
+		isVIP =  isOwner ? false : (premium & 0b110) == 0b110 ? true : false
 		self.anonymous = anonymous
 		friendship = met
 		lastMet = Date()
@@ -103,7 +104,8 @@ public class NicoLiveUser: NSObject {
 		name = UserName(identifier: identifier, nickname: nickname, handle: handlename)
 		isPremium = (premium & (0x01 << 0)) != 0x00 ? true : false
 		isPrivilege = (premium & (0x01 << 1)) != 0x00 ? true : false
-		isVIP = (premium & (0x01 << 2)) != 0x00 ? true : false
+		isOwner = (premium & 0b11) == 0b11 ? true : false
+		isVIP =  isOwner ? false : (premium & 0b110) == 0b110 ? true : false
 		friendship = entry[JSONKey.user.friendship] as? String == True ? Friendship.known : Friendship.met
 		lock = entry[JSONKey.user.lock] as? String == True ? true : false
 			// update time
