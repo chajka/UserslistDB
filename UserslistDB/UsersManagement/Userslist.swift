@@ -50,7 +50,7 @@ public class Userslist: NSObject {
 	let jsonDatabase: NSMutableDictionary
 	let ownersDictionary: NSMutableDictionary
 	let usersDictionary: NSMutableDictionary
-
+	
 	private let databasePath: String
 	private var currentOwners: Dictionary<String, NicoLiveListeners>
 	private var images: Images!
@@ -79,11 +79,11 @@ public class Userslist: NSObject {
 			usersDictionary = NSMutableDictionary()
 		}// end try - catch open data and parse json to dictionary
 	}// end init
-
+	
 	deinit {
 		let _ = updateDatabaseFile()
 	}// end deinit
-
+	
 	public func setDefaultThumbnails(defaultUser: NSImage, anonymousUser: NSImage, officialUser: NSImage, cruiseUser: NSImage) {
 		images = Images(noImageUser: defaultUser, anonymous: anonymousUser, offifical: officialUser, cruise: cruiseUser)
 	}// end setDefaultThumbnails
@@ -98,7 +98,7 @@ public class Userslist: NSObject {
 			return false
 		}// end
 	}// end updateDatabaseFile
-
+	
 	public func start (owner: String, speechDefault: Bool, commentDefault: Bool, cookies: [HTTPCookie], observer: NSObject? = nil) -> (speech: Bool, comment: Bool) {
 		let ownerInfo: NSMutableDictionary = ownersDictionary[owner] as? NSMutableDictionary ?? NSMutableDictionary()
 		let speech:Bool = ownerInfo[JSONKey.owner.speech] as? Bool ?? speechDefault
@@ -107,53 +107,53 @@ public class Userslist: NSObject {
 		let listeners: NicoLiveListeners = NicoLiveListeners(owner: owner, for: listenersForOwner, and: usersDictionary, user_session: cookies, observer: observer)
 		listeners.setDefaultThumbnails(images: images)
 		currentOwners[owner] = listeners
-
+		
 		return (speech, comment)
 	}// end func start
-
+	
 	public func activeOwners () -> Array<String> {
 		var result: Array<String> = Array()
 		for key: String in currentOwners.keys {
 			result.append(key)
 		}// end foreach allkeys
-
+		
 		return result
 	}// end func activeOwners
-
+	
 	public func end (owner: String) -> Void {
 		currentOwners.removeValue(forKey: owner)
 	}// end func end
-
+	
 	public func update (speech :Bool, forOwner owner: String) -> Void {
 		guard let ownerInfo: NSMutableDictionary = ownersDictionary[owner] as? NSMutableDictionary else { return }
 		ownerInfo[JSONKey.owner.speech] = speech
 	}// end func update owner, speech
-
+	
 	public func update (anonymousComment: Bool, forOwner owner: String) -> Void {
 		guard let ownerInfo: NSMutableDictionary = ownersDictionary[owner] as? NSMutableDictionary else { return }
 		ownerInfo[JSONKey.owner.anonymous] = anonymousComment
 	}// end func update owner, speech
-
+	
 	public func user (identifier: String, for owner: String) throws -> NicoLiveUser {
 		guard let listeners: NicoLiveListeners = currentOwners[owner] else { throw UserslistError.inactiveOwnner }
 		let user: NicoLiveUser = try listeners.user(identifier: identifier)
 		return user
 	}// end func user
-
-	public func user (identifier: String, premium: Int, anonymous: Bool, Lang: UserLanguage, forOwner owner: String, with error: UserslistError) throws -> NicoLiveUser {
+	
+	public func user (identifier: String, vip: Bool, premium: Int, anonymous: Bool, Lang: UserLanguage, forOwner owner: String, with error: UserslistError) throws -> NicoLiveUser {
 		guard let listeners: NicoLiveListeners = currentOwners[owner] else { throw UserslistError.inactiveOwnner }
 		var user: NicoLiveUser
-
+		
 		switch error {
 		case .entriedUser:
-			user = try listeners.activateUser(identifier: identifier, premium: premium, anonymous: anonymous, lang: Lang)
+			user = try listeners.activateUser(identifier: identifier, vip: vip, premium: premium, anonymous: anonymous, lang: Lang)
 		case .inDatabaseUser:
-			user = listeners.newUser(identifier: identifier, premium: premium, anonymous: anonymous, lang: Lang, met: Friendship.metOther)
+			user = listeners.newUser(identifier: identifier, vip: vip, premium: premium, anonymous: anonymous, lang: Lang, met: Friendship.metOther)
 		case .unknownUser: fallthrough
 		default:
-			user = listeners.newUser(identifier: identifier, premium: premium, anonymous: anonymous, lang: Lang, met: Friendship.new)
+			user = listeners.newUser(identifier: identifier, vip: vip, premium: premium, anonymous: anonymous, lang: Lang, met: Friendship.new)
 		}// end switch case by exception name
-
+		
 		return user
 	}// end func user
 	
