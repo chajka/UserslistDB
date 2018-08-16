@@ -16,17 +16,25 @@ public enum Friendship {
 	case metOther
 }// end enum Friendship
 
+public enum Privilege {
+	case listener
+	case owner
+	case vip
+	case cruise
+	case official
+}// end enum Privilege
+
 public class UserName {
 	public let identifier: String
 	public let nickname: String
 	public var handle: String
-
+	
 	init (identifier: String, nickname: String = "", handle: String = "") {
 		self.identifier = identifier
 		self.nickname = nickname.isEmpty ? String(identifier.prefix(10)) : nickname
 		self.handle = handle.isEmpty ? self.nickname : handle
 	}// end init
-
+	
 	init (identifier: String, nickname: String = "") {
 		self.identifier = identifier
 		if nickname.isEmpty { self.nickname = String(identifier.prefix(10)) }
@@ -50,9 +58,7 @@ public class NicoLiveUser: NSObject {
 	}// end property handle
 	public let anonymous: Bool
 	public let isPremium: Bool
-	public let isPrivilege: Bool
-	public let isVIP : Bool
-	public var isOwner: Bool = false
+	public let privilege: Privilege
 	public let language: UserLanguage
 	public var friendship: Friendship
 	@objc public dynamic var thumbnail: NSImage?
@@ -73,42 +79,46 @@ public class NicoLiveUser: NSObject {
 			entry[JSONKey.user.note] = note
 		}// end didSet
 	}// end property note
-
+	
 	private(set) var entry: NSMutableDictionary
-
-	public init (nickname: String, identifier: String, premium: Int, anonymous: Bool, lang: UserLanguage, met: Friendship) {
+	
+	public init (nickname: String, identifier: String, vip: Bool, premium: Int, anonymous: Bool, lang: UserLanguage, met: Friendship) {
 		entry = NSMutableDictionary()
 		name = anonymous ? UserName(identifier: identifier) : UserName(identifier: identifier, nickname: nickname)
 		let handle = name.handle
 		isPremium = (premium & (0x01 << 0)) != 0x00 ? true : false
-		isPrivilege = (premium & (0x01 << 1)) != 0x00 ? true : false
-		isOwner = (premium & 0b11) == 0b11 ? true : false
-		isVIP =  isOwner ? false : (premium & 0b110) == 0b110 ? true : false
+		if vip { privilege = Privilege.vip }
+		else if (premium & (0x01 << 1)) != 0x00 { privilege = Privilege.owner }
+		else if (premium & 0b11) == 0b11 { privilege = Privilege.cruise }
+		else if (premium & 0b110) == 0b110 { privilege = Privilege.official }
+		else { privilege = Privilege.listener }
 		self.anonymous = anonymous
 		friendship = met
 		lastMet = Date()
 		language = lang
-			// set entry object
+		// set entry object
 		entry[JSONKey.user.handle] = handle
 		let formatter:DateFormatter = DateFormatter()
 		formatter.dateStyle = DateFormatter.Style.short
 		formatter.timeStyle = DateFormatter.Style.short
 		entry[JSONKey.user.met] = formatter.string(from: lastMet)
 	}// end init
-
-	public init (user: NSMutableDictionary, nickname: String, identifier: String, premium: Int, anonymous: Bool, lang: UserLanguage) {
+	
+	public init (user: NSMutableDictionary, nickname: String, identifier: String, vip: Bool, premium: Int, anonymous: Bool, lang: UserLanguage) {
 		entry = user
-		self.anonymous = anonymous
 		language = lang
 		let handlename: String = entry[JSONKey.user.handle] as? String ?? ""
 		name = UserName(identifier: identifier, nickname: nickname, handle: handlename)
 		isPremium = (premium & (0x01 << 0)) != 0x00 ? true : false
-		isPrivilege = (premium & (0x01 << 1)) != 0x00 ? true : false
-		isOwner = (premium & 0b11) == 0b11 ? true : false
-		isVIP =  isOwner ? false : (premium & 0b110) == 0b110 ? true : false
+		if vip { privilege = Privilege.vip }
+		else if (premium & (0x01 << 1)) != 0x00 { privilege = Privilege.owner }
+		else if (premium & 0b11) == 0b11 { privilege = Privilege.cruise }
+		else if (premium & 0b110) == 0b110 { privilege = Privilege.official }
+		else { privilege = Privilege.listener }
+		self.anonymous = anonymous
 		friendship = entry[JSONKey.user.friendship] as? String == True ? Friendship.known : Friendship.met
 		lock = entry[JSONKey.user.lock] as? String == True ? true : false
-			// update time
+		// update time
 		let formatter: DateFormatter = DateFormatter()
 		formatter.dateStyle = DateFormatter.Style.short
 		formatter.timeStyle = DateFormatter.Style.short
@@ -120,12 +130,12 @@ public class NicoLiveUser: NSObject {
 		if let voiceName: String = entry[JSONKey.user.voice] as? String { voice = voiceName }
 		if let noteString: String = entry[JSONKey.user.note] as? String { note = noteString }
 	}// end init from entry
-
+	
 	public func setColor (hexColor: String) -> Void {
 		color = hexcClorToColor(hexColor: hexColor)
 		entry.setValue(hexColor, forKey: JSONKey.user.color.rawValue)
 	}// end setColor
-
+	
 	public func setColor (rgbColor: NSColor) -> Void {
 		color = rgbColor
 		entry.setValue(rgbColorToHexColor(rgbColor: rgbColor), forKey: JSONKey.user.color.rawValue)
@@ -135,7 +145,7 @@ public class NicoLiveUser: NSObject {
 		let identifier = name.identifier
 		listensers.setValue(entry, forKey: identifier)
 	}// end func addEntryTo
-
+	
 	private func hexcClorToColor (hexColor: String) -> NSColor {
 		guard hexColor.count == 7, hexColor.prefix(1) == "#" else { return NSColor.white }
 		let redStr: String = hexColor[hexColor.index(hexColor.startIndex, offsetBy: 1) ... hexColor.index(hexColor.startIndex, offsetBy: 2)].description
@@ -148,19 +158,19 @@ public class NicoLiveUser: NSObject {
 		
 		return NSColor(calibratedRed: red, green: green, blue: blue, alpha: 1.0)
 	}// end func hexColorToColor
-
+	
 	private func rgbColorToHexColor (rgbColor: NSColor) -> String {
 		var red: CGFloat = 1.0
 		var green: CGFloat = 1.0
 		var blue: CGFloat = 1.0
 		var alpha: CGFloat = 1.0
 		rgbColor.getRed(&red, green: &green, blue: &blue, alpha: &alpha)
-
+		
 		let intRed: Int = Int(red * 0xff)
 		let intGreen: Int = Int(green * 0xff)
 		let intBlue: Int = Int(blue * 0xff)
 		let hexColor: String = String(format: "#%02x%02x%02x", intRed, intGreen, intBlue)
-
+		
 		return hexColor
 	}// end func rgbColorToHexColor
 }// end class NicoLiveUser
