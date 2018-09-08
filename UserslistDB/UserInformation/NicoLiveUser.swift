@@ -158,6 +158,10 @@ public class NicoLiveUser: NSObject {
 	public func invert(lockStatus identifier: String) {
 		self.lock = !self.lock
 	}// end invert lock status
+
+	public func update (friendship newFriendship:Friendship) {
+		self.friendship = newFriendship
+	}// end update friendship
 	
 		// MARK: - Private methods
 	private func hexcClorToColor (hexColor: String) -> NSColor {
