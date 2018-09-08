@@ -154,6 +154,10 @@ public class NicoLiveUser: NSObject {
 		let identifier = name.identifier
 		listensers.setValue(entry, forKey: identifier)
 	}// end func addEntryTo
+
+	public func invert(lockStatus identifier: String) {
+		self.lock = !self.lock
+	}// end invert lock status
 	
 		// MARK: - Private methods
 	private func hexcClorToColor (hexColor: String) -> NSColor {
