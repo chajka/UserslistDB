@@ -34,7 +34,7 @@ public class UserName {
 		self.nickname = nickname.isEmpty ? String(identifier.prefix(10)) : nickname
 		self.handle = handle.isEmpty ? self.nickname : handle
 	}// end init
-	
+
 	init (identifier: String, nickname: String = "") {
 		self.identifier = identifier
 		if nickname.isEmpty { self.nickname = String(identifier.prefix(10)) }
@@ -46,7 +46,9 @@ public class UserName {
 private let True: String = "yes"
 
 public class NicoLiveUser: NSObject {
-	public var name: UserName
+        // MARK:   Outlets
+        // MARK: - Properties
+    public var name: UserName
 	public var handle: String {
 		get {
 			return name.handle
@@ -80,18 +82,21 @@ public class NicoLiveUser: NSObject {
 		}// end didSet
 	}// end property note
 	
+        // MARK: - Member variables
 	private(set) var entry: NSMutableDictionary
 	
+        // MARK: - Constructor/Destructor
 	public init (nickname: String, identifier: String, vip: Bool, premium: Int, anonymous: Bool, lang: UserLanguage, met: Friendship) {
 		entry = NSMutableDictionary()
 		name = anonymous ? UserName(identifier: identifier) : UserName(identifier: identifier, nickname: nickname)
 		let handle = name.handle
 		isPremium = (premium & (0x01 << 0)) != 0x00 ? true : false
 		if vip { privilege = Privilege.vip }
-		else if (premium & (0x01 << 1)) != 0x00 { privilege = Privilege.owner }
-		else if (premium & 0b11) == 0b11 { privilege = Privilege.cruise }
-		else if (premium & 0b110) == 0b110 { privilege = Privilege.official }
-		else { privilege = Privilege.listener }
+        else if (identifier == "900000000") { privilege = Privilege.official }
+        else if (premium & 0b110) == 0b110 { privilege = Privilege.official }
+        else if (premium & (0x01 << 1)) != 0x00 { privilege = Privilege.owner }
+        else if (premium & 0b11) == 0b11 { privilege = Privilege.cruise }
+        else { privilege = Privilege.listener }
 		self.anonymous = anonymous
 		friendship = met
 		lastMet = Date()
@@ -111,10 +116,11 @@ public class NicoLiveUser: NSObject {
 		name = UserName(identifier: identifier, nickname: nickname, handle: handlename)
 		isPremium = (premium & (0x01 << 0)) != 0x00 ? true : false
 		if vip { privilege = Privilege.vip }
-		else if (premium & (0x01 << 1)) != 0x00 { privilege = Privilege.owner }
-		else if (premium & 0b11) == 0b11 { privilege = Privilege.cruise }
-		else if (premium & 0b110) == 0b110 { privilege = Privilege.official }
-		else { privilege = Privilege.listener }
+        else if (identifier == "900000000") { privilege = Privilege.official }
+        else if (premium & 0b110) == 0b110 { privilege = Privilege.official }
+        else if (premium & (0x01 << 1)) != 0x00 { privilege = Privilege.owner }
+        else if (premium & 0b11) == 0b11 { privilege = Privilege.cruise }
+        else { privilege = Privilege.listener }
 		self.anonymous = anonymous
 		friendship = entry[JSONKey.user.friendship] as? String == True ? Friendship.known : Friendship.met
 		lock = entry[JSONKey.user.lock] as? String == True ? true : false
@@ -131,6 +137,9 @@ public class NicoLiveUser: NSObject {
 		if let noteString: String = entry[JSONKey.user.note] as? String { note = noteString }
 	}// end init from entry
 	
+		// MARK: - Override
+		// MARK: - Actions
+		// MARK: - Public methods
 	public func setColor (hexColor: String) -> Void {
 		color = hexcClorToColor(hexColor: hexColor)
 		entry.setValue(hexColor, forKey: JSONKey.user.color.rawValue)
@@ -146,6 +155,7 @@ public class NicoLiveUser: NSObject {
 		listensers.setValue(entry, forKey: identifier)
 	}// end func addEntryTo
 	
+		// MARK: - Private methods
 	private func hexcClorToColor (hexColor: String) -> NSColor {
 		guard hexColor.count == 7, hexColor.prefix(1) == "#" else { return NSColor.white }
 		let redStr: String = hexColor[hexColor.index(hexColor.startIndex, offsetBy: 1) ... hexColor.index(hexColor.startIndex, offsetBy: 2)].description
@@ -173,4 +183,6 @@ public class NicoLiveUser: NSObject {
 		
 		return hexColor
 	}// end func rgbColorToHexColor
+
+		// MARK: - Delegates
 }// end class NicoLiveUser
