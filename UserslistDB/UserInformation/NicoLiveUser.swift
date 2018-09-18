@@ -60,7 +60,7 @@ public class NicoLiveUser: NSObject {
 	}// end property handle
 	public let anonymous: Bool
 	public let isPremium: Bool
-	public let privilege: Privilege
+	public var privilege: Privilege!
 	public let language: UserLanguage
 	public var friendship: Friendship
 	@objc public dynamic var thumbnail: NSImage?
@@ -92,10 +92,6 @@ public class NicoLiveUser: NSObject {
 		let handle = name.handle
 		isPremium = (premium & (0x01 << 0)) != 0x00 ? true : false
 		if vip { privilege = Privilege.vip }
-        else if (identifier == "900000000") { privilege = Privilege.official }
-        else if (premium & 0b110) == 0b110 { privilege = Privilege.official }
-        else if (premium & (0x01 << 1)) != 0x00 { privilege = Privilege.owner }
-        else if (premium & 0b11) == 0b11 { privilege = Privilege.cruise }
         else { privilege = Privilege.listener }
 		self.anonymous = anonymous
 		friendship = met
@@ -116,11 +112,7 @@ public class NicoLiveUser: NSObject {
 		name = UserName(identifier: identifier, nickname: nickname, handle: handlename)
 		isPremium = (premium & (0x01 << 0)) != 0x00 ? true : false
 		if vip { privilege = Privilege.vip }
-        else if (identifier == "900000000") { privilege = Privilege.official }
-        else if (premium & 0b110) == 0b110 { privilege = Privilege.official }
-        else if (premium & (0x01 << 1)) != 0x00 { privilege = Privilege.owner }
-        else if (premium & 0b11) == 0b11 { privilege = Privilege.cruise }
-        else { privilege = Privilege.listener }
+		else { privilege = Privilege.listener }
 		self.anonymous = anonymous
 		friendship = entry[JSONKey.user.friendship] as? String == True ? Friendship.known : Friendship.met
 		lock = entry[JSONKey.user.lock] as? String == True ? true : false

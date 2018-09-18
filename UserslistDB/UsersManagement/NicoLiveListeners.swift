@@ -54,8 +54,12 @@ public class NicoLiveListeners: NSObject {
 		self.images = images
 	}// end setDefaultThumbnails
 	
-	public func user (identifier: String) throws -> NicoLiveUser {
+	public func user (identifier: String, premium: Int) throws -> NicoLiveUser {
 		if let user:NicoLiveUser = currentUsers[identifier] {
+			if (identifier == "900000000") { user.privilege = Privilege.official }
+			else if (premium & 0b110) == 0b110 { user.privilege = Privilege.official }
+			else if (premium & (0x01 << 1)) != 0x00 { user.privilege = Privilege.owner }
+			else if (premium & 0b11) == 0b11 { user.privilege = Privilege.cruise }
 			return user
 		} else {
 			if let _ = knownUsers[identifier] { throw UserslistError.entriedUser }
@@ -78,7 +82,11 @@ public class NicoLiveListeners: NSObject {
 		} else {
 			user = NicoLiveUser(user: entry, nickname: nickname, identifier: identifier, vip: vip, premium: premium, anonymous: anonymous, lang: lang)
 		}// end if premium flags is owner
-		
+		if (identifier == "900000000") { user.privilege = Privilege.official }
+		else if (premium & 0b110) == 0b110 { user.privilege = Privilege.official }
+		else if (premium & (0x01 << 1)) != 0x00 { user.privilege = Privilege.owner }
+		else if (premium & 0b11) == 0b11 { user.privilege = Privilege.cruise }
+
 		fetchThumbnail(user: user, identifier: identifier, anonymous: anonymous)
 		currentUsers[identifier] = user
 		allKnownUsers[identifier] = anonymous
@@ -93,6 +101,10 @@ public class NicoLiveListeners: NSObject {
 		else if identifier == informationUserIdentifier { nickname = informationUserName }
 		
 		let user: NicoLiveUser = NicoLiveUser(nickname: nickname, identifier: identifier, vip: vip, premium: premium, anonymous: anonymous, lang: lang, met: met)
+		if (identifier == "900000000") { user.privilege = Privilege.official }
+		else if (premium & 0b110) == 0b110 { user.privilege = Privilege.official }
+		else if (premium & (0x01 << 1)) != 0x00 { user.privilege = Privilege.owner }
+		else if (premium & 0b11) == 0b11 { user.privilege = Privilege.cruise }
 		fetchThumbnail(user: user, identifier: identifier, anonymous: anonymous)
 		currentUsers[identifier] = user
 		allKnownUsers[identifier] = anonymous
