@@ -134,9 +134,9 @@ public class Userslist: NSObject {
 		ownerInfo[JSONKey.owner.anonymous] = anonymousComment
 	}// end func update owner, speech
 	
-	public func user (identifier: String, for owner: String) throws -> NicoLiveUser {
+	public func user (identifier: String, premium: Int, for owner: String) throws -> NicoLiveUser {
 		guard let listeners: NicoLiveListeners = currentOwners[owner] else { throw UserslistError.inactiveOwnner }
-		let user: NicoLiveUser = try listeners.user(identifier: identifier)
+		let user: NicoLiveUser = try listeners.user(identifier: identifier, premium: premium)
 		return user
 	}// end func user
 	
