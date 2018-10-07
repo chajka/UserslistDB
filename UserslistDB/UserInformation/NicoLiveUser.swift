@@ -56,6 +56,7 @@ public class NicoLiveUser: NSObject {
 		set (newHandle) {
 			name.handle = newHandle
 			entry[JSONKey.user.handle] = newHandle
+			update(friendship: .known)
 		}// end set
 	}// end property handle
 	public let anonymous: Bool
@@ -67,6 +68,7 @@ public class NicoLiveUser: NSObject {
 	public var lock: Bool = false {
 		didSet {
 			entry[JSONKey.user.lock] = lock
+			update(friendship: .known)
 		}// end didSet
 	}// end property lock
 	public let lastMet: Date
@@ -74,11 +76,13 @@ public class NicoLiveUser: NSObject {
 	public var voice: String? {
 		didSet {
 			entry[JSONKey.user.voice] = voice
+			update(friendship: .known)
 		}// end didSet
 	}// end property voice
 	public var note: String? {
 		didSet {
 			entry[JSONKey.user.note] = note
+			update(friendship: .known)
 		}// end didSet
 	}// end property note
 	
@@ -135,11 +139,13 @@ public class NicoLiveUser: NSObject {
 	public func setColor (hexColor: String) -> Void {
 		color = hexcClorToColor(hexColor: hexColor)
 		entry.setValue(hexColor, forKey: JSONKey.user.color.rawValue)
+		update(friendship: .known)
 	}// end setColor
 	
 	public func setColor (rgbColor: NSColor) -> Void {
 		color = rgbColor
 		entry.setValue(rgbColorToHexColor(rgbColor: rgbColor), forKey: JSONKey.user.color.rawValue)
+		update(friendship: .known)
 	}// end setColor
 	
 	public func addEntryTo (listensers: NSMutableDictionary) {
