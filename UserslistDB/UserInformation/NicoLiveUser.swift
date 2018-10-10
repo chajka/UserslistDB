@@ -28,6 +28,7 @@ public class UserName {
 	public let identifier: String
 	public let nickname: String
 	public var handle: String
+	public var firstCommentNumber: String?
 	
 	init (identifier: String, nickname: String = "", handle: String = "") {
 		self.identifier = identifier
