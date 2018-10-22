@@ -110,7 +110,7 @@ public class NicoLiveListeners: NSObject {
 	}// end func newUser
 
 	private func parse (user usr: NicoLiveUser, id identifier: String, premium prem: Int) {
-		if (identifier == "900000000") {
+		if (identifier == informationUserIdentifier) {
 			usr.privilege = Privilege.official
 			usr.name.nickname = "Information"
 		}
