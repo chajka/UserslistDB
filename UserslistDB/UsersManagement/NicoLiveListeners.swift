@@ -61,10 +61,7 @@ public class NicoLiveListeners: NSObject {
 	
 	public func user (identifier: String, premium: Int) throws -> NicoLiveUser {
 		if let user:NicoLiveUser = currentUsers[identifier] {
-			if (identifier == "900000000") { user.privilege = Privilege.official }
-			else if (premium & 0b110) == 0b110 { user.privilege = Privilege.official }
-			else if (premium & (0x01 << 1)) != 0x00 { user.privilege = Privilege.owner }
-			else if (premium & 0b11) == 0b11 { user.privilege = Privilege.cruise }
+			parse(user: user, id: identifier, premium: premium)
 			return user
 		} else {
 			if let _ = knownUsers[identifier] { throw UserslistError.entriedUser }
@@ -87,10 +84,7 @@ public class NicoLiveListeners: NSObject {
 		} else {
 			user = NicoLiveUser(user: entry, nickname: nickname, identifier: identifier, vip: vip, premium: premium, anonymous: anonymous, lang: lang)
 		}// end if premium flags is owner
-		if (identifier == "900000000") { user.privilege = Privilege.official }
-		else if (premium & 0b110) == 0b110 { user.privilege = Privilege.official }
-		else if (premium & (0x01 << 1)) != 0x00 { user.privilege = Privilege.owner }
-		else if (premium & 0b11) == 0b11 { user.privilege = Privilege.cruise }
+		parse(user: user, id: identifier, premium: premium)
 
 		fetchThumbnail(user: user, identifier: identifier, anonymous: anonymous)
 		currentUsers[identifier] = user
@@ -106,10 +100,7 @@ public class NicoLiveListeners: NSObject {
 		else if identifier == informationUserIdentifier { nickname = informationUserName }
 		
 		let user: NicoLiveUser = NicoLiveUser(nickname: nickname, identifier: identifier, vip: vip, premium: premium, anonymous: anonymous, lang: lang, met: met)
-		if (identifier == "900000000") { user.privilege = Privilege.official }
-		else if (premium & 0b110) == 0b110 { user.privilege = Privilege.official }
-		else if (premium & (0x01 << 1)) != 0x00 { user.privilege = Privilege.owner }
-		else if (premium & 0b11) == 0b11 { user.privilege = Privilege.cruise }
+		parse(user: user, id: identifier, premium: premium)
 		fetchThumbnail(user: user, identifier: identifier, anonymous: anonymous)
 		currentUsers[identifier] = user
 		allKnownUsers[identifier] = anonymous
@@ -117,6 +108,16 @@ public class NicoLiveListeners: NSObject {
 		
 		return user
 	}// end func newUser
+
+	private func parse (user usr: NicoLiveUser, id identifier: String, premium prem: Int) {
+		if (identifier == "900000000") {
+			usr.privilege = Privilege.official
+			usr.name.nickname = "Information"
+		}
+		else if (prem & 0b110) == 0b110 { usr.privilege = Privilege.official }
+		else if (prem & (0x01 << 1)) != 0x00 { usr.privilege = Privilege.owner }
+		else if (prem & 0b11) == 0b11 { usr.privilege = Privilege.cruise }
+	}// end parse
 	
 	private func fetchNickname (identifier: String) -> String {
 		guard let url = URL(string: NicknameAPIFormat + identifier) else { return "" }
