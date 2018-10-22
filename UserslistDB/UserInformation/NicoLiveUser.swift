@@ -26,7 +26,7 @@ public enum Privilege {
 
 public class UserName {
 	public let identifier: String
-	public let nickname: String
+	public var nickname: String
 	public var handle: String
 	public var firstCommentNumber: String?
 	

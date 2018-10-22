@@ -32,7 +32,7 @@ class NicoLiveUserTests: XCTestCase {
     }
 
     func test01_allocation_from_entry() {
-		let user: NicoLiveUser = NicoLiveUser(user: userEntry!, nickname: "Чайка", identifier: "6347612", premium: 1, anonymous: false, lang: .en)
+		let user: NicoLiveUser = NicoLiveUser(user: userEntry!, nickname: "Чайка", identifier: "6347612", vip: false, premium: 1, anonymous: false, lang: .en)
 		XCTAssertNotNil(user, "Single user can not initialize")
 		XCTAssertNotNil(user.name.nickname, "user nickname can not correct")
 		XCTAssertNotNil(user.name.nickname, "user handle can not correct")
@@ -46,7 +46,7 @@ class NicoLiveUserTests: XCTestCase {
     }
 
 	func test02_allocation_from_argument() {
-		let user:NicoLiveUser = NicoLiveUser(nickname: "chajka", identifier: "6347612", premium: 1, anonymous: false, lang: UserLanguage.en, met: Friendship.met)
+		let user: NicoLiveUser = NicoLiveUser(user: userEntry!, nickname: "Чайка", identifier: "6347612", vip: false, premium: 1, anonymous: false, lang: .en)
 		XCTAssertNotNil(user, "Single user can not initialize")
 		XCTAssertNotNil(user.name.nickname, "user nickname can not correct")
 		XCTAssertNotNil(user.name.nickname, "user handle can not correct")
