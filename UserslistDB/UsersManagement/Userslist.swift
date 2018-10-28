@@ -101,6 +101,10 @@ public class Userslist: NSObject {
 	
 	public func start (owner: String, speechDefault: Bool, commentDefault: Bool, cookies: [HTTPCookie], observer: NSObject? = nil) -> (speech: Bool, comment: Bool) {
 		let ownerInfo: NSMutableDictionary = ownersDictionary[owner] as? NSMutableDictionary ?? NSMutableDictionary()
+		if ownerInfo.count == 0 {
+			ownersDictionary[owner] = ownerInfo
+			ownerInfo[JSONKey.owner.listeners] = NSMutableDictionary()
+		}// end if new owner
 		let speech:Bool = ownerInfo[JSONKey.owner.speech] as? Bool ?? speechDefault
 		let comment:Bool = ownerInfo[JSONKey.owner.anonymous] as? Bool ?? commentDefault
 		let listenersForOwner: NSMutableDictionary = ownerInfo[JSONKey.owner.listeners] as? NSMutableDictionary ?? NSMutableDictionary()
