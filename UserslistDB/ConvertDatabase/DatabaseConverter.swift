@@ -65,7 +65,7 @@ extension Attribute.user.value: StringEnum { }
 extension Attribute.handle.name: StringEnum { }
 extension Attribute.handle.value: StringEnum { }
 
-public class DatabaseConverter: NSObject , XMLParserDelegate {
+public final class DatabaseConverter: NSObject , XMLParserDelegate {
 	private var owners: NSMutableDictionary = NSMutableDictionary()
 	private var users: Dictionary<String, Bool> = Dictionary()
 	private let date: String
