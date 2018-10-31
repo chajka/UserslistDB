@@ -46,7 +46,7 @@ extension JSONKey.toplevel: StringEnum { }
 extension JSONKey.owner: StringEnum { }
 extension JSONKey.user: StringEnum { }
 
-public class Userslist: NSObject {
+public final class Userslist: NSObject {
 	let jsonDatabase: NSMutableDictionary
 	let ownersDictionary: NSMutableDictionary
 	let usersDictionary: NSMutableDictionary

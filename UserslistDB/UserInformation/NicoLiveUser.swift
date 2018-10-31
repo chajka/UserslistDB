@@ -24,7 +24,7 @@ public enum Privilege {
 	case official
 }// end enum Privilege
 
-public class UserName {
+public final class UserName {
 	public let identifier: String
 	public var nickname: String
 	public var handle: String
@@ -46,7 +46,7 @@ public class UserName {
 
 private let True: String = "yes"
 
-public class NicoLiveUser: NSObject {
+public final class NicoLiveUser: NSObject {
         // MARK:   Outlets
         // MARK: - Properties
     public var name: UserName
