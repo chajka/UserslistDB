@@ -27,7 +27,7 @@ private let cruiseUserName: String = "Cruise"
 private let informationUserIdentifier: String = "900000000"
 private let informationUserName: String = "Information"
 
-public class NicoLiveListeners: NSObject {
+public final class NicoLiveListeners: NSObject {
 	private var currentUsers: Dictionary<String, NicoLiveUser>
 	private var knownUsers: NSMutableDictionary
 	private var allKnownUsers: NSMutableDictionary
