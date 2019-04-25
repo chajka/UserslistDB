@@ -29,6 +29,12 @@ public final class UserName {
 	public var nickname: String
 	public var handle: String
 	public var firstCommentNumber: String?
+	public var isInvalidHandle: Bool {
+		get {
+			return (String(identifier.prefix(handle.count)) == handle) ? true : false
+		}// end get
+	}// end read only property get
+	
 	
 	init (identifier: String, nickname: String = "", handle: String = "") {
 		self.identifier = identifier
