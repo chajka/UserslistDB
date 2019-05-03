@@ -159,6 +159,20 @@ public final class Userslist: NSObject {
 		}// end switch
 	}// end func anonymousComment
 
+	public func enableMonitor (forOwner ownerIdentifier: String) -> Bool {
+		guard let ownerInfo: NSMutableDictionary = ownersDictionary[ownerIdentifier] as? NSMutableDictionary else { return false }
+		let result = ownerInfo[JSONKey.owner.speech.rawValue]
+		let monitor: JSONValue.BOOL = JSONValue.BOOL(rawValue: result as! String) ?? JSONValue.BOOL.no
+		
+		switch monitor {
+		case JSONValue.BOOL.yes:
+			return true
+		case JSONValue.BOOL.no: fallthrough
+		default:
+			return false
+		}// end switch
+	}// end func anonymousComment
+	
 	public func user (identifier: String, for owner: String) throws -> NicoLiveUser {
 		guard let listeners: NicoLiveListeners = currentOwners[owner] else { throw UserslistError.inactiveOwnner }
 
