@@ -149,8 +149,12 @@ public final class Userslist: NSObject {
 
 	public func anonymousComment (forOwner ownerIdentifier: String) -> Bool {
 		guard let ownerInfo: NSMutableDictionary = ownersDictionary[ownerIdentifier] as? NSMutableDictionary else { return false }
-		let result = ownerInfo[JSONKey.owner.anonymous.rawValue]
-		let anonymity: JSONValue.BOOL = JSONValue.BOOL(rawValue: result as! String) ?? JSONValue.BOOL.no
+		var anonymity: JSONValue.BOOL
+		if let result: NSString = ownerInfo[JSONKey.owner.anonymous] as? NSString {
+			anonymity = JSONValue.BOOL(rawValue: String(result)) ?? JSONValue.BOOL.no
+		} else {
+			anonymity = JSONValue.BOOL.no
+		}
 
 		switch anonymity {
 		case JSONValue.BOOL.yes:
