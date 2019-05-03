@@ -42,6 +42,13 @@ public enum JSONKey {
 	}// end enum user
 }// end enum JSONKey
 
+private enum JSONValue {
+	enum BOOL: String {
+		case yes = "yes"
+		case no = "no"
+	}// end enum bool
+}// end enum JSONValue
+
 extension JSONKey.toplevel: StringEnum { }
 extension JSONKey.owner: StringEnum { }
 extension JSONKey.user: StringEnum { }
