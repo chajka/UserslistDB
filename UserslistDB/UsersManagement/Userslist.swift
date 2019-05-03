@@ -195,18 +195,18 @@ public final class Userslist: NSObject {
 		return user
 	}// end func user
 	
-	public func user (identifier: String, vip: Bool, premium: Int, anonymous: Bool, Lang: UserLanguage, forOwner owner: String, with error: UserslistError) throws -> NicoLiveUser {
+	public func user (identifier: String, premium: Int, anonymous: Bool, Lang: UserLanguage, forOwner owner: String, with error: UserslistError) throws -> NicoLiveUser {
 		guard let listeners: NicoLiveListeners = currentOwners[owner] else { throw UserslistError.inactiveOwnner }
 		var user: NicoLiveUser
 		
 		switch error {
 		case .entriedUser:
-			user = try listeners.activateUser(identifier: identifier, vip: vip, premium: premium, anonymous: anonymous, lang: Lang)
+			user = try listeners.activateUser(identifier: identifier, premium: premium, anonymous: anonymous, lang: Lang)
 		case .inDatabaseUser:
-			user = listeners.newUser(identifier: identifier, vip: vip, premium: premium, anonymous: anonymous, lang: Lang, met: Friendship.metOther)
+			user = listeners.newUser(identifier: identifier, premium: premium, anonymous: anonymous, lang: Lang, met: Friendship.metOther)
 		case .unknownUser: fallthrough
 		default:
-			user = listeners.newUser(identifier: identifier, vip: vip, premium: premium, anonymous: anonymous, lang: Lang, met: Friendship.new)
+			user = listeners.newUser(identifier: identifier, premium: premium, anonymous: anonymous, lang: Lang, met: Friendship.new)
 		}// end switch case by exception name
 		
 		return user

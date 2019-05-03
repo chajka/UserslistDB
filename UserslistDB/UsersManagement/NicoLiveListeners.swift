@@ -70,7 +70,7 @@ public final class NicoLiveListeners: NSObject {
 		}// end if current user is in current users dictionary
 	}// end func user
 	
-	public func activateUser (identifier: String, vip: Bool, premium: Int, anonymous: Bool, lang: UserLanguage) throws -> NicoLiveUser {
+	public func activateUser (identifier: String, premium: Int, anonymous: Bool, lang: UserLanguage) throws -> NicoLiveUser {
 		guard let entry: NSMutableDictionary = knownUsers[identifier] as? NSMutableDictionary else { throw UserslistError.canNotActivateUser }
 		var nickname: String = ""
 		if !anonymous { nickname = fetchNickname(identifier: identifier) }
@@ -80,9 +80,9 @@ public final class NicoLiveListeners: NSObject {
 		
 		var user: NicoLiveUser
 		if premium ^ 0x011 == 0 {
-			user = NicoLiveUser(user: entry, nickname: nickname, identifier: identifier, vip: vip, premium: premium, anonymous: anonymous, lang: lang)
+			user = NicoLiveUser(user: entry, nickname: nickname, identifier: identifier, premium: premium, anonymous: anonymous, lang: lang)
 		} else {
-			user = NicoLiveUser(user: entry, nickname: nickname, identifier: identifier, vip: vip, premium: premium, anonymous: anonymous, lang: lang)
+			user = NicoLiveUser(user: entry, nickname: nickname, identifier: identifier, premium: premium, anonymous: anonymous, lang: lang)
 		}// end if premium flags is owner
 		parse(user: user, id: identifier, premium: premium)
 
@@ -93,13 +93,13 @@ public final class NicoLiveListeners: NSObject {
 		return user
 	}// end func activateUser
 	
-	public func newUser (identifier: String, vip: Bool, premium: Int, anonymous: Bool, lang: UserLanguage, met: Friendship) -> NicoLiveUser {
+	public func newUser (identifier: String, premium: Int, anonymous: Bool, lang: UserLanguage, met: Friendship) -> NicoLiveUser {
 		var nickname: String = ""
 		if !anonymous { nickname = fetchNickname(fromVitaAPI: identifier) }
 		else if premium == 0x11 { nickname = fetchNickname(fromVitaAPI: ownerIdentifier) }
 		else if identifier == informationUserIdentifier { nickname = informationUserName }
 		
-		let user: NicoLiveUser = NicoLiveUser(nickname: nickname, identifier: identifier, vip: vip, premium: premium, anonymous: anonymous, lang: lang, met: met)
+		let user: NicoLiveUser = NicoLiveUser(nickname: nickname, identifier: identifier, premium: premium, anonymous: anonymous, lang: lang, met: met)
 		parse(user: user, id: identifier, premium: premium)
 		fetchThumbnail(user: user, identifier: identifier, anonymous: anonymous)
 		currentUsers[identifier] = user
