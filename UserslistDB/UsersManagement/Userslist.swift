@@ -42,6 +42,13 @@ public enum JSONKey {
 	}// end enum user
 }// end enum JSONKey
 
+private enum JSONValue {
+	enum BOOL: String {
+		case yes = "yes"
+		case no = "no"
+	}// end enum bool
+}// end enum JSONValue
+
 extension JSONKey.toplevel: StringEnum { }
 extension JSONKey.owner: StringEnum { }
 extension JSONKey.user: StringEnum { }
@@ -102,12 +109,14 @@ public final class Userslist: NSObject {
 	public func start (owner: String, speechDefault: Bool, commentDefault: Bool, cookies: [HTTPCookie], observer: NSObject? = nil) -> (speech: Bool, comment: Bool) {
 		let ownerInfo: NSMutableDictionary = ownersDictionary[owner] as? NSMutableDictionary ?? NSMutableDictionary()
 		if ownerInfo.count == 0 {
-			ownersDictionary[owner] = ownerInfo
-			ownerInfo[JSONKey.owner.listeners] = NSMutableDictionary()
+			ownersDictionary.setObject(ownerInfo, forKey: NSString(string: owner))
+			ownerInfo.setObject(NSMutableDictionary(), forKey: NSString(string: JSONKey.owner.listeners.rawValue))
+			ownerInfo.setObject(NSString(string: speechDefault ? JSONValue.BOOL.yes.rawValue : JSONValue.BOOL.no.rawValue), forKey: NSString(string: JSONKey.owner.speech.rawValue))
+			ownerInfo.setObject(NSString(string: commentDefault ? JSONValue.BOOL.yes.rawValue : JSONValue.BOOL.no.rawValue), forKey: NSString(string: JSONKey.owner.anonymous.rawValue))
 		}// end if new owner
-		let speech:Bool = ownerInfo[JSONKey.owner.speech] as? Bool ?? speechDefault
-		let comment:Bool = ownerInfo[JSONKey.owner.anonymous] as? Bool ?? commentDefault
-		let listenersForOwner: NSMutableDictionary = ownerInfo[JSONKey.owner.listeners] as? NSMutableDictionary ?? NSMutableDictionary()
+		let speech:Bool = enableMonitor(forOwner: owner)
+		let comment:Bool = anonymousComment(forOwner: owner)
+		let listenersForOwner: NSMutableDictionary = ownerInfo[JSONKey.owner.listeners] as! NSMutableDictionary
 		let listeners: NicoLiveListeners = NicoLiveListeners(owner: owner, for: listenersForOwner, and: usersDictionary, user_session: cookies, observer: observer)
 		listeners.setDefaultThumbnails(images: images)
 		currentOwners[owner] = listeners
@@ -138,6 +147,34 @@ public final class Userslist: NSObject {
 		ownerInfo[JSONKey.owner.anonymous] = anonymousComment
 	}// end func update owner, speech
 
+	public func anonymousComment (forOwner ownerIdentifier: String) -> Bool {
+		guard let ownerInfo: NSMutableDictionary = ownersDictionary[ownerIdentifier] as? NSMutableDictionary else { return false }
+		let result = ownerInfo[JSONKey.owner.anonymous.rawValue]
+		let anonymity: JSONValue.BOOL = JSONValue.BOOL(rawValue: result as! String) ?? JSONValue.BOOL.no
+
+		switch anonymity {
+		case JSONValue.BOOL.yes:
+			return true
+		case JSONValue.BOOL.no: fallthrough
+		default:
+			return false
+		}// end switch
+	}// end func anonymousComment
+
+	public func enableMonitor (forOwner ownerIdentifier: String) -> Bool {
+		guard let ownerInfo: NSMutableDictionary = ownersDictionary[ownerIdentifier] as? NSMutableDictionary else { return false }
+		let result = ownerInfo[JSONKey.owner.speech.rawValue]
+		let monitor: JSONValue.BOOL = JSONValue.BOOL(rawValue: result as! String) ?? JSONValue.BOOL.no
+		
+		switch monitor {
+		case JSONValue.BOOL.yes:
+			return true
+		case JSONValue.BOOL.no: fallthrough
+		default:
+			return false
+		}// end switch
+	}// end func anonymousComment
+	
 	public func user (identifier: String, for owner: String) throws -> NicoLiveUser {
 		guard let listeners: NicoLiveListeners = currentOwners[owner] else { throw UserslistError.inactiveOwnner }
 

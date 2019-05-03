@@ -18,7 +18,11 @@ public extension NSMutableDictionary {
 			return self.object(forKey: enumKey.rawValue)
 		}// end computed property get
 		set {
-			self.setObject(newValue ?? nil!, forKey: enumKey.rawValue as NSCopying)
+			if let voiceName: String = newValue as? String {
+				self.setObject(voiceName, forKey: enumKey.rawValue as NSCopying)
+			} else {
+				self.removeObject(forKey: enumKey.rawValue as NSCopying)
+			}
 		}// end computed property set
 	}// end override subscript
 }// end extension Dictionary
