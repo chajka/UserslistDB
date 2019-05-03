@@ -43,7 +43,7 @@ class NicoLiveListenersTests: XCTestCase {
 			XCTAssertThrowsError(try nicoLiveListeners.user(identifier: "6347612"), "unactivate user id : 6347612 is is there") { (error) in
 				print(error)
 			}
-			user = try nicoLiveListeners.activateUser(identifier: "6347612", vip: false, premium: 3, anonymous: false, lang: .en)
+			user = try nicoLiveListeners.activateUser(identifier: "6347612", premium: 3, anonymous: false, lang: .en)
 			XCTAssertNotNil(user, "instance for id 6347612 can not instatinate")
 			let entry: NSMutableDictionary = listenes?.object(forKey: "6347612") as! NSMutableDictionary
 			XCTAssertNotNil(entry.value(forKey: JSONKey.user.met.rawValue), "last met date not updated")

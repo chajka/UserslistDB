@@ -19,7 +19,7 @@ public enum Friendship {
 public enum Privilege {
 	case listener
 	case owner
-	case vip
+	case guide
 	case cruise
 	case official
 }// end enum Privilege
@@ -97,12 +97,14 @@ public final class NicoLiveUser: NSObject {
 	private(set) var entry: NSMutableDictionary
 	
         // MARK: - Constructor/Destructor
-	public init (nickname: String, identifier: String, vip: Bool, premium: Int, anonymous: Bool, lang: UserLanguage, met: Friendship) {
+	public init (nickname: String, identifier: String, premium: Int, anonymous: Bool, lang: UserLanguage, met: Friendship) {
 		entry = NSMutableDictionary()
 		name = anonymous ? UserName(identifier: identifier) : UserName(identifier: identifier, nickname: nickname)
 		let handle = name.handle
 		isPremium = (premium & (0x01 << 0)) != 0x00 ? true : false
-		if vip { privilege = Privilege.vip }
+		if premium ^ 0b11 == 0 { privilege = Privilege.owner }
+		else if premium ^ 0b10 == 0 { privilege = Privilege.cruise }
+		else if premium ^ 0b110 == 0 { privilege = Privilege.official }
         else { privilege = Privilege.listener }
 		self.anonymous = anonymous
 		friendship = met
@@ -116,13 +118,15 @@ public final class NicoLiveUser: NSObject {
 		entry[JSONKey.user.met] = formatter.string(from: lastMet)
 	}// end init
 	
-	public init (user: NSMutableDictionary, nickname: String, identifier: String, vip: Bool, premium: Int, anonymous: Bool, lang: UserLanguage) {
+	public init (user: NSMutableDictionary, nickname: String, identifier: String, premium: Int, anonymous: Bool, lang: UserLanguage) {
 		entry = user
 		language = lang
 		let handlename: String = entry[JSONKey.user.handle] as? String ?? ""
 		name = UserName(identifier: identifier, nickname: nickname, handle: handlename)
 		isPremium = (premium & (0x01 << 0)) != 0x00 ? true : false
-		if vip { privilege = Privilege.vip }
+		if premium ^ 0b11 == 0 { privilege = Privilege.owner }
+		else if premium ^ 0b10 == 0 { privilege = Privilege.cruise }
+		else if premium ^ 0b110 == 0 { privilege = Privilege.official }
 		else { privilege = Privilege.listener }
 		self.anonymous = anonymous
 		friendship = entry[JSONKey.user.friendship] as? String == True ? Friendship.known : Friendship.met

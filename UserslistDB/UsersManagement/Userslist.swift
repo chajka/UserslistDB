@@ -149,8 +149,12 @@ public final class Userslist: NSObject {
 
 	public func anonymousComment (forOwner ownerIdentifier: String) -> Bool {
 		guard let ownerInfo: NSMutableDictionary = ownersDictionary[ownerIdentifier] as? NSMutableDictionary else { return false }
-		let result = ownerInfo[JSONKey.owner.anonymous.rawValue]
-		let anonymity: JSONValue.BOOL = JSONValue.BOOL(rawValue: result as! String) ?? JSONValue.BOOL.no
+		var anonymity: JSONValue.BOOL
+		if let result: NSString = ownerInfo[JSONKey.owner.anonymous] as? NSString {
+			anonymity = JSONValue.BOOL(rawValue: String(result)) ?? JSONValue.BOOL.no
+		} else {
+			anonymity = JSONValue.BOOL.no
+		}
 
 		switch anonymity {
 		case JSONValue.BOOL.yes:
@@ -163,8 +167,12 @@ public final class Userslist: NSObject {
 
 	public func enableMonitor (forOwner ownerIdentifier: String) -> Bool {
 		guard let ownerInfo: NSMutableDictionary = ownersDictionary[ownerIdentifier] as? NSMutableDictionary else { return false }
-		let result = ownerInfo[JSONKey.owner.speech.rawValue]
-		let monitor: JSONValue.BOOL = JSONValue.BOOL(rawValue: result as! String) ?? JSONValue.BOOL.no
+		var monitor: JSONValue.BOOL
+		if let result: NSString = ownerInfo[JSONKey.owner.speech] as? NSString {
+			monitor = JSONValue.BOOL(rawValue: String(result)) ?? JSONValue.BOOL.no
+		} else {
+			monitor = JSONValue.BOOL.no
+		}
 		
 		switch monitor {
 		case JSONValue.BOOL.yes:
@@ -187,18 +195,18 @@ public final class Userslist: NSObject {
 		return user
 	}// end func user
 	
-	public func user (identifier: String, vip: Bool, premium: Int, anonymous: Bool, Lang: UserLanguage, forOwner owner: String, with error: UserslistError) throws -> NicoLiveUser {
+	public func user (identifier: String, premium: Int, anonymous: Bool, Lang: UserLanguage, forOwner owner: String, with error: UserslistError) throws -> NicoLiveUser {
 		guard let listeners: NicoLiveListeners = currentOwners[owner] else { throw UserslistError.inactiveOwnner }
 		var user: NicoLiveUser
 		
 		switch error {
 		case .entriedUser:
-			user = try listeners.activateUser(identifier: identifier, vip: vip, premium: premium, anonymous: anonymous, lang: Lang)
+			user = try listeners.activateUser(identifier: identifier, premium: premium, anonymous: anonymous, lang: Lang)
 		case .inDatabaseUser:
-			user = listeners.newUser(identifier: identifier, vip: vip, premium: premium, anonymous: anonymous, lang: Lang, met: Friendship.metOther)
+			user = listeners.newUser(identifier: identifier, premium: premium, anonymous: anonymous, lang: Lang, met: Friendship.metOther)
 		case .unknownUser: fallthrough
 		default:
-			user = listeners.newUser(identifier: identifier, vip: vip, premium: premium, anonymous: anonymous, lang: Lang, met: Friendship.new)
+			user = listeners.newUser(identifier: identifier, premium: premium, anonymous: anonymous, lang: Lang, met: Friendship.new)
 		}// end switch case by exception name
 		
 		return user
