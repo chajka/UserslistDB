@@ -19,6 +19,7 @@ public enum Friendship {
 public enum Privilege {
 	case listener
 	case owner
+	case guide
 	case cruise
 	case official
 }// end enum Privilege
