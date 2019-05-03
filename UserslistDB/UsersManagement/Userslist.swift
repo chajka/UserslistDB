@@ -167,8 +167,12 @@ public final class Userslist: NSObject {
 
 	public func enableMonitor (forOwner ownerIdentifier: String) -> Bool {
 		guard let ownerInfo: NSMutableDictionary = ownersDictionary[ownerIdentifier] as? NSMutableDictionary else { return false }
-		let result = ownerInfo[JSONKey.owner.speech.rawValue]
-		let monitor: JSONValue.BOOL = JSONValue.BOOL(rawValue: result as! String) ?? JSONValue.BOOL.no
+		var monitor: JSONValue.BOOL
+		if let result: NSString = ownerInfo[JSONKey.owner.speech] as? NSString {
+			monitor = JSONValue.BOOL(rawValue: String(result)) ?? JSONValue.BOOL.no
+		} else {
+			monitor = JSONValue.BOOL.no
+		}
 		
 		switch monitor {
 		case JSONValue.BOOL.yes:
