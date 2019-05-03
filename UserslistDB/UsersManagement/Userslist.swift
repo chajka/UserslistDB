@@ -109,12 +109,14 @@ public final class Userslist: NSObject {
 	public func start (owner: String, speechDefault: Bool, commentDefault: Bool, cookies: [HTTPCookie], observer: NSObject? = nil) -> (speech: Bool, comment: Bool) {
 		let ownerInfo: NSMutableDictionary = ownersDictionary[owner] as? NSMutableDictionary ?? NSMutableDictionary()
 		if ownerInfo.count == 0 {
-			ownersDictionary[owner] = ownerInfo
-			ownerInfo[JSONKey.owner.listeners] = NSMutableDictionary()
+			ownersDictionary.setObject(ownerInfo, forKey: NSString(string: owner))
+			ownerInfo.setObject(NSMutableDictionary(), forKey: NSString(string: JSONKey.owner.listeners.rawValue))
+			ownerInfo.setObject(NSString(string: speechDefault ? JSONValue.BOOL.yes.rawValue : JSONValue.BOOL.no.rawValue), forKey: NSString(string: JSONKey.owner.speech.rawValue))
+			ownerInfo.setObject(NSString(string: commentDefault ? JSONValue.BOOL.yes.rawValue : JSONValue.BOOL.no.rawValue), forKey: NSString(string: JSONKey.owner.anonymous.rawValue))
 		}// end if new owner
-		let speech:Bool = ownerInfo[JSONKey.owner.speech] as? Bool ?? speechDefault
-		let comment:Bool = ownerInfo[JSONKey.owner.anonymous] as? Bool ?? commentDefault
-		let listenersForOwner: NSMutableDictionary = ownerInfo[JSONKey.owner.listeners] as? NSMutableDictionary ?? NSMutableDictionary()
+		let speech:Bool = enableMonitor(forOwner: owner)
+		let comment:Bool = anonymousComment(forOwner: owner)
+		let listenersForOwner: NSMutableDictionary = ownerInfo[JSONKey.owner.listeners] as! NSMutableDictionary
 		let listeners: NicoLiveListeners = NicoLiveListeners(owner: owner, for: listenersForOwner, and: usersDictionary, user_session: cookies, observer: observer)
 		listeners.setDefaultThumbnails(images: images)
 		currentOwners[owner] = listeners
