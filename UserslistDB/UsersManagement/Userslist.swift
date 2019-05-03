@@ -145,6 +145,20 @@ public final class Userslist: NSObject {
 		ownerInfo[JSONKey.owner.anonymous] = anonymousComment
 	}// end func update owner, speech
 
+	public func anonymousComment (forOwner ownerIdentifier: String) -> Bool {
+		guard let ownerInfo: NSMutableDictionary = ownersDictionary[ownerIdentifier] as? NSMutableDictionary else { return false }
+		let result = ownerInfo[JSONKey.owner.anonymous.rawValue]
+		let anonymity: JSONValue.BOOL = JSONValue.BOOL(rawValue: result as! String) ?? JSONValue.BOOL.no
+
+		switch anonymity {
+		case JSONValue.BOOL.yes:
+			return true
+		case JSONValue.BOOL.no: fallthrough
+		default:
+			return false
+		}// end switch
+	}// end func anonymousComment
+
 	public func user (identifier: String, for owner: String) throws -> NicoLiveUser {
 		guard let listeners: NicoLiveListeners = currentOwners[owner] else { throw UserslistError.inactiveOwnner }
 
