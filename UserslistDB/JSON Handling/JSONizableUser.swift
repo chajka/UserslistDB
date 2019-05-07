@@ -9,6 +9,22 @@
 import Cocoa
 
 public final class JSONizableUser: NSObject, Codable {
+		// MARK: static methods
+	public override func isEqual(_ object: Any?) -> Bool {
+		guard let rhs: JSONizableUser = object as? JSONizableUser else { return false }
+
+		var same : Bool = true
+		same = self.handle == rhs.handle ? same && true : same && false
+		same = self.known == rhs.known ? same && true : same && false
+		same = self.lock == rhs.lock ? same && true : same && false
+		same = self.color == rhs.color ? same && true : same && false
+		same = self.voice == rhs.voice ? same && true : same && false
+		same = self.note == rhs.note ? same && true : same && false
+		same = self.lastMet == rhs.lastMet ? same && true : same && false
+		
+		return same
+	}// end override func isEqual
+
 		// MARK: - Properties
 	public var handle: String
 	public var known: Bool?
@@ -32,7 +48,7 @@ public final class JSONizableUser: NSObject, Codable {
 		self.handle = handle
 		lastMet = met
 	}// end init
-	
+
 		// MARK: - Override
 		// MARK: - Actions
 		// MARK: - Public methods

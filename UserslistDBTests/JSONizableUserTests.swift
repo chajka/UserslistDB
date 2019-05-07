@@ -56,6 +56,24 @@ class JSONizableUserTests: XCTestCase {
 		user.note = note
 		XCTAssertEqual(user.note, note, "property lock is not equal")
 	}
+
+	func testt03__storeSomeUser() {
+		let encoder: JSONEncoder = JSONEncoder()
+		let decoder: JSONDecoder = JSONDecoder()
+
+		do {
+			let handle: String = "Чайка"
+			let user: JSONizableUser = JSONizableUser(handle)
+			XCTAssertEqual(user.handle, handle, "handle is not equal")
+			let data: Data = try encoder.encode(user)
+			let user2: JSONizableUser = try decoder.decode(JSONizableUser.self, from: data)
+			XCTAssertEqual(user, user2, "restored object is not equal")
+		} catch let error {
+			print(error.localizedDescription)
+			XCTAssert(true, "exceptioon throwed \(error.localizedDescription)")
+		}
+	}
+
     func testPerformanceExample() {
         // This is an example of a performance test case.
         self.measure {
