@@ -24,7 +24,7 @@ class JSONizableUsersTests: XCTestCase {
 		XCTAssertTrue(users.anonymousComment, "default anonymous comment value is not false")
 		XCTAssertFalse(users.monitor, "default enable monitor value is not false")
 		let user: JSONizableUser? = users.user(identifier: "6347612")
-		XCTAssertNil(user, "unkown user is entried")
+		XCTAssertNotNil(user, "unkown user is entried")
     }
 
 	func test02_NormalConstructor() {
@@ -32,7 +32,7 @@ class JSONizableUsersTests: XCTestCase {
 		XCTAssertTrue(users.anonymousComment, "default anonymous comment value is not false")
 		XCTAssertTrue(users.monitor, "default enable monitor value is not false")
 		let user: JSONizableUser? = users.user(identifier: "6347612")
-		XCTAssertNil(user, "unkown user is entried")
+		XCTAssertNotNil(user, "unkown user is entried")
 	}
 
 	func test03_AppendUser() {
@@ -80,11 +80,15 @@ class JSONizableUsersTests: XCTestCase {
 		}
 	}
 
-    func testPerformanceExample() {
-        // This is an example of a performance test case.
-        self.measure {
-            // Put the code you want to measure the time of here.
-        }
-    }
+	func test05_checkUser() {
+		let users: JSONizableUsers = JSONizableUsers()
+		XCTAssertNotNil(users, "users allocation failed")
+		var user: JSONizableUser = users.user(identifier: "6347612")
+		XCTAssertNotNil(user, "user can not retrieved")
+		XCTAssertEqual(user.handle, "6347612", "user handle is invalid")
+		user = users.user(identifier: "6347612", userName: "Чайка")
+		XCTAssertNotNil(user, "user can not retrieved")
+		XCTAssertEqual(user.handle, "Чайка", "user handle is invalid")
+	}
 
 }
