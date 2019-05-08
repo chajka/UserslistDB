@@ -53,9 +53,17 @@ private enum Attribute {
 			static func ~= (lhs: name, rhs: String) -> Bool {
 				return lhs.rawValue == rhs ? true : false
 			}// end func ~=
+			static func == (lhs: String, rhs: name) -> Bool {
+				return lhs == rhs.rawValue
+			}// end func ==
 		}// end enum name
 		enum value: String {
 			case yes = "yes"
+			case no = "no"
+
+			static func == (lhs: String, rhs: value) -> Bool {
+				return lhs == rhs.rawValue
+			}// end func ==
 		}// end enum value
 	}// end enum handle
 }// end enum Attribute
@@ -66,126 +74,148 @@ extension Attribute.handle.name: StringEnum { }
 extension Attribute.handle.value: StringEnum { }
 
 public final class DatabaseConverter: NSObject , XMLParserDelegate {
-	private var owners: NSMutableDictionary = NSMutableDictionary()
-	private var users: Dictionary<String, Bool> = Dictionary()
+		// MARK: - Properties
+		// MARK: - Member variables
 	private let date: String
-	private let databaseJSONFilePath: String
+	private let databaseJSONFileURL: URL
+	private let databaseFoldeerURL: URL
 	private var serializedData: Data!
-
+	
 	private var currentUserIdentifier: String = String()
 	private var currentOwnerIdentifier: String = String()
-	private var user: NSMutableDictionary = NSMutableDictionary()
-	private var currentUsers: Array<NSMutableDictionary> = Array()
-	private var anonymous: Bool = true
+	private var user: JSONizableUser?
+	private var onymous: Bool = true
+	private var anonymousComment: Bool = false
+
+	private var lock: Bool?
+	private var known: Bool?
+	private var color: String?
+	
 	private var stringBuffer: String = String()
 
+	private let allUsers: JSONizableAllUsers = JSONizableAllUsers()
 	private let parser:XMLParser
-
+	private var data: Data?
+	
+		// MARK: - Constructor/Destructor
 	public init (databasePath: String, databaseFile :String = "userslist") throws {
-		let databaseFullpath: String = databasePath.prefix(1) == "~" ? (databasePath as NSString).expandingTildeInPath : databasePath
-		let databaseXMLFilePath :String = databaseFullpath + "/" + databaseFile + ".xml"
-		databaseJSONFilePath = databaseFullpath + "/" + databaseFile + ".json"
-		let data: NSData = try NSData(contentsOfFile: databaseXMLFilePath)
-		parser = XMLParser(data: data as Data)
+		let databaseFullpath: String = databasePath.prefix(1) == "~" ? (NSHomeDirectory() + String(databasePath.suffix(databasePath.count - 1))) : databasePath
+		databaseFoldeerURL = URL(fileURLWithPath: databaseFullpath, isDirectory: true)
+		let databaseXMLURL: URL = databaseFoldeerURL.appendingPathComponent(databaseFile).appendingPathExtension("xml")
+		let data: Data = try Data(contentsOf: databaseXMLURL)
+		databaseJSONFileURL = databaseFoldeerURL.appendingPathComponent(databaseFile).appendingPathExtension("json")
+		parser = XMLParser(data: data)
 		let dateFormatter: DateFormatter = DateFormatter()
 		dateFormatter.dateStyle = DateFormatter.Style.short
 		dateFormatter.timeStyle = DateFormatter.Style.short
 		date = dateFormatter.string(from: Date())
-	}// end init
-
-	public func parse() -> Bool {
+		super.init()
 		parser.delegate = self
+	}// end init
+	
+		// MARK: - Override
+		// MARK: - Actions
+		// MARK: - Public methods
+	public func parse() -> Bool {
 		let succcess: Bool = parser.parse()
 		do {
-			var jsonObj: Dictionary<String, Any> = Dictionary()
-			jsonObj[JSONKey.toplevel.owners] = owners
-			jsonObj[JSONKey.toplevel.users] = users
-			serializedData = try JSONSerialization.data(withJSONObject: jsonObj, options: JSONSerialization.WritingOptions.prettyPrinted)
-			print(String(data: serializedData, encoding: .utf8)!)
-		} catch {
-			print("JSON serialization error")
+			let encoder: JSONEncoder = JSONEncoder()
+			encoder.outputFormatting = JSONEncoder.OutputFormatting.prettyPrinted
+			data = try encoder.encode(allUsers)
+		} catch let error {
+			print("JSON serialization error \(error.localizedDescription)")
 		}
 		return succcess
 	}// end func parse
-
+	
 	public func writeJson() -> Bool {
 		do {
-			try (serializedData as NSData).write(toFile: databaseJSONFilePath, options: NSData.WritingOptions.atomicWrite)
-			return true
+			if let data: Data = self.data {
+				try data.write(to: databaseJSONFileURL)
+				return true
+			} else {
+				return false
+			}// end optional binding check for data
 		} catch {
 			return false
 		}// end try write to file
 	}// end func writeJson
-
+	
+		// MARK: - Internal methods
+		// MARK: - Private methods
+		// MARK: - Delegates
+			// MARK: XMLParserDelegate
 	public func parser(_ parser: XMLParser, didStartElement elementName: String, namespaceURI: String?, qualifiedName qName: String?, attributes attributeDict: [String : String] = [:]) {
 		stringBuffer = String()
 
 		switch elementName {
 		case .user:
-			guard let userID: String = attributeDict[Attribute.user.name.identifier], let anon = attributeDict[Attribute.user.name.kind] else { return }
-			currentUserIdentifier = userID
-			anonymous = Attribute.user.value.anonymous == anon ? true : false
-			if (!anonymous) {
-				users[currentUserIdentifier] = false
-				user = NSMutableDictionary()
+			guard let userID: String = attributeDict[Attribute.user.name.identifier], let onym = attributeDict[Attribute.user.name.kind] else { return }
+			onymous = Attribute.user.value.id == onym ? true : false
+			if onymous {
+				currentUserIdentifier = userID
+				allUsers.addUser(identifier: currentUserIdentifier, onymity: true)
 					// get or create owner
-				let owner: NSMutableDictionary = owners[currentUserIdentifier] as? NSMutableDictionary ?? NSMutableDictionary()
-				let listeners: NSMutableDictionary = NSMutableDictionary()
+				var anonymousComment: Bool = true
+				var monitor: Bool = false
 				if let comment: String = attributeDict[Attribute.user.name.comment]  {
-					let anonComment:Bool = Attribute.user.value.sign == comment
-					if !anonComment { owner[JSONKey.owner.anonymous] = true }
+					if  Attribute.user.value.sign == comment { anonymousComment = false }
 				}// end if comment mode to this owner
 				if let speech: String = attributeDict[Attribute.user.name.speech] {
-					let speechAtThisOwner: Bool = Attribute.user.value.yes == speech
-					if speechAtThisOwner { owner[JSONKey.owner.speech] = true }
+					if Attribute.user.value.yes == speech { monitor = true }
 				}// end if enable speech to this owner
-				if listeners.allKeys.count > 0 { owner[JSONKey.owner.listeners] = listeners }
-				if owner.allKeys.count > 0 { owners[currentUserIdentifier] = owner }
+				if anonymousComment == false || monitor == true {
+					let users: JSONizableUsers = allUsers.users(forOwner: currentUserIdentifier)
+					users.anonymousComment = anonymousComment
+					users.monitor = monitor
+				}// end if have attribute omment or speech (update or make owner witth current attribute)
 			}// end if not anonymous
 		case .handle:
-			guard let currentOwner = attributeDict[Attribute.handle.name.owner] else { return }
-			if anonymous { return }
-			currentOwnerIdentifier = currentOwner
-			let ownerForCurrentUser: NSMutableDictionary = owners[currentOwnerIdentifier] as? NSMutableDictionary ?? NSMutableDictionary()
-			let userForCurrentOwner: NSMutableDictionary = NSMutableDictionary(dictionary: user)
+			guard let currentOwnerIdentifier = attributeDict[Attribute.handle.name.owner], onymous else { return }
+			self.currentOwnerIdentifier = currentOwnerIdentifier
+
+			lock = nil
+			known = nil
+			color = nil
 			for attribute: String in attributeDict.keys {
 				switch attribute {
-				case .lock:
-					if attributeDict[Attribute.handle.name.lock] == "yes" { userForCurrentOwner[JSONKey.user.lock] = "yes" }
+				case .lock :
+					if let lockAttr: String = attributeDict[Attribute.handle.name.lock] {
+						if lockAttr == Attribute.handle.value.yes { lock = true }
+						if lockAttr == Attribute.handle.value.no { lock = false }
+					}// end optional binding check for lock attribute have value
 				case .known:
-					if attributeDict[Attribute.handle.name.known] == "yes" {userForCurrentOwner[JSONKey.user.friendship] = "yes" }
+					if let knownAttr: String = attributeDict[Attribute.handle.name.known] {
+						if knownAttr == Attribute.handle.value.yes { known = true }
+						if knownAttr == Attribute.handle.value.no { known = false }
+					}// end optional binding check for lock attribute have value
 				case .color:
-					if let color = attributeDict[Attribute.handle.name.color] { userForCurrentOwner[JSONKey.user.color] = color }
+					if let color = attributeDict[Attribute.handle.name.color] { self.color = color }
 				default:
 					break
 				}// end switch case by attribute dictionary key
 			}// end foreach attribute dictionary contents
-			if ownerForCurrentUser[JSONKey.owner.listeners] == nil { ownerForCurrentUser[JSONKey.owner.listeners] = NSMutableDictionary() }
-			if let listeners = ownerForCurrentUser[JSONKey.owner.listeners] as? NSMutableDictionary {
-				listeners[currentUserIdentifier] = userForCurrentOwner
-			}// end optional binding
-			currentUsers.append(userForCurrentOwner)
 		default:
 			break
 		}// end switch case by user element or handle element
 	}// end func parser didStartElement
 
 	public func parser(_ parser: XMLParser, didEndElement elementName: String, namespaceURI: String?, qualifiedName qName: String?) {
-		if anonymous { return }
+		if !onymous { return }
 		switch elementName {
 		case .user:
 			currentUserIdentifier = String()
-			currentOwnerIdentifier = String()
-			user = NSMutableDictionary()
-			currentUsers = Array()
-			anonymous = true
+			onymous = false
 			stringBuffer = String()
 		case .handle:
+			let usersFroCurrentOwner: JSONizableUsers = allUsers.users(forOwner: currentOwnerIdentifier)
 			let handle: String = String(stringBuffer)
-			for entry: NSMutableDictionary in currentUsers {
-				entry[JSONKey.user.handle] = handle
-				entry[JSONKey.user.met] = date
-			}
+			let user: JSONizableUser = JSONizableUser(handle)
+			
+			if let lock: Bool = self.lock { user.lock = lock }
+			if let known: Bool = self.known { user.known = known }
+			if let color: String = self.color { user.color = color }
+			usersFroCurrentOwner.addUser(identifier: currentUserIdentifier, with: user)
 		default:
 			break
 		}// end swith case by element name

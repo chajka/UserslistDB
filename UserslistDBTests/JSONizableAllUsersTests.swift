@@ -31,10 +31,10 @@ class JSONizableAllUsersTests: XCTestCase {
 			let data: Data = try Data(contentsOf: sampleJSONURL)
 			let allUsers: JSONizableAllUsers = try decoder.decode(JSONizableAllUsers.self, from: data)
 			XCTAssertNotNil(allUsers, "userslist decoce from json userslist failed")
-			if let isAnonymous: Bool = allUsers.isAnnonymousUser(identifierOf: "6347612") {
+			if let isAnonymous: Bool = allUsers.onymoity(ofUserIdentifier: "6347612") {
 				XCTAssertFalse(isAnonymous, "user id 6347612 is seems to anonyous")
 			} else {
-				XCTAssertNotNil(allUsers.isAnnonymousUser(identifierOf: "6347612"), "user id 6347612 is not entried")
+				XCTAssertNotNil(allUsers.onymoity(ofUserIdentifier: "6347612"), "user id 6347612 is not entried")
 			}
 			
 		} catch let error {
