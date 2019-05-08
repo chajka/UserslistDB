@@ -110,15 +110,15 @@ class JSONizableAllUsersTests: XCTestCase {
 
     func testPerformanceExample() {
         // This is an example of a performance test case.
+		let home: String = NSHomeDirectory()
+		let sampleJSONURL: URL = URL(fileURLWithPath: home + "/Library/Application Support/Charleston/userslist.json")
+		let decoder: JSONDecoder = JSONDecoder()
         self.measure {
-			let home: String = NSHomeDirectory()
-			let sampleJSONURL: URL = URL(fileURLWithPath: home + "Documents/userslist.json")
 			do {
-				let decoder: JSONDecoder = JSONDecoder()
 				let data: Data = try Data(contentsOf: sampleJSONURL)
-				let allUsers: JSONizableAllUsers = try decoder.decode(JSONizableAllUsers.self, from: data)
+				let _: JSONizableAllUsers = try decoder.decode(JSONizableAllUsers.self, from: data)
 			} catch let error {
-				print(error.localizedDescription)
+				XCTAssertNil(error, "\(error.localizedDescription)")
 			}
        }
     }
