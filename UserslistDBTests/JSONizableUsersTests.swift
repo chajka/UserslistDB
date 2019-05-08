@@ -21,7 +21,7 @@ class JSONizableUsersTests: XCTestCase {
     func test01_ConvinienceAllocation() {
 		let users: JSONizableUsers = JSONizableUsers()
 		XCTAssertNotNil(users, "users allocation failed")
-		XCTAssertFalse(users.anonymous, "default anonymous comment value is not false")
+		XCTAssertTrue(users.anonymousComment, "default anonymous comment value is not false")
 		XCTAssertFalse(users.monitor, "default enable monitor value is not false")
 		let user: JSONizableUser? = users.user(identifier: "6347612")
 		XCTAssertNil(user, "unkown user is entried")
@@ -29,7 +29,7 @@ class JSONizableUsersTests: XCTestCase {
 
 	func test02_NormalConstructor() {
 		let users: JSONizableUsers = JSONizableUsers(anonymousComment: true, enableMoonitor: true)
-		XCTAssertTrue(users.anonymous, "default anonymous comment value is not false")
+		XCTAssertTrue(users.anonymousComment, "default anonymous comment value is not false")
 		XCTAssertTrue(users.monitor, "default enable monitor value is not false")
 		let user: JSONizableUser? = users.user(identifier: "6347612")
 		XCTAssertNil(user, "unkown user is entried")
@@ -41,7 +41,7 @@ class JSONizableUsersTests: XCTestCase {
 		users.addUser(identifier: "6347612", with: user!)
 		user = users.user(identifier: "6347612")
 		XCTAssertNotNil(user, "enttried user can nott get")
-		XCTAssertFalse(users.anonymous, "default anonymous comment value is not false")
+		XCTAssertTrue(users.anonymousComment, "default anonymous comment value is not false")
 		XCTAssertFalse(users.monitor, "default enable monitor value is not false")
 	}
 
@@ -51,7 +51,7 @@ class JSONizableUsersTests: XCTestCase {
 		users.addUser(identifier: "6347612", with: user!)
 		user = users.user(identifier: "6347612")
 		XCTAssertNotNil(user, "enttried user can nott get")
-		XCTAssertFalse(users.anonymous, "default anonymous comment value is not false")
+		XCTAssertTrue(users.anonymousComment, "default anonymous comment value is not false")
 		XCTAssertFalse(users.monitor, "default enable monitor value is not false")
 		user = JSONizableUser("chajka")
 		users.addUser(identifier: "6347613", with: user!)

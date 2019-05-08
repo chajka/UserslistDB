@@ -10,7 +10,7 @@ import Cocoa
 
 public final class JSONizableUsers: NSObject, Codable {
 		// MARK: - Properties
-	public var anonymous: Bool
+	public var anonymousComment: Bool
 	public var monitor: Bool
 
 		// MARK: - Member variables
@@ -18,11 +18,11 @@ public final class JSONizableUsers: NSObject, Codable {
 
 		// MARK: - Constructor/Destructor
 	public convenience override init () {
-		self.init(anonymousComment: false, enableMoonitor: false)
+		self.init(anonymousComment: true, enableMoonitor: false)
 	}// end convenience init
 
 	public init (anonymousComment anonymous: Bool, enableMoonitor monitor: Bool) {
-		self.anonymous = anonymous
+		self.anonymousComment = anonymous
 		self.monitor = monitor
 		listener = Dictionary()
 	}// end init
