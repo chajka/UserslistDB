@@ -46,8 +46,8 @@ public final class JSONizableAllUsers: NSObject, Codable {
 		return anonymous
 	}// end known user
 
-	public func addUser (identifier user: String, anonymity anon: Bool) {
-		knownUsersAnonymity[user] = anon
+	public func addUser (identifier user: String, onymity signed: Bool) {
+		knownUsersAnonymity[user] = signed
 	}// end addUser
 
 		// MARK: - Internal methods
