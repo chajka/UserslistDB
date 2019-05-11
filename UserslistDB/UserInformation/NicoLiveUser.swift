@@ -108,27 +108,6 @@ public final class NicoLiveUser: NSObject {
 		handle = ownerNickname
 	}// end init owner user
 
-	public init (user: JSONizableUser, identifier: String, premium: Int, anonymous: Bool, lang: UserLanguage, met: Friendship) {
-		entry = user
-		name = anonymous ? UserName(identifier: identifier) : UserName(identifier: identifier, nickname: entry.handle)
-		let handle = name.handle
-		isPremium = (premium & (0x01 << 0)) != 0x00 ? true : false
-		if premium ^ 0b11 == 0 { privilege = Privilege.owner }
-		else if premium ^ 0b10 == 0 { privilege = Privilege.cruise }
-		else if premium ^ 0b110 == 0 { privilege = Privilege.official }
-        else { privilege = Privilege.listener }
-		self.anonymous = anonymous
-		friendship = met
-		lastMet = Date()
-		language = lang
-		// set entry object
-		entry.handle = handle
-		let formatter:DateFormatter = DateFormatter()
-		formatter.dateStyle = DateFormatter.Style.short
-		formatter.timeStyle = DateFormatter.Style.short
-		entry[JSONKey.user.met] = formatter.string(from: lastMet)
-	}// end init
-	
 	public init (user: NSMutableDictionary, nickname: String, identifier: String, premium: Int, anonymous: Bool, lang: UserLanguage) {
 		entry = user
 		language = lang
