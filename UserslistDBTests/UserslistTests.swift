@@ -9,7 +9,8 @@
 import XCTest
 
 let testID: String = "6347612"
-let testDBPath: String = "/Volumes/SharkWire/build/UserslistDB/UserslistDBTests/test.json"
+let testDBPath: String = "/Users/chajka/Documents"
+let databaseFileName: String = "userslist"
 
 class UserslistTests: XCTestCase {
 
@@ -24,14 +25,12 @@ class UserslistTests: XCTestCase {
     }
 
     func test01_allocation() {
-		let db: Userslist = Userslist(jsonPath: testDBPath)
+		let db: Userslist = Userslist(databaseFolderPath: testDBPath, databaseFileName: databaseFileName)
 		XCTAssertNotNil(db, "db can not allocate")
     }
 
 	func test02_func_identifier() {
-		let db: Userslist = Userslist(jsonPath: testDBPath)
-		XCTAssertNoThrow(try db.userAnonymity(identifier: testID), "known user 6347612 is not found")
-		XCTAssertThrowsError(try db.userAnonymity(identifier: "1234567"), "unknown user 1234567 found", { (error) in
+		let db: Userslist = Userslist(databaseFolderPath: testDBPath)
 		XCTAssertNoThrow(try db.userOnymity(identifier: testID), "known user 6347612 is not found")
 		XCTAssertThrowsError(try db.userOnymity(identifier: "1234567"), "unknown user 1234567 found", { (error) in
 			print(error)

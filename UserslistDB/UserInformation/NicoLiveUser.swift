@@ -108,10 +108,10 @@ public final class NicoLiveUser: NSObject {
 		handle = ownerNickname
 	}// end init owner user
 
-	public init (user: NSMutableDictionary, nickname: String, identifier: String, premium: Int, anonymous: Bool, lang: UserLanguage) {
+	public init (user: JSONizableUser, identifier: String, nickname: String, premium: Int, anonymous: Bool, lang: UserLanguage) {
 		entry = user
 		language = lang
-		let handlename: String = entry[JSONKey.user.handle] as? String ?? ""
+		let handlename: String = entry.handle
 		name = UserName(identifier: identifier, nickname: nickname, handle: handlename)
 		isPremium = (premium & (0x01 << 0)) != 0x00 ? true : false
 		if premium ^ 0b11 == 0 { privilege = Privilege.owner }
@@ -119,19 +119,20 @@ public final class NicoLiveUser: NSObject {
 		else if premium ^ 0b110 == 0 { privilege = Privilege.official }
 		else { privilege = Privilege.listener }
 		self.anonymous = anonymous
-		friendship = entry[JSONKey.user.friendship] as? String == True ? Friendship.known : Friendship.met
-		lock = entry[JSONKey.user.lock] as? String == True ? true : false
+		if let known: Bool = entry.known { friendship = known ? Friendship.known : Friendship.met }
+		else { friendship = Friendship.metOther }
+		if let lock: Bool = entry.lock { self.lock = lock }
 		// update time
 		let formatter: DateFormatter = DateFormatter()
 		formatter.dateStyle = DateFormatter.Style.short
 		formatter.timeStyle = DateFormatter.Style.short
-		let lastMetString: String = entry[JSONKey.user.met] as? String ?? formatter.string(from: Date())
-		lastMet = formatter.date(from: lastMetString)!
-		entry[JSONKey.user.met] = formatter.string(from: Date())
+		if let date: Date = formatter.date(from: entry.lastMet) { lastMet = date }
+		else { lastMet = Date() }
+		entry.lastMet = formatter.string(from: Date())
 		super.init()
-		if let colorString: String = entry[JSONKey.user.color] as? String { color = hexcClorToColor(hexColor: colorString) }
-		if let voiceName: String = entry[JSONKey.user.voice] as? String { voice = voiceName }
-		if let noteString: String = entry[JSONKey.user.note] as? String { note = noteString }
+		if let colorString: String = entry.color { color = hexcClorToColor(hexColor: colorString) }
+		if let voiceName: String = entry.voice { voice = voiceName }
+		if let noteString: String = entry.note { note = noteString }
 	}// end init from entry
 	
 		// MARK: - Override
