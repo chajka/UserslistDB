@@ -12,12 +12,12 @@ public final class JSONizableAllUsers: NSObject, Codable {
 		// MARK: - Properties
 		// MARK: - Member variables
 	private var knownOwners: Dictionary<String, JSONizableUsers>
-	private var knownUsersAnonymity: Dictionary<String, Bool>
+	private var knownUsersOnymity: Dictionary<String, Bool>
 
 		// MARK: - Constructor/Destructor
 	public override init() {
 		knownOwners = Dictionary()
-		knownUsersAnonymity = Dictionary()
+		knownUsersOnymity = Dictionary()
 	}// end initt
 
 		// MARK: - Override
@@ -42,12 +42,12 @@ public final class JSONizableAllUsers: NSObject, Codable {
 	}// end addOwner
 	
 	public func onymoity (ofUserIdentifier identifier: String) -> Bool? {
-		guard let anonymous: Bool = knownUsersAnonymity[identifier] else { return nil }
+		guard let anonymous: Bool = knownUsersOnymity[identifier] else { return nil }
 		return anonymous
 	}// end known user
 
 	public func addUser (identifier user: String, onymity signed: Bool) {
-		knownUsersAnonymity[user] = signed
+		knownUsersOnymity[user] = signed
 	}// end addUser
 
 		// MARK: - Internal methods
