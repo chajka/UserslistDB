@@ -95,9 +95,22 @@ public final class NicoLiveUser: NSObject {
 	private(set) var entry: NSMutableDictionary
 	
         // MARK: - Constructor/Destructor
-	public init (nickname: String, identifier: String, premium: Int, anonymous: Bool, lang: UserLanguage, met: Friendship) {
-		entry = NSMutableDictionary()
-		name = anonymous ? UserName(identifier: identifier) : UserName(identifier: identifier, nickname: nickname)
+	public init (owner  identifier: String, ownerEntry entry: JSONizableUser, nickname ownerNickname: String) {
+		self.entry = entry
+		self.name = UserName(identifier: identifier, nickname: ownerNickname)
+		anonymous = false
+		isPremium = true
+		privilege = Privilege.owner
+		language = UserLanguage.ja
+		friendship = Friendship.known
+		lastMet = Date()
+		super.init()
+		handle = ownerNickname
+	}// end init owner user
+
+	public init (user: JSONizableUser, identifier: String, premium: Int, anonymous: Bool, lang: UserLanguage, met: Friendship) {
+		entry = user
+		name = anonymous ? UserName(identifier: identifier) : UserName(identifier: identifier, nickname: entry.handle)
 		let handle = name.handle
 		isPremium = (premium & (0x01 << 0)) != 0x00 ? true : false
 		if premium ^ 0b11 == 0 { privilege = Privilege.owner }
