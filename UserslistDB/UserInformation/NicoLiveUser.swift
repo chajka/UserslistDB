@@ -92,7 +92,7 @@ public final class NicoLiveUser: NSObject {
 	}// end property note
 	
         // MARK: - Member variables
-	private(set) var entry: NSMutableDictionary
+	private(set) unowned var entry: JSONizableUser
 	
         // MARK: - Constructor/Destructor
 	public init (owner  identifier: String, ownerEntry entry: JSONizableUser, nickname ownerNickname: String) {
