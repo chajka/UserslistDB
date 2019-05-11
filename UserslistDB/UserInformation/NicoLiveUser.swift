@@ -60,7 +60,7 @@ public final class NicoLiveUser: NSObject {
 		}// end get
 		set (newHandle) {
 			name.handle = newHandle
-			entry[JSONKey.user.handle] = newHandle
+			entry.handle = newHandle
 			update(friendship: .known)
 		}// end set
 	}// end property handle
@@ -72,7 +72,7 @@ public final class NicoLiveUser: NSObject {
 	@objc public dynamic var thumbnail: NSImage?
 	public var lock: Bool = false {
 		didSet {
-			entry[JSONKey.user.lock] = lock
+			entry.lock = lock
 			update(friendship: .known)
 		}// end didSet
 	}// end property lock
@@ -80,13 +80,13 @@ public final class NicoLiveUser: NSObject {
 	public var color: NSColor?
 	public var voice: String? {
 		didSet {
-			entry[JSONKey.user.voice] = voice
+			entry.voice = voice
 			update(friendship: .known)
 		}// end didSet
 	}// end property voice
 	public var note: String? {
 		didSet {
-			entry[JSONKey.user.note] = note
+			entry.note = note
 			update(friendship: .known)
 		}// end didSet
 	}// end property note
@@ -122,7 +122,7 @@ public final class NicoLiveUser: NSObject {
 		lastMet = Date()
 		language = lang
 		// set entry object
-		entry[JSONKey.user.handle] = handle
+		entry.handle = handle
 		let formatter:DateFormatter = DateFormatter()
 		formatter.dateStyle = DateFormatter.Style.short
 		formatter.timeStyle = DateFormatter.Style.short
