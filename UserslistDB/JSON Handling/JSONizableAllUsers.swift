@@ -23,7 +23,7 @@ public final class JSONizableAllUsers: NSObject, Codable {
 		// MARK: - Override
 	public override func isEqual(_ object: Any?) -> Bool {
 		guard let rhs:JSONizableAllUsers = object as? JSONizableAllUsers else { return false }
-		return knownOwners == rhs.knownOwners && knownUsersAnonymity == rhs.knownUsersAnonymity
+		return knownOwners == rhs.knownOwners && knownUsersOnymity == rhs.knownUsersOnymity
 	}
 		// MARK: - Actions
 		// MARK: - Public methods

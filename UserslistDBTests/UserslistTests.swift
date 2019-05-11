@@ -32,6 +32,8 @@ class UserslistTests: XCTestCase {
 		let db: Userslist = Userslist(jsonPath: testDBPath)
 		XCTAssertNoThrow(try db.userAnonymity(identifier: testID), "known user 6347612 is not found")
 		XCTAssertThrowsError(try db.userAnonymity(identifier: "1234567"), "unknown user 1234567 found", { (error) in
+		XCTAssertNoThrow(try db.userOnymity(identifier: testID), "known user 6347612 is not found")
+		XCTAssertThrowsError(try db.userOnymity(identifier: "1234567"), "unknown user 1234567 found", { (error) in
 			print(error)
 		})
 	}
