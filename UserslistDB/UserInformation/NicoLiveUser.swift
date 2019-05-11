@@ -50,8 +50,6 @@ public final class UserName {
 	}// end init
 }// end struct UserName
 
-private let True: String = "yes"
-
 public final class NicoLiveUser: NSObject {
         // MARK:   Outlets
         // MARK: - Properties
