@@ -32,6 +32,9 @@ public final class JSONizableAllUsers: NSObject, Codable {
 			return users
 	}// end optional binding chek for owner identifier entry in owners dictionary
 		
+		let users: JSONizableUsers = addUsers(forOwner: owner)
+		users.anonymousComment = anonymousCommentDefault
+		users.monitor = monitorhDefault
 		return addUsers(forOwner: owner)
 	}// end func users
 
