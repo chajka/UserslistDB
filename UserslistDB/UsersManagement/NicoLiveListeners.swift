@@ -31,8 +31,6 @@ internal let Owner: String = "BroadcastOwner"
 
 public final class NicoLiveListeners: NSObject {
 	private var currentUsers: Dictionary<String, NicoLiveUser>
-	private var knownUsers: NSMutableDictionary
-	private var allKnownUsers: NSMutableDictionary
 	private let ownerIdentifier: String
 	private var observer: NSObject?
 	
