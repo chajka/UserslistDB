@@ -146,16 +146,6 @@ public final class Userslist: NSObject {
 		currentOwners.removeValue(forKey: owner)
 	}// end func end
 	
-	public func update (speech :Bool, forOwner owner: String) -> Void {
-		guard let ownerInfo: NSMutableDictionary = ownersDictionary[owner] as? NSMutableDictionary else { return }
-		ownerInfo[JSONKey.owner.speech] = speech
-	}// end func update owner, speech
-	
-	public func update (anonymousComment: Bool, forOwner owner: String) -> Void {
-		guard let ownerInfo: NSMutableDictionary = ownersDictionary[owner] as? NSMutableDictionary else { return }
-		ownerInfo[JSONKey.owner.anonymous] = anonymousComment
-	}// end func update owner, speech
-	
 	public func user (identifier: String, for owner: String) throws -> NicoLiveUser {
 		guard let listeners: NicoLiveListeners = currentOwners[owner] else { throw UserslistError.inactiveOwnner }
 
