@@ -42,7 +42,10 @@ public enum JSONKey {
 	}// end enum user
 }// end enum JSONKey
 
-private enum JSONValue {
+public let DatabaseFileName: String = "userslist"
+internal let DatabaseExtension: String = "json"
+
+public enum JSONValue {
 	enum BOOL: String {
 		case yes = "yes"
 		case no = "no"
