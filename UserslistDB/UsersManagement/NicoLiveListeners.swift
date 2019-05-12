@@ -58,7 +58,7 @@ public final class NicoLiveListeners: NSObject {
 		let ownersNickname: String = fetchNickname(identifier: owner) ?? fetchNickname(fromVitaAPI: owner)
 		let ownerEntry = knownUsers.user(identifier: Owner, userName: ownersNickname)
 		self.owner = NicoLiveUser(owner: Owner, ownerEntry: ownerEntry, nickname: ownersNickname)
-		fetchThumbnail(user: self.owner, identifier: ownersNickname, anonymous: false)
+		fetchThumbnail(user: self.owner, identifier: ownerIdentifier, anonymous: false)
 	}// end init
 	
 		// MARK: - Override
