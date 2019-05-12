@@ -16,6 +16,8 @@ public struct Images {
 	public let cruise: NSImage?
 }// end struct Images
 
+public typealias thumbNailCompletionhandler = ( (NSImage) -> Void )
+
 private let ThumbnailAPIFormat: String = "https://secure-dcdn.cdn.nimg.jp/nicoaccount/usericon/%@/%@.jpg"
 private let NoImageThumbnailURL: String = "https://secure-dcdn.cdn.nimg.jp/nicoaccount/usericon/defaults/blank.jpg"
 private let NicknameAPIFormat: String = "http://seiga.nicovideo.jp/api/user/info?id="
@@ -27,10 +29,14 @@ private let cruiseUserName: String = "Cruise"
 private let informationUserIdentifier: String = "900000000"
 private let informationUserName: String = "Information"
 
+internal let Owner: String = "BroadcastOwner"
+
 public final class NicoLiveListeners: NSObject {
+		// MARK: - Properties
+	private(set) var owner: NicoLiveUser!
+		// MARK: - Member variables
+	private unowned var knownUsers: JSONizableUsers
 	private var currentUsers: Dictionary<String, NicoLiveUser>
-	private var knownUsers: NSMutableDictionary
-	private var allKnownUsers: NSMutableDictionary
 	private let ownerIdentifier: String
 	private var observer: NSObject?
 	
@@ -39,90 +45,73 @@ public final class NicoLiveListeners: NSObject {
 	private let session: URLSession = URLSession(configuration: URLSessionConfiguration.default)
 	private var reqest: URLRequest
 	
-	public init (owner: String, for listeners: NSMutableDictionary, and allKnownUsers: NSMutableDictionary, user_session: [HTTPCookie], observer: NSObject? = nil) {
+		// MARK: - Constructor/Destructor
+	public init (owner: String, for listeners: JSONizableUsers, user_session: [HTTPCookie], observer: NSObject? = nil) {
 		ownerIdentifier = owner
 		currentUsers = Dictionary()
 		knownUsers = listeners
 		cookies = user_session
-		self.allKnownUsers = allKnownUsers
 		self.observer = observer
 		reqest = URLRequest(url: URL(string: NicknameAPIFormat)!)
 		reqest.allHTTPHeaderFields = HTTPCookie.requestHeaderFields(with: cookies)
+		super.init()
+		let ownersNickname: String = fetchNickname(identifier: owner) ?? fetchNickname(fromVitaAPI: owner)
+		let ownerEntry = knownUsers.user(identifier: Owner, userName: ownersNickname)
+		self.owner = NicoLiveUser(owner: Owner, ownerEntry: ownerEntry, nickname: ownersNickname)
+		fetchThumbnail(user: self.owner, identifier: ownersNickname, anonymous: false)
 	}// end init
 	
+		// MARK: - Override
+		// MARK: - Public methods
 	public func setDefaultThumbnails(images: Images) {
 		self.images = images
 	}// end setDefaultThumbnails
-
+	
 	public func user (identifier: String) throws -> NicoLiveUser {
-		if let user: NicoLiveUser = currentUsers[identifier] { return user}
-		else { throw UserslistError.notInListeners }
+		guard let user: NicoLiveUser = currentUsers[identifier] else { throw UserslistError.inactiveListener }
+		
+		return user
 	}// end user
 	
-	public func user (identifier: String, premium: Int) throws -> NicoLiveUser {
-		if let user:NicoLiveUser = currentUsers[identifier] {
-			parse(user: user, id: identifier, premium: premium)
-			return user
-		} else {
-			if let _ = knownUsers[identifier] { throw UserslistError.entriedUser }
-			else if let _ = allKnownUsers[identifier] {throw UserslistError.inDatabaseUser }
-			else { throw UserslistError.unknownUser }
-		}// end if current user is in current users dictionary
-	}// end func user
-	
-	public func activateUser (identifier: String, premium: Int, anonymous: Bool, lang: UserLanguage) throws -> NicoLiveUser {
-		guard let entry: NSMutableDictionary = knownUsers[identifier] as? NSMutableDictionary else { throw UserslistError.canNotActivateUser }
+	public func activateUser (identifier: String, premium: Int, anonymous: Bool, lang: UserLanguage) -> NicoLiveUser {
 		var nickname: String = ""
-		if !anonymous { nickname = fetchNickname(identifier: identifier) }
-		else if premium == 0x11 { nickname = fetchNickname(identifier: ownerIdentifier) }
-		else if identifier == cruiseUserIdentifier { nickname = cruiseUserName }
+		if !anonymous || premium == 0b11 {
+			if let nick: String = fetchNickname(identifier: identifier) {
+				nickname = nick
+			} else {
+				nickname = fetchNickname(fromVitaAPI: identifier)
+			}// end optional binding check for fetch nickname and failed, use vita api to get nickname
+		} else if identifier == cruiseUserIdentifier { nickname = cruiseUserName }
 		else if identifier == informationUserIdentifier { nickname = informationUserName }
+		// end if user is not anonymous
 		
-		var user: NicoLiveUser
-		if premium ^ 0x011 == 0 {
-			user = NicoLiveUser(user: entry, nickname: nickname, identifier: identifier, premium: premium, anonymous: anonymous, lang: lang)
-		} else {
-			user = NicoLiveUser(user: entry, nickname: nickname, identifier: identifier, premium: premium, anonymous: anonymous, lang: lang)
-		}// end if premium flags is owner
+		let usr: JSONizableUser = knownUsers.user(identifier: identifier, userName: nickname)
+		let user: NicoLiveUser = NicoLiveUser(user: usr, identifier: identifier, nickname: nickname, premium: premium, anonymous: anonymous, lang: lang)
 		parse(user: user, id: identifier, premium: premium)
-
+		
 		fetchThumbnail(user: user, identifier: identifier, anonymous: anonymous)
 		currentUsers[identifier] = user
-		allKnownUsers[identifier] = anonymous
 		
 		return user
 	}// end func activateUser
 	
-	public func newUser (identifier: String, premium: Int, anonymous: Bool, lang: UserLanguage, met: Friendship) -> NicoLiveUser {
-		var nickname: String = ""
-		if !anonymous { nickname = fetchNickname(fromVitaAPI: identifier) }
-		else if premium == 0x11 { nickname = fetchNickname(fromVitaAPI: ownerIdentifier) }
-		else if identifier == informationUserIdentifier { nickname = informationUserName }
-		
-		let user: NicoLiveUser = NicoLiveUser(nickname: nickname, identifier: identifier, premium: premium, anonymous: anonymous, lang: lang, met: met)
-		parse(user: user, id: identifier, premium: premium)
-		fetchThumbnail(user: user, identifier: identifier, anonymous: anonymous)
-		currentUsers[identifier] = user
-		allKnownUsers[identifier] = anonymous
-		knownUsers[identifier] = user.entry
-		
-		return user
-	}// end func newUser
-
+		// MARK: - Internal methods
+		// MARK: - Private methods
 	private func parse (user usr: NicoLiveUser, id identifier: String, premium prem: Int) {
 		if (identifier == informationUserIdentifier) {
 			usr.privilege = Privilege.official
 			usr.name.nickname = "Information"
+			usr.name.handle = "Information"
 		}
 		else if (prem & 0b110) == 0b110 { usr.privilege = Privilege.official }
 		else if (prem & (0x01 << 1)) != 0x00 { usr.privilege = Privilege.owner }
 		else if (prem & 0b11) == 0b11 { usr.privilege = Privilege.cruise }
 	}// end parse
 	
-	private func fetchNickname (identifier: String) -> String {
+	private func fetchNickname (identifier: String) -> String? {
 		guard let url = URL(string: NicknameAPIFormat + identifier) else { return "" }
-		var fetchData: Bool = false
-		var nickname: String = String()
+		let semaphore: DispatchSemaphore = DispatchSemaphore(value: 0)
+		var nickname: String? = nil
 		reqest.url = url
 		let task:URLSessionDataTask = session.dataTask(with: reqest) { (dat, req, err) in
 			if let data:Data = dat {
@@ -130,22 +119,24 @@ public final class NicoLiveListeners: NSObject {
 					let resultXML: XMLDocument = try XMLDocument(data: data, options: XMLNode.Options.documentTidyXML)
 					guard let userNode = resultXML.children?.first?.children?.first else { throw NSError(domain: "could not parse", code: 0, userInfo: nil)}
 					for child: XMLNode in (userNode.children)! {
-						if child.name == NicknameNodeName { nickname = child.stringValue ?? "No Nickname (Charleston)"}
+						if child.name == NicknameNodeName { nickname = child.stringValue }
 					}// end foreach
-				} catch {
+				} catch let error {
+					print(error.localizedDescription)
 				}// end try - catch parse XML document
 			}// end if data is there
-			fetchData = true
+			semaphore.signal()
 		}// end closure for recieve data
 		task.resume()
+		let result: DispatchTimeoutResult = semaphore.wait(timeout: DispatchTime.now() + (5 * 1000 * 1000 * 1000))
+		if result == DispatchTimeoutResult.timedOut { return nil }
 		
-		while (!fetchData) { Thread.sleep(forTimeInterval: 0.001)}
 		return nickname
 	}// end func fetchNickname
 	
 	private func fetchNickname(fromVitaAPI identifier: String) -> String {
 		guard let url = URL(string: VitaAPIFormat + identifier) else { return "" }
-		var fetchData: Bool = false
+		let semaphoe: DispatchSemaphore = DispatchSemaphore(value: 0)
 		var nickname: String = String()
 		reqest.url = url
 		let task:URLSessionDataTask = session.dataTask(with: reqest) { (dat, req, err) in
@@ -162,11 +153,11 @@ public final class NicoLiveListeners: NSObject {
 					Swift.print(String(data: data, encoding: .utf8)!)
 				}// end try - catch parse XML document
 			}// end if data is there
-			fetchData = true
+			semaphoe.signal()
 		}// end closure for recieve data
 		task.resume()
+		semaphoe.wait()
 		
-		while (!fetchData) { Thread.sleep(forTimeInterval: 0.001)}
 		return nickname
 	}// end fetchNickname fromVitaAPI
 	
@@ -202,4 +193,5 @@ public final class NicoLiveListeners: NSObject {
 		
 		return url
 	}// end func thumbnailURL
+		// MARK: - Delegates
 }// end class NicoLiveListeners
