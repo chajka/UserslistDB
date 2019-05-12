@@ -13,7 +13,7 @@ public enum UserslistError: Error {
 	case entriedUser
 	case inDatabaseUser
 	case unknownUser
-	case notInListeners
+	case inactiveListener
 	case canNotActivateUser
 	case inactiveOwnner
 }// end enum UsersListError
@@ -42,7 +42,10 @@ public enum JSONKey {
 	}// end enum user
 }// end enum JSONKey
 
-private enum JSONValue {
+public let DatabaseFileName: String = "userslist"
+internal let DatabaseExtension: String = "json"
+
+public enum JSONValue {
 	enum BOOL: String {
 		case yes = "yes"
 		case no = "no"
@@ -54,75 +57,73 @@ extension JSONKey.owner: StringEnum { }
 extension JSONKey.user: StringEnum { }
 
 public final class Userslist: NSObject {
-	let jsonDatabase: NSMutableDictionary
-	let ownersDictionary: NSMutableDictionary
-	let usersDictionary: NSMutableDictionary
+		// MARK: - Properties
+	private let allUsers: JSONizableAllUsers
+	private let encoder: JSONEncoder = JSONEncoder()
 	
-	private let databasePath: String
+	private let databaseURL: URL
 	private var currentOwners: Dictionary<String, NicoLiveListeners>
 	private var images: Images!
 	
-	public init (jsonPath: String) {
+		// MARK: - Member variables
+		// MARK: - Constructor/Destructor
+	public init (databaseFolderPath jsonPath: String, databaseFileName: String = DatabaseFileName) {
 		currentOwners = Dictionary()
-		databasePath = jsonPath.starts(with: "~") ? (jsonPath as NSString).expandingTildeInPath : jsonPath
+		
+		let databaseFolderURL: URL = URL(fileURLWithPath: (jsonPath.prefix(1) == "~") ? NSHomeDirectory() + String(jsonPath.suffix(jsonPath.count - 1)) : jsonPath, isDirectory: true)
+		databaseURL = databaseFolderURL.appendingPathComponent(databaseFileName).appendingPathExtension(DatabaseExtension)
 		let fm: FileManager = FileManager.default
-		if !fm.fileExists(atPath: databasePath) {
-			let defaultJasonPath:String = Bundle.main.path(forResource: "userslist", ofType: "json")!
-			do {
-				try fm.moveItem(atPath: defaultJasonPath, toPath: databasePath)
-			} catch let err {
-				print(err)
-			}// end try - catch move item
+		if !fm.fileExists(atPath: databaseURL.path) {
+			let oldUserDatabaseURL: URL = databaseURL.deletingPathExtension().appendingPathExtension("xml")
+			if fm.fileExists(atPath: oldUserDatabaseURL.path) {
+				do {
+					let converter: DatabaseConverter = try DatabaseConverter(databasePath: oldUserDatabaseURL.deletingLastPathComponent().path, databaseFile: oldUserDatabaseURL.lastPathComponent)
+					let success = converter.parse()
+					if success { _ = converter.writeJson() }
+				} catch let error {
+					print(error.localizedDescription)
+				}// end do try - catch convert database
+			} else {
+				let defaultJasonPath:String = Bundle.main.path(forResource: "userslist", ofType: "json")!
+				do {
+					try fm.moveItem(atPath: defaultJasonPath, toPath: databaseURL.path)
+				} catch let err {
+					print(err)
+				}// end try - catch move item
+			}
 		}// end if not exist Userslist.json
 		do {
-			let data: NSData = try NSData(contentsOfFile: databasePath)
-			jsonDatabase = try JSONSerialization.jsonObject(with: data as Data, options: [JSONSerialization.ReadingOptions.mutableContainers, JSONSerialization.ReadingOptions.mutableLeaves]) as! NSMutableDictionary
-			ownersDictionary = jsonDatabase[JSONKey.toplevel.owners] as? NSMutableDictionary ?? NSMutableDictionary()
-			usersDictionary = jsonDatabase[JSONKey.toplevel.users] as? NSMutableDictionary ?? NSMutableDictionary()
-		} catch {
+			let decoder: JSONDecoder = JSONDecoder()
+			let data: Data = try Data(contentsOf: databaseURL)
+			allUsers = try decoder.decode(JSONizableAllUsers.self, from: data)
+		} catch let error {
 			print(error)
-			jsonDatabase = NSMutableDictionary()
-			ownersDictionary = NSMutableDictionary()
-			usersDictionary = NSMutableDictionary()
+			allUsers = JSONizableAllUsers()
 		}// end try - catch open data and parse json to dictionary
+		encoder.outputFormatting = JSONEncoder.OutputFormatting.prettyPrinted
 	}// end init
 	
 	deinit {
 		let _ = updateDatabaseFile()
 	}// end deinit
 	
+		// MARK: - Override
+		// MARK: - Public methods
 	public func setDefaultThumbnails(defaultUser: NSImage, anonymousUser: NSImage, officialUser: NSImage, cruiseUser: NSImage) {
 		images = Images(noImageUser: defaultUser, anonymous: anonymousUser, offifical: officialUser, cruise: cruiseUser)
 	}// end setDefaultThumbnails
 	
 	public func updateDatabaseFile () -> Bool {
 		do {
-			let jsonData: Data = try JSONSerialization.data(withJSONObject: jsonDatabase, options: JSONSerialization.WritingOptions.prettyPrinted)
-			try (jsonData as NSData).write(toFile: databasePath, options: NSData.WritingOptions.atomicWrite)
+			let data: Data = try encoder.encode(allUsers)
+			try data.write(to: databaseURL, options: Data.WritingOptions.atomicWrite)
+
 			return true
 		} catch {
 			print(error)
 			return false
 		}// end
 	}// end updateDatabaseFile
-	
-	public func start (owner: String, speechDefault: Bool, commentDefault: Bool, cookies: [HTTPCookie], observer: NSObject? = nil) -> (speech: Bool, comment: Bool) {
-		let ownerInfo: NSMutableDictionary = ownersDictionary[owner] as? NSMutableDictionary ?? NSMutableDictionary()
-		if ownerInfo.count == 0 {
-			ownersDictionary.setObject(ownerInfo, forKey: NSString(string: owner))
-			ownerInfo.setObject(NSMutableDictionary(), forKey: NSString(string: JSONKey.owner.listeners.rawValue))
-			ownerInfo.setObject(NSString(string: speechDefault ? JSONValue.BOOL.yes.rawValue : JSONValue.BOOL.no.rawValue), forKey: NSString(string: JSONKey.owner.speech.rawValue))
-			ownerInfo.setObject(NSString(string: commentDefault ? JSONValue.BOOL.yes.rawValue : JSONValue.BOOL.no.rawValue), forKey: NSString(string: JSONKey.owner.anonymous.rawValue))
-		}// end if new owner
-		let speech:Bool = enableMonitor(forOwner: owner)
-		let comment:Bool = anonymousComment(forOwner: owner)
-		let listenersForOwner: NSMutableDictionary = ownerInfo[JSONKey.owner.listeners] as! NSMutableDictionary
-		let listeners: NicoLiveListeners = NicoLiveListeners(owner: owner, for: listenersForOwner, and: usersDictionary, user_session: cookies, observer: observer)
-		listeners.setDefaultThumbnails(images: images)
-		currentOwners[owner] = listeners
-		
-		return (speech, comment)
-	}// end func start
 	
 	public func activeOwners () -> Array<String> {
 		var result: Array<String> = Array()
@@ -133,87 +134,51 @@ public final class Userslist: NSObject {
 		return result
 	}// end func activeOwners
 	
+	public func start (owner: String, anonymousCommentDefault: Bool = true, monitorhDefault: Bool = false, cookies: [HTTPCookie], observer: NSObject? = nil) -> (comment: Bool, monitor: Bool) {
+		let users: JSONizableUsers = allUsers.users(forOwner: owner, anonymousCommentDefault: anonymousCommentDefault, monitorhDefault: monitorhDefault)
+		let listeners: NicoLiveListeners = NicoLiveListeners(owner: owner, for: users, user_session: cookies, observer: observer)
+		
+		listeners.setDefaultThumbnails(images: images)
+		currentOwners[owner] = listeners
+		
+		return (users.anonymousComment, users.monitor)
+	}// end func start
+	
 	public func end (owner: String) -> Void {
 		currentOwners.removeValue(forKey: owner)
 	}// end func end
 	
-	public func update (speech :Bool, forOwner owner: String) -> Void {
-		guard let ownerInfo: NSMutableDictionary = ownersDictionary[owner] as? NSMutableDictionary else { return }
-		ownerInfo[JSONKey.owner.speech] = speech
-	}// end func update owner, speech
-	
-	public func update (anonymousComment: Bool, forOwner owner: String) -> Void {
-		guard let ownerInfo: NSMutableDictionary = ownersDictionary[owner] as? NSMutableDictionary else { return }
-		ownerInfo[JSONKey.owner.anonymous] = anonymousComment
-	}// end func update owner, speech
-
-	public func anonymousComment (forOwner ownerIdentifier: String) -> Bool {
-		guard let ownerInfo: NSMutableDictionary = ownersDictionary[ownerIdentifier] as? NSMutableDictionary else { return false }
-		var anonymity: JSONValue.BOOL
-		if let result: NSString = ownerInfo[JSONKey.owner.anonymous] as? NSString {
-			anonymity = JSONValue.BOOL(rawValue: String(result)) ?? JSONValue.BOOL.no
-		} else {
-			anonymity = JSONValue.BOOL.no
-		}
-
-		switch anonymity {
-		case JSONValue.BOOL.yes:
-			return true
-		case JSONValue.BOOL.no: fallthrough
-		default:
-			return false
-		}// end switch
-	}// end func anonymousComment
-
-	public func enableMonitor (forOwner ownerIdentifier: String) -> Bool {
-		guard let ownerInfo: NSMutableDictionary = ownersDictionary[ownerIdentifier] as? NSMutableDictionary else { return false }
-		var monitor: JSONValue.BOOL
-		if let result: NSString = ownerInfo[JSONKey.owner.speech] as? NSString {
-			monitor = JSONValue.BOOL(rawValue: String(result)) ?? JSONValue.BOOL.no
-		} else {
-			monitor = JSONValue.BOOL.no
-		}
-		
-		switch monitor {
-		case JSONValue.BOOL.yes:
-			return true
-		case JSONValue.BOOL.no: fallthrough
-		default:
-			return false
-		}// end switch
-	}// end func anonymousComment
-	
-	public func user (identifier: String, for owner: String) throws -> NicoLiveUser {
-		guard let listeners: NicoLiveListeners = currentOwners[owner] else { throw UserslistError.inactiveOwnner }
-
-		return try listeners.user(identifier: identifier)
-	}// end user
-
 	public func user (identifier: String, premium: Int, for owner: String) throws -> NicoLiveUser {
+		if premium ^ 0b11 == 0 {
+			if let listeners: NicoLiveListeners = currentOwners[owner] {
+				return listeners.owner
+			}// end optional binding check for argumented owner is in currentOwners
+		}// end if premium is owner value
+		
 		guard let listeners: NicoLiveListeners = currentOwners[owner] else { throw UserslistError.inactiveOwnner }
-		let user: NicoLiveUser = try listeners.user(identifier: identifier, premium: premium)
+		let user: NicoLiveUser = try listeners.user(identifier: identifier)
+
 		return user
 	}// end func user
 	
-	public func user (identifier: String, premium: Int, anonymous: Bool, Lang: UserLanguage, forOwner owner: String, with error: UserslistError) throws -> NicoLiveUser {
-		guard let listeners: NicoLiveListeners = currentOwners[owner] else { throw UserslistError.inactiveOwnner }
-		var user: NicoLiveUser
-		
-		switch error {
-		case .entriedUser:
-			user = try listeners.activateUser(identifier: identifier, premium: premium, anonymous: anonymous, lang: Lang)
-		case .inDatabaseUser:
-			user = listeners.newUser(identifier: identifier, premium: premium, anonymous: anonymous, lang: Lang, met: Friendship.metOther)
-		case .unknownUser: fallthrough
-		default:
-			user = listeners.newUser(identifier: identifier, premium: premium, anonymous: anonymous, lang: Lang, met: Friendship.new)
-		}// end switch case by exception name
+	public func activatteUser (identifier: String, premium: Int, anonymous: Bool, Lang: UserLanguage, forOwner owner: String) throws -> NicoLiveUser {
+		guard let users: NicoLiveListeners = currentOwners[owner] else { throw UserslistError.inactiveOwnner }
+		allUsers.addUser(identifier: identifier, onymity: !anonymous)
+		let user: NicoLiveUser = users.activateUser(identifier: identifier, premium: premium, anonymous: anonymous, lang: Lang)
 		
 		return user
-	}// end func user
+	}// end fuc activate user
 	
-	public func userAnonymity (identifier: String) throws -> Bool {
-		guard let anonimity: Bool = usersDictionary[identifier] as? Bool else { throw UserslistError.unknownUser }
-		return anonimity
+	public func userOnymity (identifier: String) throws -> Bool {
+		guard let onimity: Bool = allUsers.onymoity(ofUserIdentifier: identifier) else { throw UserslistError.unknownUser }
+		return onimity
 	}// end func user
+
+	public func setUserOmymity (identifier user: String, to onymity: Bool) {
+		allUsers.addUser(identifier: user, onymity: onymity)
+	}// end set user onymity
+
+		// MARK: - Internal methods
+		// MARK: - Private methods
+		// MARK: - Delegates
 }// end class Userslist
