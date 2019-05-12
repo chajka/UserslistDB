@@ -146,12 +146,6 @@ public final class Userslist: NSObject {
 		currentOwners.removeValue(forKey: owner)
 	}// end func end
 	
-	public func user (identifier: String, for owner: String) throws -> NicoLiveUser {
-		guard let listeners: NicoLiveListeners = currentOwners[owner] else { throw UserslistError.inactiveOwnner }
-
-		return try listeners.user(identifier: identifier)
-	}// end user
-
 	public func user (identifier: String, premium: Int, for owner: String) throws -> NicoLiveUser {
 		if premium ^ 0b11 == 0 {
 			if let listeners: NicoLiveListeners = currentOwners[owner] {
@@ -165,19 +159,6 @@ public final class Userslist: NSObject {
 		return user
 	}// end func user
 	
-	public func user (identifier: String, premium: Int, anonymous: Bool, Lang: UserLanguage, forOwner owner: String, with error: UserslistError) throws -> NicoLiveUser {
-		guard let listeners: NicoLiveListeners = currentOwners[owner] else { throw UserslistError.inactiveOwnner }
-		var user: NicoLiveUser
-		
-		switch error {
-		case .entriedUser:
-			user = try listeners.activateUser(identifier: identifier, premium: premium, anonymous: anonymous, lang: Lang)
-		case .inDatabaseUser:
-			user = listeners.newUser(identifier: identifier, premium: premium, anonymous: anonymous, lang: Lang, met: Friendship.metOther)
-		case .unknownUser: fallthrough
-		default:
-			user = listeners.newUser(identifier: identifier, premium: premium, anonymous: anonymous, lang: Lang, met: Friendship.new)
-		}// end switch case by exception name
 		
 		return user
 	}// end func user
