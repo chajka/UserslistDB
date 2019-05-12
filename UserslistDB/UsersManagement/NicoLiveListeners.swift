@@ -129,7 +129,7 @@ public final class NicoLiveListeners: NSObject {
 	
 	private func fetchNickname(fromVitaAPI identifier: String) -> String {
 		guard let url = URL(string: VitaAPIFormat + identifier) else { return "" }
-		var fetchData: Bool = false
+		let semaphoe: DispatchSemaphore = DispatchSemaphore(value: 0)
 		var nickname: String = String()
 		reqest.url = url
 		let task:URLSessionDataTask = session.dataTask(with: reqest) { (dat, req, err) in
@@ -146,11 +146,11 @@ public final class NicoLiveListeners: NSObject {
 					Swift.print(String(data: data, encoding: .utf8)!)
 				}// end try - catch parse XML document
 			}// end if data is there
-			fetchData = true
+			semaphoe.signal()
 		}// end closure for recieve data
 		task.resume()
+		semaphoe.wait()
 		
-		while (!fetchData) { Thread.sleep(forTimeInterval: 0.001)}
 		return nickname
 	}// end fetchNickname fromVitaAPI
 	
