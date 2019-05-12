@@ -30,6 +30,7 @@ private let informationUserName: String = "Information"
 internal let Owner: String = "BroadcastOwner"
 
 public final class NicoLiveListeners: NSObject {
+	private unowned var knownUsers: JSONizableUsers
 	private var currentUsers: Dictionary<String, NicoLiveUser>
 	private let ownerIdentifier: String
 	private var observer: NSObject?
@@ -39,12 +40,12 @@ public final class NicoLiveListeners: NSObject {
 	private let session: URLSession = URLSession(configuration: URLSessionConfiguration.default)
 	private var reqest: URLRequest
 	
-	public init (owner: String, for listeners: NSMutableDictionary, and allKnownUsers: NSMutableDictionary, user_session: [HTTPCookie], observer: NSObject? = nil) {
+		// MARK: - Constructor/Destructor
+	public init (owner: String, for listeners: JSONizableUsers, user_session: [HTTPCookie], observer: NSObject? = nil) {
 		ownerIdentifier = owner
 		currentUsers = Dictionary()
 		knownUsers = listeners
 		cookies = user_session
-		self.allKnownUsers = allKnownUsers
 		self.observer = observer
 		reqest = URLRequest(url: URL(string: NicknameAPIFormat)!)
 		reqest.allHTTPHeaderFields = HTTPCookie.requestHeaderFields(with: cookies)
