@@ -62,10 +62,11 @@ public final class NicoLiveListeners: NSObject {
 	public func setDefaultThumbnails(images: Images) {
 		self.images = images
 	}// end setDefaultThumbnails
-
+	
 	public func user (identifier: String) throws -> NicoLiveUser {
-		if let user: NicoLiveUser = currentUsers[identifier] { return user}
-		else { throw UserslistError.notInListeners }
+		guard let user: NicoLiveUser = currentUsers[identifier] else { throw UserslistError.inactiveListener }
+		
+		return user
 	}// end user
 	
 	public func activateUser (identifier: String, premium: Int, anonymous: Bool, lang: UserLanguage) -> NicoLiveUser {
