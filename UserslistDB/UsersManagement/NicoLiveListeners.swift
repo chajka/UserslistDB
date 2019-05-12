@@ -68,17 +68,6 @@ public final class NicoLiveListeners: NSObject {
 		else { throw UserslistError.notInListeners }
 	}// end user
 	
-	public func user (identifier: String, premium: Int) throws -> NicoLiveUser {
-		if let user:NicoLiveUser = currentUsers[identifier] {
-			parse(user: user, id: identifier, premium: premium)
-			return user
-		} else {
-			if let _ = knownUsers[identifier] { throw UserslistError.entriedUser }
-			else if let _ = allKnownUsers[identifier] {throw UserslistError.inDatabaseUser }
-			else { throw UserslistError.unknownUser }
-		}// end if current user is in current users dictionary
-	}// end func user
-	
 	public func activateUser (identifier: String, premium: Int, anonymous: Bool, lang: UserLanguage) throws -> NicoLiveUser {
 		guard let entry: NSMutableDictionary = knownUsers[identifier] as? NSMutableDictionary else { throw UserslistError.canNotActivateUser }
 		var nickname: String = ""
