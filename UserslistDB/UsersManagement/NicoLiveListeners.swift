@@ -16,6 +16,8 @@ public struct Images {
 	public let cruise: NSImage?
 }// end struct Images
 
+public typealias thumbNailCompletionhandler = ( (NSImage) -> Void )
+
 private let ThumbnailAPIFormat: String = "https://secure-dcdn.cdn.nimg.jp/nicoaccount/usericon/%@/%@.jpg"
 private let NoImageThumbnailURL: String = "https://secure-dcdn.cdn.nimg.jp/nicoaccount/usericon/defaults/blank.jpg"
 private let NicknameAPIFormat: String = "http://seiga.nicovideo.jp/api/user/info?id="
@@ -59,6 +61,8 @@ public final class NicoLiveListeners: NSObject {
 		fetchThumbnail(user: self.owner, identifier: ownersNickname, anonymous: false)
 	}// end init
 	
+		// MARK: - Override
+		// MARK: - Public methods
 	public func setDefaultThumbnails(images: Images) {
 		self.images = images
 	}// end setDefaultThumbnails
@@ -91,10 +95,13 @@ public final class NicoLiveListeners: NSObject {
 		return user
 	}// end func activateUser
 	
+		// MARK: - Internal methods
+		// MARK: - Private methods
 	private func parse (user usr: NicoLiveUser, id identifier: String, premium prem: Int) {
 		if (identifier == informationUserIdentifier) {
 			usr.privilege = Privilege.official
 			usr.name.nickname = "Information"
+			usr.name.handle = "Information"
 		}
 		else if (prem & 0b110) == 0b110 { usr.privilege = Privilege.official }
 		else if (prem & (0x01 << 1)) != 0x00 { usr.privilege = Privilege.owner }
@@ -186,4 +193,5 @@ public final class NicoLiveListeners: NSObject {
 		
 		return url
 	}// end func thumbnailURL
+		// MARK: - Delegates
 }// end class NicoLiveListeners
