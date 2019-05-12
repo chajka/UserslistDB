@@ -94,6 +94,10 @@ public final class NicoLiveListeners: NSObject {
 		
 		return user
 	}// end func activateUser
+
+	public func set (commentAAnonymity anonymity: Bool) {
+		knownUsers.anonymousComment = anonymity
+	}// end set comment aonymity
 	
 		// MARK: - Internal methods
 		// MARK: - Private methods
