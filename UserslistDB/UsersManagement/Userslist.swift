@@ -167,8 +167,16 @@ public final class Userslist: NSObject {
 		return user
 	}// end fuc activate user
 	
-	public func userAnonymity (identifier: String) throws -> Bool {
-		guard let anonimity: Bool = usersDictionary[identifier] as? Bool else { throw UserslistError.unknownUser }
-		return anonimity
+	public func userOnymity (identifier: String) throws -> Bool {
+		guard let onimity: Bool = allUsers.onymoity(ofUserIdentifier: identifier) else { throw UserslistError.unknownUser }
+		return onimity
 	}// end func user
+
+	public func setUserOmymity (identifier user: String, to onymity: Bool) {
+		allUsers.addUser(identifier: user, onymity: onymity)
+	}// end set user onymity
+
+		// MARK: - Internal methods
+		// MARK: - Private methods
+		// MARK: - Delegates
 }// end class Userslist
