@@ -115,6 +115,7 @@ public final class NicoLiveUser: NSObject {
 		language = lang
 		let handlename: String = entry.handle
 		name = UserName(identifier: identifier, nickname: nickname, handle: handlename)
+		self.premium = premium
 		isPremium = (premium & (0x01 << 0)) != 0x00 ? true : false
 		if premium ^ 0b11 == 0 { privilege = Privilege.owner }
 		else if premium ^ 0b10 == 0 { privilege = Privilege.cruise }
