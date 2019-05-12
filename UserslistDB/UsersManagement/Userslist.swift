@@ -58,14 +58,16 @@ extension JSONKey.user: StringEnum { }
 
 public final class Userslist: NSObject {
 		// MARK: - Properties
+		// MARK: - Member variables
 	private let allUsers: JSONizableAllUsers
 	private let encoder: JSONEncoder = JSONEncoder()
 	
 	private let databaseURL: URL
 	private var currentOwners: Dictionary<String, NicoLiveListeners>
+
+	private let queue: DispatchQueue = DispatchQueue(label: "tv.from.chajka.UserslistDatabase", qos: DispatchQoS.background)
 	private var images: Images!
 	
-		// MARK: - Member variables
 		// MARK: - Constructor/Destructor
 	public init (databaseFolderPath jsonPath: String, databaseFileName: String = DatabaseFileName) {
 		currentOwners = Dictionary()
@@ -116,7 +118,7 @@ public final class Userslist: NSObject {
 	public func updateDatabaseFile () -> Bool {
 		do {
 			let data: Data = try encoder.encode(allUsers)
-			try data.write(to: databaseURL, options: Data.WritingOptions.atomicWrite)
+			try data.write(to: databaseURL, options: Data.WritingOptions.atomic)
 
 			return true
 		} catch {
@@ -165,6 +167,10 @@ public final class Userslist: NSObject {
 		guard let users: NicoLiveListeners = currentOwners[owner] else { throw UserslistError.inactiveOwnner }
 		allUsers.addUser(identifier: identifier, onymity: !anonymous)
 		let user: NicoLiveUser = users.activateUser(identifier: identifier, premium: premium, anonymous: anonymous, lang: Lang)
+		setUserOmymity(identifier: identifier, to: !anonymous)
+		queue.async {
+			_ = self.updateDatabaseFile()
+		}// end background database file update
 		
 		return user
 	}// end fuc activate user
