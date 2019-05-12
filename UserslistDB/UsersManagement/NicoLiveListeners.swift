@@ -30,6 +30,9 @@ private let informationUserName: String = "Information"
 internal let Owner: String = "BroadcastOwner"
 
 public final class NicoLiveListeners: NSObject {
+		// MARK: - Properties
+	private(set) var owner: NicoLiveUser!
+		// MARK: - Member variables
 	private unowned var knownUsers: JSONizableUsers
 	private var currentUsers: Dictionary<String, NicoLiveUser>
 	private let ownerIdentifier: String
@@ -49,6 +52,11 @@ public final class NicoLiveListeners: NSObject {
 		self.observer = observer
 		reqest = URLRequest(url: URL(string: NicknameAPIFormat)!)
 		reqest.allHTTPHeaderFields = HTTPCookie.requestHeaderFields(with: cookies)
+		super.init()
+		let ownersNickname: String = fetchNickname(identifier: owner) ?? fetchNickname(fromVitaAPI: owner)
+		let ownerEntry = knownUsers.user(identifier: Owner, userName: ownersNickname)
+		self.owner = NicoLiveUser(owner: Owner, ownerEntry: ownerEntry, nickname: ownersNickname)
+		fetchThumbnail(user: self.owner, identifier: ownersNickname, anonymous: false)
 	}// end init
 	
 	public func setDefaultThumbnails(images: Images) {
