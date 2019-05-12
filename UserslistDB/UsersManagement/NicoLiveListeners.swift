@@ -68,25 +68,24 @@ public final class NicoLiveListeners: NSObject {
 		else { throw UserslistError.notInListeners }
 	}// end user
 	
-	public func activateUser (identifier: String, premium: Int, anonymous: Bool, lang: UserLanguage) throws -> NicoLiveUser {
-		guard let entry: NSMutableDictionary = knownUsers[identifier] as? NSMutableDictionary else { throw UserslistError.canNotActivateUser }
+	public func activateUser (identifier: String, premium: Int, anonymous: Bool, lang: UserLanguage) -> NicoLiveUser {
 		var nickname: String = ""
-		if !anonymous { nickname = fetchNickname(identifier: identifier) }
-		else if premium == 0x11 { nickname = fetchNickname(identifier: ownerIdentifier) }
-		else if identifier == cruiseUserIdentifier { nickname = cruiseUserName }
+		if !anonymous || premium == 0b11 {
+			if let nick: String = fetchNickname(identifier: identifier) {
+				nickname = nick
+			} else {
+				nickname = fetchNickname(fromVitaAPI: identifier)
+			}// end optional binding check for fetch nickname and failed, use vita api to get nickname
+		} else if identifier == cruiseUserIdentifier { nickname = cruiseUserName }
 		else if identifier == informationUserIdentifier { nickname = informationUserName }
+		// end if user is not anonymous
 		
-		var user: NicoLiveUser
-		if premium ^ 0x011 == 0 {
-			user = NicoLiveUser(user: entry, nickname: nickname, identifier: identifier, premium: premium, anonymous: anonymous, lang: lang)
-		} else {
-			user = NicoLiveUser(user: entry, nickname: nickname, identifier: identifier, premium: premium, anonymous: anonymous, lang: lang)
-		}// end if premium flags is owner
+		let usr: JSONizableUser = knownUsers.user(identifier: identifier, userName: nickname)
+		let user: NicoLiveUser = NicoLiveUser(user: usr, identifier: identifier, nickname: nickname, premium: premium, anonymous: anonymous, lang: lang)
 		parse(user: user, id: identifier, premium: premium)
-
+		
 		fetchThumbnail(user: user, identifier: identifier, anonymous: anonymous)
 		currentUsers[identifier] = user
-		allKnownUsers[identifier] = anonymous
 		
 		return user
 	}// end func activateUser
