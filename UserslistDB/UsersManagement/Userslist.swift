@@ -113,8 +113,9 @@ public final class Userslist: NSObject {
 	
 	public func updateDatabaseFile () -> Bool {
 		do {
-			let jsonData: Data = try JSONSerialization.data(withJSONObject: jsonDatabase, options: JSONSerialization.WritingOptions.prettyPrinted)
-			try (jsonData as NSData).write(toFile: databasePath, options: NSData.WritingOptions.atomicWrite)
+			let data: Data = try encoder.encode(allUsers)
+			try data.write(to: databaseURL, options: Data.WritingOptions.atomicWrite)
+
 			return true
 		} catch {
 			print(error)
