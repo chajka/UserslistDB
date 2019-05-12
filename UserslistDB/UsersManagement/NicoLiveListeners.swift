@@ -90,22 +90,6 @@ public final class NicoLiveListeners: NSObject {
 		return user
 	}// end func activateUser
 	
-	public func newUser (identifier: String, premium: Int, anonymous: Bool, lang: UserLanguage, met: Friendship) -> NicoLiveUser {
-		var nickname: String = ""
-		if !anonymous { nickname = fetchNickname(fromVitaAPI: identifier) }
-		else if premium == 0x11 { nickname = fetchNickname(fromVitaAPI: ownerIdentifier) }
-		else if identifier == informationUserIdentifier { nickname = informationUserName }
-		
-		let user: NicoLiveUser = NicoLiveUser(nickname: nickname, identifier: identifier, premium: premium, anonymous: anonymous, lang: lang, met: met)
-		parse(user: user, id: identifier, premium: premium)
-		fetchThumbnail(user: user, identifier: identifier, anonymous: anonymous)
-		currentUsers[identifier] = user
-		allKnownUsers[identifier] = anonymous
-		knownUsers[identifier] = user.entry
-		
-		return user
-	}// end func newUser
-
 	private func parse (user usr: NicoLiveUser, id identifier: String, premium prem: Int) {
 		if (identifier == informationUserIdentifier) {
 			usr.privilege = Privilege.official
