@@ -13,7 +13,7 @@ public enum UserslistError: Error {
 	case entriedUser
 	case inDatabaseUser
 	case unknownUser
-	case notInListeners
+	case inactiveListener
 	case canNotActivateUser
 	case inactiveOwnner
 }// end enum UsersListError
