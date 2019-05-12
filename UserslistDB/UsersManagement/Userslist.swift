@@ -118,7 +118,7 @@ public final class Userslist: NSObject {
 	public func updateDatabaseFile () -> Bool {
 		do {
 			let data: Data = try encoder.encode(allUsers)
-			try data.write(to: databaseURL, options: Data.WritingOptions.atomicWrite)
+			try data.write(to: databaseURL, options: Data.WritingOptions.atomic)
 
 			return true
 		} catch {
