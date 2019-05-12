@@ -65,29 +65,42 @@ public final class Userslist: NSObject {
 	private var currentOwners: Dictionary<String, NicoLiveListeners>
 	private var images: Images!
 	
-	public init (jsonPath: String) {
+		// MARK: - Member variables
+		// MARK: - Constructor/Destructor
+	public init (databaseFolderPath jsonPath: String, databaseFileName: String = DatabaseFileName) {
 		currentOwners = Dictionary()
-		databasePath = jsonPath.starts(with: "~") ? (jsonPath as NSString).expandingTildeInPath : jsonPath
+		
+		let databaseFolderURL: URL = URL(fileURLWithPath: (jsonPath.prefix(1) == "~") ? NSHomeDirectory() + String(jsonPath.suffix(jsonPath.count - 1)) : jsonPath, isDirectory: true)
+		databaseURL = databaseFolderURL.appendingPathComponent(databaseFileName).appendingPathExtension(DatabaseExtension)
 		let fm: FileManager = FileManager.default
-		if !fm.fileExists(atPath: databasePath) {
-			let defaultJasonPath:String = Bundle.main.path(forResource: "userslist", ofType: "json")!
-			do {
-				try fm.moveItem(atPath: defaultJasonPath, toPath: databasePath)
-			} catch let err {
-				print(err)
-			}// end try - catch move item
+		if !fm.fileExists(atPath: databaseURL.path) {
+			let oldUserDatabaseURL: URL = databaseURL.deletingPathExtension().appendingPathExtension("xml")
+			if fm.fileExists(atPath: oldUserDatabaseURL.path) {
+				do {
+					let converter: DatabaseConverter = try DatabaseConverter(databasePath: oldUserDatabaseURL.deletingLastPathComponent().path, databaseFile: oldUserDatabaseURL.lastPathComponent)
+					let success = converter.parse()
+					if success { _ = converter.writeJson() }
+				} catch let error {
+					print(error.localizedDescription)
+				}// end do try - catch convert database
+			} else {
+				let defaultJasonPath:String = Bundle.main.path(forResource: "userslist", ofType: "json")!
+				do {
+					try fm.moveItem(atPath: defaultJasonPath, toPath: databaseURL.path)
+				} catch let err {
+					print(err)
+				}// end try - catch move item
+			}
 		}// end if not exist Userslist.json
 		do {
-			let data: NSData = try NSData(contentsOfFile: databasePath)
-			jsonDatabase = try JSONSerialization.jsonObject(with: data as Data, options: [JSONSerialization.ReadingOptions.mutableContainers, JSONSerialization.ReadingOptions.mutableLeaves]) as! NSMutableDictionary
-			ownersDictionary = jsonDatabase[JSONKey.toplevel.owners] as? NSMutableDictionary ?? NSMutableDictionary()
-			usersDictionary = jsonDatabase[JSONKey.toplevel.users] as? NSMutableDictionary ?? NSMutableDictionary()
-		} catch {
+			let decoder: JSONDecoder = JSONDecoder()
+			let data: Data = try Data(contentsOf: databaseURL)
+			allUsers = try decoder.decode(JSONizableAllUsers.self, from: data)
+		} catch let error {
 			print(error)
-			jsonDatabase = NSMutableDictionary()
-			ownersDictionary = NSMutableDictionary()
-			usersDictionary = NSMutableDictionary()
+			allUsers = JSONizableAllUsers()
 		}// end try - catch open data and parse json to dictionary
+		encoder.outputFormatting = JSONEncoder.OutputFormatting.prettyPrinted
 	}// end init
 	
 	deinit {
