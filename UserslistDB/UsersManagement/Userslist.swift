@@ -167,6 +167,10 @@ public final class Userslist: NSObject {
 		guard let users: NicoLiveListeners = currentOwners[owner] else { throw UserslistError.inactiveOwnner }
 		allUsers.addUser(identifier: identifier, onymity: !anonymous)
 		let user: NicoLiveUser = users.activateUser(identifier: identifier, premium: premium, anonymous: anonymous, lang: Lang)
+		setUserOmymity(identifier: identifier, to: !anonymous)
+		queue.async {
+			_ = self.updateDatabaseFile()
+		}// end background database file update
 		
 		return user
 	}// end fuc activate user
