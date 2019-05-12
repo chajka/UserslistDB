@@ -99,6 +99,7 @@ public final class NicoLiveUser: NSObject {
 	public init (owner  identifier: String, ownerEntry entry: JSONizableUser, nickname ownerNickname: String) {
 		self.entry = entry
 		self.name = UserName(identifier: identifier, nickname: ownerNickname)
+		self.premium = 3
 		anonymous = false
 		isPremium = true
 		privilege = Privilege.owner
