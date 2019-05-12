@@ -57,9 +57,9 @@ extension JSONKey.owner: StringEnum { }
 extension JSONKey.user: StringEnum { }
 
 public final class Userslist: NSObject {
-	let jsonDatabase: NSMutableDictionary
-	let ownersDictionary: NSMutableDictionary
-	let usersDictionary: NSMutableDictionary
+		// MARK: - Properties
+	private let allUsers: JSONizableAllUsers
+	private let encoder: JSONEncoder = JSONEncoder()
 	
 	private let databasePath: String
 	private var currentOwners: Dictionary<String, NicoLiveListeners>
