@@ -64,6 +64,7 @@ public final class NicoLiveUser: NSObject {
 			update(friendship: .known)
 		}// end set
 	}// end property handle
+	public let premium: Int
 	public let anonymous: Bool
 	public let isPremium: Bool
 	public var privilege: Privilege!
