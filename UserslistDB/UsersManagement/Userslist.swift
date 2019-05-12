@@ -163,8 +163,15 @@ public final class Userslist: NSObject {
 	}// end user
 
 	public func user (identifier: String, premium: Int, for owner: String) throws -> NicoLiveUser {
+		if premium ^ 0b11 == 0 {
+			if let listeners: NicoLiveListeners = currentOwners[owner] {
+				return listeners.owner
+			}// end optional binding check for argumented owner is in currentOwners
+		}// end if premium is owner value
+		
 		guard let listeners: NicoLiveListeners = currentOwners[owner] else { throw UserslistError.inactiveOwnner }
-		let user: NicoLiveUser = try listeners.user(identifier: identifier, premium: premium)
+		let user: NicoLiveUser = try listeners.user(identifier: identifier)
+
 		return user
 	}// end func user
 	
