@@ -154,42 +154,6 @@ public final class Userslist: NSObject {
 		guard let ownerInfo: NSMutableDictionary = ownersDictionary[owner] as? NSMutableDictionary else { return }
 		ownerInfo[JSONKey.owner.anonymous] = anonymousComment
 	}// end func update owner, speech
-
-	public func anonymousComment (forOwner ownerIdentifier: String) -> Bool {
-		guard let ownerInfo: NSMutableDictionary = ownersDictionary[ownerIdentifier] as? NSMutableDictionary else { return false }
-		var anonymity: JSONValue.BOOL
-		if let result: NSString = ownerInfo[JSONKey.owner.anonymous] as? NSString {
-			anonymity = JSONValue.BOOL(rawValue: String(result)) ?? JSONValue.BOOL.no
-		} else {
-			anonymity = JSONValue.BOOL.no
-		}
-
-		switch anonymity {
-		case JSONValue.BOOL.yes:
-			return true
-		case JSONValue.BOOL.no: fallthrough
-		default:
-			return false
-		}// end switch
-	}// end func anonymousComment
-
-	public func enableMonitor (forOwner ownerIdentifier: String) -> Bool {
-		guard let ownerInfo: NSMutableDictionary = ownersDictionary[ownerIdentifier] as? NSMutableDictionary else { return false }
-		var monitor: JSONValue.BOOL
-		if let result: NSString = ownerInfo[JSONKey.owner.speech] as? NSString {
-			monitor = JSONValue.BOOL(rawValue: String(result)) ?? JSONValue.BOOL.no
-		} else {
-			monitor = JSONValue.BOOL.no
-		}
-		
-		switch monitor {
-		case JSONValue.BOOL.yes:
-			return true
-		case JSONValue.BOOL.no: fallthrough
-		default:
-			return false
-		}// end switch
-	}// end func anonymousComment
 	
 	public func user (identifier: String, for owner: String) throws -> NicoLiveUser {
 		guard let listeners: NicoLiveListeners = currentOwners[owner] else { throw UserslistError.inactiveOwnner }
