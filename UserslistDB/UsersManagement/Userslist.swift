@@ -61,7 +61,7 @@ public final class Userslist: NSObject {
 	private let allUsers: JSONizableAllUsers
 	private let encoder: JSONEncoder = JSONEncoder()
 	
-	private let databasePath: String
+	private let databaseURL: URL
 	private var currentOwners: Dictionary<String, NicoLiveListeners>
 	private var images: Images!
 	
@@ -107,6 +107,8 @@ public final class Userslist: NSObject {
 		let _ = updateDatabaseFile()
 	}// end deinit
 	
+		// MARK: - Override
+		// MARK: - Public methods
 	public func setDefaultThumbnails(defaultUser: NSImage, anonymousUser: NSImage, officialUser: NSImage, cruiseUser: NSImage) {
 		images = Images(noImageUser: defaultUser, anonymous: anonymousUser, offifical: officialUser, cruise: cruiseUser)
 	}// end setDefaultThumbnails
