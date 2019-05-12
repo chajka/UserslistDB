@@ -184,6 +184,11 @@ public final class Userslist: NSObject {
 		allUsers.addUser(identifier: user, onymity: onymity)
 	}// end set user onymity
 
+	public func set (commentAnonymity anonymity: Bool, toOwner owner: String) {
+		guard let listensers: NicoLiveListeners = currentOwners[owner] else { return }
+		listensers.set(commentAAnonymity: anonymity)
+	}// end func set comment anonymity
+
 		// MARK: - Internal methods
 		// MARK: - Private methods
 		// MARK: - Delegates
