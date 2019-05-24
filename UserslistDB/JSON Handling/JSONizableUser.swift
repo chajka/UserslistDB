@@ -36,6 +36,18 @@ public final class JSONizableUser: NSObject, Codable {
 	
 		// MARK: - Member variables
 		// MARK: - Constructor/Destructor
+	public init (_ handle: String, _ known: Bool? = nil, _ lock: Bool? = nil, _ color: String? = nil, _ voice: String? = nil) {
+		self.handle = handle
+		if let known: Bool = known { self.known = known }
+		if let lock: Bool = lock { self.lock = lock }
+		if let color: String = color { self.color = color }
+		if let voice: String = voice { self.voice = voice }
+		let formatter:DateFormatter = DateFormatter()
+		formatter.dateStyle = DateFormatter.Style.short
+		formatter.timeStyle = DateFormatter.Style.short
+		self.lastMet = formatter.string(from: Date())
+	}// end init
+
 	init (_ handle: String, metAt met: Date = Date()) {
 		self.handle = handle
 		let formatter:DateFormatter = DateFormatter()
