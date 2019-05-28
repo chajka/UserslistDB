@@ -69,7 +69,16 @@ public final class NicoLiveUser: NSObject {
 	public let isPremium: Bool
 	public var privilege: Privilege!
 	public let language: UserLanguage
-	public var friendship: Friendship
+	public var friendship: Friendship {
+		didSet {
+			switch friendship {
+			case .known:
+				entry.known = true
+			default:
+				entry.known = nil
+			}// end switch case by friendship
+		}// end 
+	}// end property friendship
 	@objc public dynamic var thumbnail: NSImage?
 	public var lock: Bool = false {
 		didSet {
