@@ -191,5 +191,23 @@ public final class Userslist: NSObject {
 
 		// MARK: - Internal methods
 		// MARK: - Private methods
+	private func cleanupOutdatedUser () {
+		let queue: DispatchQueue = DispatchQueue(label: "tv.from.chajka.UserslistDB", qos: DispatchQoS.background, attributes: DispatchQueue.Attributes.concurrent, autoreleaseFrequency: DispatchQueue.AutoreleaseFrequency.inherit)
+		queue.async { [weak self] in
+			guard let weakSelf = self else { return }
+			let calender: Calendar = Calendar.current
+			let component: DateComponents = DateComponents(hour: 9, minute: 0, weekday: 5)
+			guard let lastThu: Date = calender.nextDate(after: Date(), matching: component, matchingPolicy: Calendar.MatchingPolicy.nextTime, direction: .backward) else { return }
+
+			let formatter:DateFormatter = DateFormatter()
+			formatter.dateStyle = DateFormatter.Style.short
+			formatter.timeStyle = DateFormatter.Style.short
+			let cleanupBeforeDate: String = formatter.string(from: lastThu)
+
+			weakSelf.allUsers.cleanupOutdatedUser(before: cleanupBeforeDate)
+			_ = weakSelf.updateDatabaseFile()
+		}// end queue async
+	}// end cleanupOutdatedUser
+
 		// MARK: - Delegates
 }// end class Userslist
