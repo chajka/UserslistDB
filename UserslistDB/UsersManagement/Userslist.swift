@@ -103,6 +103,8 @@ public final class Userslist: NSObject {
 			allUsers = JSONizableAllUsers()
 		}// end try - catch open data and parse json to dictionary
 		encoder.outputFormatting = JSONEncoder.OutputFormatting.prettyPrinted
+		super.init()
+		cleanupOutdatedUser()
 	}// end init
 	
 	deinit {
