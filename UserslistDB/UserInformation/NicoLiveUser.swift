@@ -87,7 +87,11 @@ public final class NicoLiveUser: NSObject {
 		}// end didSet
 	}// end property lock
 	public let lastMet: Date
-	public var color: NSColor?
+	public var color: NSColor? {
+		willSet {
+			if lock { return }
+		}// end willSet
+	}// end side effect with stored property
 	public var voice: String? {
 		didSet {
 			entry.voice = voice
