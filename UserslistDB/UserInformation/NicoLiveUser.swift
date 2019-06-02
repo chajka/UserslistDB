@@ -59,6 +59,7 @@ public final class NicoLiveUser: NSObject {
 			return name.handle
 		}// end get
 		set (newHandle) {
+			if lock { return }
 			name.handle = newHandle
 			entry.handle = newHandle
 			update(friendship: .known)
@@ -87,19 +88,26 @@ public final class NicoLiveUser: NSObject {
 		}// end didSet
 	}// end property lock
 	public let lastMet: Date
-	public var color: NSColor?
+	public var color: NSColor? {
+		willSet {
+			if lock { return }
+		}// end willSet
+	}// end side effect with stored property
 	public var voice: String? {
+		willSet {
+			if lock { return }
+		}// end willSet
 		didSet {
 			entry.voice = voice
 			update(friendship: .known)
 		}// end didSet
-	}// end property voice
+	}// end side effect with stored property voice
 	public var note: String? {
 		didSet {
 			entry.note = note
 			update(friendship: .known)
 		}// end didSet
-	}// end property note
+	}// end side effect with stored property note
 	
         // MARK: - Member variables
 	private(set) unowned var entry: JSONizableUser
@@ -114,8 +122,12 @@ public final class NicoLiveUser: NSObject {
 		privilege = Privilege.owner
 		language = UserLanguage.ja
 		friendship = Friendship.known
+		if let lock: Bool = entry.lock { self.lock = lock }
 		lastMet = Date()
 		super.init()
+		if let colorString: String = entry.color { color = hexcClorToColor(hexColor: colorString) }
+		if let voiceName: String = entry.voice { voice = voiceName }
+		if let noteString: String = entry.note { note = noteString }
 		handle = ownerNickname
 	}// end init owner user
 
@@ -176,33 +188,64 @@ public final class NicoLiveUser: NSObject {
 	}// end update friendship
 	
 		// MARK: - Private methods
-	private func hexcClorToColor (hexColor: String) -> NSColor {
-		guard hexColor.count == 7, hexColor.prefix(1) == "#" else { return NSColor.white }
-		let redStr: String = hexColor[hexColor.index(hexColor.startIndex, offsetBy: 1) ... hexColor.index(hexColor.startIndex, offsetBy: 2)].description
-		let greenStr: String = hexColor[hexColor.index(hexColor.startIndex, offsetBy: 3) ... hexColor.index(hexColor.startIndex, offsetBy: 4)].description
-		let blueStr: String = hexColor[hexColor.index(hexColor.startIndex, offsetBy: 5) ..< hexColor.endIndex].description
-		
-		let red: CGFloat = CGFloat(Int(redStr)!) / 0xff
-		let green: CGFloat = CGFloat(Int(greenStr)!) / 0xff
-		let blue: CGFloat = CGFloat(Int(blueStr)!) / 0xff
-		
-		return NSColor(calibratedRed: red, green: green, blue: blue, alpha: 1.0)
-	}// end func hexColorToColor
+	private func hexcClorToColor (hexColor colorString: String) -> NSColor {
+		var rangeFrom: String.Index
+		var rangeTo: String.Index
+		let hexColortMax: CGFloat = CGFloat(0xff)
+		let length: Int = colorString.count
+		let capableLength: Set = Set(arrayLiteral: 7, 9)
+		if capableLength.contains(length) {
+			var red: CGFloat = 0.0, green: CGFloat = 0.0, blue: CGFloat = 0.0, alpha: CGFloat = 1.0
+			rangeFrom = colorString.index(colorString.startIndex, offsetBy: 1)
+			rangeTo = colorString.index(rangeFrom, offsetBy: 1)
+			let hexRed: String = String(colorString[rangeFrom ... rangeTo])
+			red = CGFloat(UInt(hexRed, radix: 16) ?? 0) / hexColortMax
+			
+			rangeFrom = colorString.index(colorString.startIndex, offsetBy: 3)
+			rangeTo = colorString.index(rangeFrom, offsetBy: 1)
+			let hexGreen: String = String(colorString[rangeFrom ... rangeTo])
+			green = CGFloat(UInt(hexGreen, radix: 16) ?? 0) / hexColortMax
+			
+			rangeFrom = colorString.index(colorString.startIndex, offsetBy: 5)
+			rangeTo = colorString.index(rangeFrom, offsetBy: 1)
+			let hexBlue: String = String(colorString[rangeFrom ... rangeTo])
+			blue = CGFloat(UInt(hexBlue, radix: 16) ?? 0) / hexColortMax
+			if length == 9 {
+				rangeFrom = colorString.index(colorString.startIndex, offsetBy: 7)
+				rangeTo = colorString.index(rangeFrom, offsetBy: 1)
+				let hexAlpha: String = String(colorString[rangeFrom ... rangeTo])
+				alpha = CGFloat(UInt(hexAlpha, radix: 16) ?? 0) / hexColortMax
+			}// end if have alpha string
+			
+			let color: NSColor = NSColor(calibratedRed: red, green: green, blue: blue, alpha: alpha)
+			
+			return color
+		}// end if length of color string is 7 or 9
+
+		return NSColor.clear
+	}// end hexcClorToColor
 	
-	private func rgbColorToHexColor (rgbColor: NSColor) -> String {
-		var red: CGFloat = 1.0
-		var green: CGFloat = 1.0
-		var blue: CGFloat = 1.0
-		var alpha: CGFloat = 1.0
-		rgbColor.getRed(&red, green: &green, blue: &blue, alpha: &alpha)
+	private func rgbColorToHexColor (rgbColor color: NSColor) -> String {
+		var red: CGFloat = 0.0
+		var green: CGFloat = 0.0
+		var blue: CGFloat = 0.0
+		var alpha: CGFloat = 0.0
+		color.getRed(&red, green: &green, blue: &blue, alpha: &alpha)
 		
-		let intRed: Int = Int(red * 0xff)
-		let intGreen: Int = Int(green * 0xff)
-		let intBlue: Int = Int(blue * 0xff)
-		let hexColor: String = String(format: "#%02x%02x%02x", intRed, intGreen, intBlue)
+		var hexColor: String = "#"
+		for elem: CGFloat in [red, green, blue] {
+			let colorLevel: UInt = UInt(elem * CGFloat(0xff))
+			let element: String = String(colorLevel, radix: 16)
+			hexColor.append(element)
+		}// end foreach color element
+		if alpha != 1.0 {
+			let alphaLevel: UInt =  UInt(alpha * CGFloat(0xff))
+			let element: String = String(alphaLevel, radix: 16)
+			hexColor.append(element)
+		}// end if color have alpha element
 		
 		return hexColor
-	}// end func rgbColorToHexColor
+	}// end rgbColorToHexColor
 
 		// MARK: - Delegates
 }// end class NicoLiveUser
