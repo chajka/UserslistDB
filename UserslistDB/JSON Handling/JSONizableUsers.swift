@@ -55,6 +55,18 @@ public final class JSONizableUsers: NSObject, Codable {
 		listener[id] = user
 	}// end func id
 
+	public func cleanupOutdatedUser (before date: String, onymityDict: inout Dictionary<String, Bool>) {
+		for user in listener {
+			let onymity: Bool = onymityDict[user.key, default: false]
+			if onymity == false && user.key != Owner {
+				if user.value.lastMet < date {
+					listener.removeValue(forKey: user.key)
+					if let _ = onymityDict[user.key] { onymityDict.removeValue(forKey: user.key) }
+				}// end if user is anonymous and outdated
+			}// end if anonymous user
+		}// end foreach listener
+	}// end cleanupOutdatedUser
+
 		// MARK: - Internal methods
 		// MARK: - Private methods
 		// MARK: - Delegates
