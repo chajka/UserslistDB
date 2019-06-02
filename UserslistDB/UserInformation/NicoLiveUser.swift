@@ -107,7 +107,7 @@ public final class NicoLiveUser: NSObject {
 			entry.note = note
 			update(friendship: .known)
 		}// end didSet
-	}// end property note
+	}// end side effect with stored property note
 	
         // MARK: - Member variables
 	private(set) unowned var entry: JSONizableUser
@@ -122,8 +122,12 @@ public final class NicoLiveUser: NSObject {
 		privilege = Privilege.owner
 		language = UserLanguage.ja
 		friendship = Friendship.known
+		if let lock: Bool = entry.lock { self.lock = lock }
 		lastMet = Date()
 		super.init()
+		if let colorString: String = entry.color { color = hexcClorToColor(hexColor: colorString) }
+		if let voiceName: String = entry.voice { voice = voiceName }
+		if let noteString: String = entry.note { note = noteString }
 		handle = ownerNickname
 	}// end init owner user
 
