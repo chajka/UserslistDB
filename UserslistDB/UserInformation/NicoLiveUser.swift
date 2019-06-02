@@ -59,6 +59,7 @@ public final class NicoLiveUser: NSObject {
 			return name.handle
 		}// end get
 		set (newHandle) {
+			if lock { return }
 			name.handle = newHandle
 			entry.handle = newHandle
 			update(friendship: .known)
