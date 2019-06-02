@@ -53,6 +53,12 @@ public final class JSONizableAllUsers: NSObject, Codable {
 		knownUsersOnymity[user] = signed
 	}// end addUser
 
+	public func cleanupOutdatedUser (before date: String) {
+		for owner in knownOwners {
+			owner.value.cleanupOutdatedUser(before: date, onymityDict: &knownUsersOnymity)
+		}// end foreach all owners
+	}// end cleanupOutdatedUser
+	
 		// MARK: - Internal methods
 		// MARK: - Private methods
 		// MARK: - Delegates
