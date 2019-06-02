@@ -94,11 +94,14 @@ public final class NicoLiveUser: NSObject {
 		}// end willSet
 	}// end side effect with stored property
 	public var voice: String? {
+		willSet {
+			if lock { return }
+		}// end willSet
 		didSet {
 			entry.voice = voice
 			update(friendship: .known)
 		}// end didSet
-	}// end property voice
+	}// end side effect with stored property voice
 	public var note: String? {
 		didSet {
 			entry.note = note
