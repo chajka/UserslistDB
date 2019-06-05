@@ -67,6 +67,9 @@ public final class Userslist: NSObject {
 	private let databaseURL: URL
 	private var currentOwners: Dictionary<String, NicoLiveListeners>
 
+	private let officialEntry: JSONizableUser
+	private let cruiseEntry: JSONizableUser
+
 	private let queue: DispatchQueue = DispatchQueue(label: "tv.from.chajka.UserslistDatabase", qos: DispatchQoS.background)
 	private var images: Images!
 	
