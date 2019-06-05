@@ -132,7 +132,7 @@ public final class NicoLiveListeners: NSObject {
 			semaphore.signal()
 		}// end closure for recieve data
 		task.resume()
-		let result: DispatchTimeoutResult = semaphore.wait(timeout: DispatchTime.now() + (5 * 1000 * 1000 * 1000))
+		let result: DispatchTimeoutResult = semaphore.wait(timeout: DispatchTime.now() + 5)
 		if result == DispatchTimeoutResult.timedOut { return nil }
 		
 		return nickname
