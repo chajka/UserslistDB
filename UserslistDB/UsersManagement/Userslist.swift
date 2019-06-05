@@ -58,12 +58,17 @@ extension JSONKey.user: StringEnum { }
 
 public final class Userslist: NSObject {
 		// MARK: - Properties
+	public let officialUser: NicoLiveUser
+	public let cruiseUser: NicoLiveUser
 		// MARK: - Member variables
 	private let allUsers: JSONizableAllUsers
 	private let encoder: JSONEncoder = JSONEncoder()
 	
 	private let databaseURL: URL
 	private var currentOwners: Dictionary<String, NicoLiveListeners>
+
+	private let officialEntry: JSONizableUser
+	private let cruiseEntry: JSONizableUser
 
 	private let queue: DispatchQueue = DispatchQueue(label: "tv.from.chajka.UserslistDatabase", qos: DispatchQoS.background)
 	private var images: Images!
@@ -103,6 +108,10 @@ public final class Userslist: NSObject {
 			allUsers = JSONizableAllUsers()
 		}// end try - catch open data and parse json to dictionary
 		encoder.outputFormatting = JSONEncoder.OutputFormatting.prettyPrinted
+		officialEntry = JSONizableUser("Official", true, true)
+		officialUser = NicoLiveUser(user: officialEntry, identifier: officialEntry.handle, nickname: officialEntry.handle, premium: 0, anonymous: false, lang: UserLanguage.ja)
+		cruiseEntry = JSONizableUser("Cruise", true, true)
+		cruiseUser = NicoLiveUser(user: cruiseEntry, identifier: cruiseEntry.handle, nickname: cruiseEntry.handle, premium: 0, anonymous: false, lang: UserLanguage.ja)
 		super.init()
 		cleanupOutdatedUser()
 	}// end init
@@ -115,6 +124,8 @@ public final class Userslist: NSObject {
 		// MARK: - Public methods
 	public func setDefaultThumbnails(defaultUser: NSImage, anonymousUser: NSImage, officialUser: NSImage, cruiseUser: NSImage) {
 		images = Images(noImageUser: defaultUser, anonymous: anonymousUser, offifical: officialUser, cruise: cruiseUser)
+		self.officialUser.thumbnail = officialUser
+		self.cruiseUser.thumbnail = cruiseUser
 	}// end setDefaultThumbnails
 	
 	public func updateDatabaseFile () -> Bool {
