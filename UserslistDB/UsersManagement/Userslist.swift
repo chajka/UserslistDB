@@ -124,6 +124,8 @@ public final class Userslist: NSObject {
 		// MARK: - Public methods
 	public func setDefaultThumbnails(defaultUser: NSImage, anonymousUser: NSImage, officialUser: NSImage, cruiseUser: NSImage) {
 		images = Images(noImageUser: defaultUser, anonymous: anonymousUser, offifical: officialUser, cruise: cruiseUser)
+		self.officialUser.thumbnail = officialUser
+		self.cruiseUser.thumbnail = cruiseUser
 	}// end setDefaultThumbnails
 	
 	public func updateDatabaseFile () -> Bool {
