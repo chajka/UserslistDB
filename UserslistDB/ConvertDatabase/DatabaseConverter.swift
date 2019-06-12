@@ -186,8 +186,7 @@ public final class DatabaseConverter: NSObject , XMLParserDelegate {
 					}// end optional binding check for lock attribute have value
 				case .known:
 					if let knownAttr: String = attributeDict[Attribute.handle.name.known] {
-						if knownAttr == Attribute.handle.value.yes { known = true }
-						if knownAttr == Attribute.handle.value.no { known = false }
+						known = knownAttr == Attribute.handle.value.yes ? true : false
 					}// end optional binding check for lock attribute have value
 				case .color:
 					if let color = attributeDict[Attribute.handle.name.color] { self.color = color }
