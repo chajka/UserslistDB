@@ -15,16 +15,17 @@ public final class JSONizableAllUsers: NSObject, Codable {
 	private var knownUsersOnymity: Dictionary<String, Bool>
 
 		// MARK: - Constructor/Destructor
-	public override init() {
+	public override init () {
 		knownOwners = Dictionary()
 		knownUsersOnymity = Dictionary()
 	}// end initt
 
 		// MARK: - Override
-	public override func isEqual(_ object: Any?) -> Bool {
+	public override func isEqual (_ object: Any?) -> Bool {
 		guard let rhs:JSONizableAllUsers = object as? JSONizableAllUsers else { return false }
 		return knownOwners == rhs.knownOwners && knownUsersOnymity == rhs.knownUsersOnymity
-	}
+	}// end isEqual
+
 		// MARK: - Actions
 		// MARK: - Public methods
 	public func users (forOwner owner: String, anonymousCommentDefault: Bool = true, monitorhDefault: Bool = false) -> JSONizableUsers {
@@ -32,10 +33,10 @@ public final class JSONizableAllUsers: NSObject, Codable {
 			return users
 		}// end optional binding chek for owner identifier entry in owners dictionary
 		
-		let users: JSONizableUsers = addUsers(forOwner: owner)
+		let users: JSONizableUsers = JSONizableUsers()
 		users.anonymousComment = anonymousCommentDefault
 		users.monitor = monitorhDefault
-		return addUsers(forOwner: owner)
+		return addUsers(forOwner: owner, to: users)
 	}// end func users
 
 	public func addUsers (forOwner identifier: String, to users: JSONizableUsers = JSONizableUsers()) -> JSONizableUsers {
