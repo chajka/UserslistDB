@@ -160,6 +160,8 @@ public final class Userslist: NSObject {
 	}// end func start
 	
 	public func end (owner: String) -> Void {
+		guard let users: NicoLiveListeners = currentOwners[owner] else { return }
+		users.finishProcess()
 		currentOwners.removeValue(forKey: owner)
 	}// end func end
 	
