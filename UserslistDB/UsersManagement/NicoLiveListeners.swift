@@ -63,6 +63,12 @@ public final class NicoLiveListeners: NSObject {
 	
 		// MARK: - Override
 		// MARK: - Public methods
+	public func finishProcess () {
+		for user: NicoLiveUser in currentUsers.values {
+			if user.entry.known == nil { user.entry.known = false }
+		}// end foreach currentUsers
+	}// end finishProcess
+
 	public func setDefaultThumbnails(images: Images) {
 		self.images = images
 	}// end setDefaultThumbnails
