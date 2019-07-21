@@ -80,7 +80,7 @@ public final class DatabaseConverter: NSObject , XMLParserDelegate {
 	private let databaseJSONFileURL: URL
 	private let databaseFoldeerURL: URL
 	private var serializedData: Data!
-	
+
 	private var currentUserIdentifier: String = String()
 	private var currentOwnerIdentifier: String = String()
 	private var user: JSONizableUser?
@@ -90,13 +90,13 @@ public final class DatabaseConverter: NSObject , XMLParserDelegate {
 	private var lock: Bool?
 	private var known: Bool?
 	private var color: String?
-	
+
 	private var stringBuffer: String = String()
 
 	private let allUsers: JSONizableAllUsers = JSONizableAllUsers()
 	private let parser:XMLParser
 	private var data: Data?
-	
+
 		// MARK: - Constructor/Destructor
 	public init (databasePath: String, databaseFile :String = "userslist") throws {
 		let databaseFullpath: String = databasePath.prefix(1) == "~" ? (NSHomeDirectory() + String(databasePath.suffix(databasePath.count - 1))) : databasePath
@@ -112,7 +112,7 @@ public final class DatabaseConverter: NSObject , XMLParserDelegate {
 		super.init()
 		parser.delegate = self
 	}// end init
-	
+
 		// MARK: - Override
 		// MARK: - Actions
 		// MARK: - Public methods
@@ -127,7 +127,7 @@ public final class DatabaseConverter: NSObject , XMLParserDelegate {
 		}
 		return succcess
 	}// end func parse
-	
+
 	public func writeJson() -> Bool {
 		do {
 			if let data: Data = self.data {
@@ -140,7 +140,7 @@ public final class DatabaseConverter: NSObject , XMLParserDelegate {
 			return false
 		}// end try write to file
 	}// end func writeJson
-	
+
 		// MARK: - Internal methods
 		// MARK: - Private methods
 		// MARK: - Delegates
@@ -210,7 +210,7 @@ public final class DatabaseConverter: NSObject , XMLParserDelegate {
 			let usersFroCurrentOwner: JSONizableUsers = allUsers.users(forOwner: currentOwnerIdentifier)
 			let handle: String = String(stringBuffer)
 			let user: JSONizableUser = JSONizableUser(handle)
-			
+
 			if let lock: Bool = self.lock { user.lock = lock }
 			if let known: Bool = self.known { user.known = known }
 			if let color: String = self.color { user.color = color }

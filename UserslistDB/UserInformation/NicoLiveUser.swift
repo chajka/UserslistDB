@@ -34,8 +34,7 @@ public final class UserName {
 			return (handle == String(identifier.prefix(handle.count))) ? false : true
 		}// end get
 	}// end read only property get
-	
-	
+
 	init (identifier: String, nickname: String = "", handle: String = "") {
 		self.identifier = identifier
 		self.nickname = nickname.isEmpty ? String(identifier.prefix(10)) : nickname
@@ -108,10 +107,10 @@ public final class NicoLiveUser: NSObject {
 			update(friendship: .known)
 		}// end didSet
 	}// end side effect with stored property note
-	
+
         // MARK: - Member variables
 	private(set) unowned var entry: JSONizableUser
-	
+
         // MARK: - Constructor/Destructor
 	public init (owner  identifier: String, ownerEntry entry: JSONizableUser, nickname ownerNickname: String) {
 		self.entry = entry
@@ -158,7 +157,7 @@ public final class NicoLiveUser: NSObject {
 		if let voiceName: String = entry.voice { voice = voiceName }
 		if let noteString: String = entry.note { note = noteString }
 	}// end init from entry
-	
+
 		// MARK: - Override
 		// MARK: - Actions
 		// MARK: - Public methods
@@ -167,13 +166,13 @@ public final class NicoLiveUser: NSObject {
 		entry.setValue(hexColor, forKey: JSONKey.user.color.rawValue)
 		update(friendship: .known)
 	}// end setColor
-	
+
 	public func setColor (rgbColor: NSColor) -> Void {
 		color = rgbColor
 		entry.setValue(rgbColorToHexColor(rgbColor: rgbColor), forKey: JSONKey.user.color.rawValue)
 		update(friendship: .known)
 	}// end setColor
-	
+
 	public func addEntryTo (listensers: NSMutableDictionary) {
 		let identifier = name.identifier
 		listensers.setValue(entry, forKey: identifier)
@@ -186,7 +185,7 @@ public final class NicoLiveUser: NSObject {
 	public func update (friendship newFriendship:Friendship) {
 		self.friendship = newFriendship
 	}// end update friendship
-	
+
 		// MARK: - Private methods
 	private func hexcClorToColor (hexColor colorString: String) -> NSColor {
 		var rangeFrom: String.Index
@@ -200,12 +199,12 @@ public final class NicoLiveUser: NSObject {
 			rangeTo = colorString.index(rangeFrom, offsetBy: 1)
 			let hexRed: String = String(colorString[rangeFrom ... rangeTo])
 			red = CGFloat(UInt(hexRed, radix: 16) ?? 0) / hexColortMax
-			
+
 			rangeFrom = colorString.index(colorString.startIndex, offsetBy: 3)
 			rangeTo = colorString.index(rangeFrom, offsetBy: 1)
 			let hexGreen: String = String(colorString[rangeFrom ... rangeTo])
 			green = CGFloat(UInt(hexGreen, radix: 16) ?? 0) / hexColortMax
-			
+
 			rangeFrom = colorString.index(colorString.startIndex, offsetBy: 5)
 			rangeTo = colorString.index(rangeFrom, offsetBy: 1)
 			let hexBlue: String = String(colorString[rangeFrom ... rangeTo])
@@ -216,22 +215,21 @@ public final class NicoLiveUser: NSObject {
 				let hexAlpha: String = String(colorString[rangeFrom ... rangeTo])
 				alpha = CGFloat(UInt(hexAlpha, radix: 16) ?? 0) / hexColortMax
 			}// end if have alpha string
-			
 			let color: NSColor = NSColor(calibratedRed: red, green: green, blue: blue, alpha: alpha)
-			
+
 			return color
 		}// end if length of color string is 7 or 9
 
 		return NSColor.clear
 	}// end hexcClorToColor
-	
+
 	private func rgbColorToHexColor (rgbColor color: NSColor) -> String {
 		var red: CGFloat = 0.0
 		var green: CGFloat = 0.0
 		var blue: CGFloat = 0.0
 		var alpha: CGFloat = 0.0
 		color.getRed(&red, green: &green, blue: &blue, alpha: &alpha)
-		
+
 		var hexColor: String = "#"
 		for elem: CGFloat in [red, green, blue] {
 			let colorLevel: UInt = UInt(elem * CGFloat(0xff))
@@ -243,7 +241,7 @@ public final class NicoLiveUser: NSObject {
 			let element: String = String(alphaLevel, radix: 16)
 			hexColor.append(element)
 		}// end if color have alpha element
-		
+
 		return hexColor
 	}// end rgbColorToHexColor
 

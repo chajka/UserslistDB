@@ -32,7 +32,7 @@ public final class JSONizableAllUsers: NSObject, Codable {
 		if let users: JSONizableUsers = knownOwners[owner] {
 			return users
 		}// end optional binding chek for owner identifier entry in owners dictionary
-		
+
 		let users: JSONizableUsers = JSONizableUsers()
 		users.anonymousComment = anonymousCommentDefault
 		users.monitor = monitorhDefault
@@ -41,10 +41,10 @@ public final class JSONizableAllUsers: NSObject, Codable {
 
 	public func addUsers (forOwner identifier: String, to users: JSONizableUsers = JSONizableUsers()) -> JSONizableUsers {
 		knownOwners[identifier] = users
-	
+
 		return users
 	}// end addOwner
-	
+
 	public func onymoity (ofUserIdentifier identifier: String) -> Bool? {
 		guard let anonymous: Bool = knownUsersOnymity[identifier] else { return nil }
 		return anonymous
@@ -59,7 +59,7 @@ public final class JSONizableAllUsers: NSObject, Codable {
 			owner.value.cleanupOutdatedUser(before: date, onymityDict: &knownUsersOnymity)
 		}// end foreach all owners
 	}// end cleanupOutdatedUser
-	
+
 		// MARK: - Internal methods
 		// MARK: - Private methods
 		// MARK: - Delegates
