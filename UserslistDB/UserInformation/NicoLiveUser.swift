@@ -24,6 +24,17 @@ public enum Privilege {
 	case official
 }// end enum Privilege
 
+fileprivate let Radix: Int = 0x10
+fileprivate let OffsetRed: Int = 1
+fileprivate let OffsetGreen: Int = 3
+fileprivate let OffsetBlue: Int = 5
+fileprivate let OffsetAlpha: Int = 7
+fileprivate let ColorDigit: Int = 2
+fileprivate let MaxValue: CGFloat = 0xff
+fileprivate let RGBColorCount: Int = 7
+fileprivate let RGBAColorCount: Int = 9
+fileprivate let PaddingCharacter: Character = "0"
+
 public final class UserName {
 	public let identifier: String
 	public var nickname: String
@@ -188,61 +199,45 @@ public final class NicoLiveUser: NSObject {
 
 		// MARK: - Private methods
 	private func hexcClorToColor (hexColor colorString: String) -> NSColor {
-		var rangeFrom: String.Index
-		var rangeTo: String.Index
-		let hexColortMax: CGFloat = CGFloat(0xff)
-		let length: Int = colorString.count
-		let capableLength: Set = Set(arrayLiteral: 7, 9)
-		if capableLength.contains(length) {
-			var red: CGFloat = 0.0, green: CGFloat = 0.0, blue: CGFloat = 0.0, alpha: CGFloat = 1.0
-			rangeFrom = colorString.index(colorString.startIndex, offsetBy: 1)
-			rangeTo = colorString.index(rangeFrom, offsetBy: 1)
-			let hexRed: String = String(colorString[rangeFrom ... rangeTo])
-			red = CGFloat(UInt(hexRed, radix: 16) ?? 0) / hexColortMax
+		let capableLength: Set = Set(arrayLiteral: RGBColorCount, RGBAColorCount)
+		if capableLength.contains(colorString.count) && String(colorString.prefix(1)) == "#" {
+			var red: CGFloat = 0
+			var green: CGFloat = 0
+			var blue: CGFloat = 0
+			var alpha: CGFloat = 1.0
+			if let range: Range = Range(NSRange(location: OffsetRed, length: ColorDigit), in: colorString) {
+				if let hexRed: Int = Int(String(colorString[range]), radix: Radix) { red = CGFloat(hexRed) / MaxValue }
+			}// end optional binding for red color hex vallue
+			if let range: Range = Range(NSRange(location: OffsetGreen, length: ColorDigit), in: colorString) {
+				if let hexGreen: Int = Int(String(colorString[range]), radix: Radix) { green = CGFloat(hexGreen) / MaxValue }
+			}// end optional binding for green color hex vallue
+			if let range: Range = Range(NSRange(location: OffsetBlue, length: ColorDigit), in: colorString) {
+				if let hexBlue: Int = Int(String(colorString[range]), radix: Radix) { blue = CGFloat(hexBlue) / MaxValue }
+			}// end optional binding for blue color hex vallue
+			if let range: Range = Range(NSRange(location: OffsetAlpha, length: ColorDigit), in: colorString) {
+				if let hexAlpha: Int = Int(String(colorString[range]), radix: Radix) { alpha = CGFloat(hexAlpha) / MaxValue }
+			}// end optional binding for alpha blending hex vallue
 
-			rangeFrom = colorString.index(colorString.startIndex, offsetBy: 3)
-			rangeTo = colorString.index(rangeFrom, offsetBy: 1)
-			let hexGreen: String = String(colorString[rangeFrom ... rangeTo])
-			green = CGFloat(UInt(hexGreen, radix: 16) ?? 0) / hexColortMax
-
-			rangeFrom = colorString.index(colorString.startIndex, offsetBy: 5)
-			rangeTo = colorString.index(rangeFrom, offsetBy: 1)
-			let hexBlue: String = String(colorString[rangeFrom ... rangeTo])
-			blue = CGFloat(UInt(hexBlue, radix: 16) ?? 0) / hexColortMax
-			if length == 9 {
-				rangeFrom = colorString.index(colorString.startIndex, offsetBy: 7)
-				rangeTo = colorString.index(rangeFrom, offsetBy: 1)
-				let hexAlpha: String = String(colorString[rangeFrom ... rangeTo])
-				alpha = CGFloat(UInt(hexAlpha, radix: 16) ?? 0) / hexColortMax
-			}// end if have alpha string
-			let color: NSColor = NSColor(calibratedRed: red, green: green, blue: blue, alpha: alpha)
-
-			return color
-		}// end if length of color string is 7 or 9
+			return NSColor(calibratedRed: red, green: green, blue: blue, alpha: alpha)
+		}// end if string maybe hex color
 
 		return NSColor.clear
 	}// end hexcClorToColor
 
 	private func rgbColorToHexColor (rgbColor color: NSColor) -> String {
-		var red: CGFloat = 0.0
-		var green: CGFloat = 0.0
-		var blue: CGFloat = 0.0
-		var alpha: CGFloat = 0.0
+		var red: CGFloat = 0
+		var green: CGFloat = 0
+		var blue: CGFloat = 0
+		var alpha: CGFloat = 0
 		color.getRed(&red, green: &green, blue: &blue, alpha: &alpha)
+		var colorString = "#"
+		let padding: String = String(repeating: PaddingCharacter, count: ColorDigit)
+		colorString += String((padding + String(Int(red * MaxValue), radix: Radix)).suffix(ColorDigit))
+		colorString += String((padding + String(Int(green * MaxValue), radix: Radix)).suffix(ColorDigit))
+		colorString += String((padding + String(Int(blue * MaxValue), radix: Radix)).suffix(ColorDigit))
+		if alpha != 1.0 { colorString += String((padding + String(Int(alpha * MaxValue), radix: Radix)).suffix(ColorDigit)) }
 
-		var hexColor: String = "#"
-		for elem: CGFloat in [red, green, blue] {
-			let colorLevel: UInt = UInt(elem * CGFloat(0xff))
-			let element: String = String(colorLevel, radix: 16)
-			hexColor.append(element)
-		}// end foreach color element
-		if alpha != 1.0 {
-			let alphaLevel: UInt =  UInt(alpha * CGFloat(0xff))
-			let element: String = String(alphaLevel, radix: 16)
-			hexColor.append(element)
-		}// end if color have alpha element
-
-		return hexColor
+		return colorString
 	}// end rgbColorToHexColor
 
 		// MARK: - Delegates
