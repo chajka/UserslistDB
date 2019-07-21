@@ -91,7 +91,7 @@ public final class NicoLiveListeners: NSObject {
 		else if identifier == informationUserIdentifier { nickname = informationUserName }
 		// end if user is not anonymous
 		
-		let usr: JSONizableUser = knownUsers.user(identifier: identifier, userName: nickname)
+		let usr: JSONizableUser = knownUsers.user(identifier: identifier)
 		let user: NicoLiveUser = NicoLiveUser(user: usr, identifier: identifier, nickname: nickname, premium: premium, anonymous: anonymous, lang: lang)
 		parse(user: user, id: identifier, premium: premium)
 		
