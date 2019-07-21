@@ -225,25 +225,19 @@ public final class NicoLiveUser: NSObject {
 	}// end hexcClorToColor
 
 	private func rgbColorToHexColor (rgbColor color: NSColor) -> String {
-		var red: CGFloat = 0.0
-		var green: CGFloat = 0.0
-		var blue: CGFloat = 0.0
-		var alpha: CGFloat = 0.0
+		var red: CGFloat = 0
+		var green: CGFloat = 0
+		var blue: CGFloat = 0
+		var alpha: CGFloat = 0
 		color.getRed(&red, green: &green, blue: &blue, alpha: &alpha)
+		var colorString = "#"
+		let padding: String = String(repeating: PaddingCharacter, count: ColorDigit)
+		colorString += String((padding + String(Int(red * MaxValue), radix: Radix)).suffix(ColorDigit))
+		colorString += String((padding + String(Int(green * MaxValue), radix: Radix)).suffix(ColorDigit))
+		colorString += String((padding + String(Int(blue * MaxValue), radix: Radix)).suffix(ColorDigit))
+		if alpha != 1.0 { colorString += String((padding + String(Int(alpha * MaxValue), radix: Radix)).suffix(ColorDigit)) }
 
-		var hexColor: String = "#"
-		for elem: CGFloat in [red, green, blue] {
-			let colorLevel: UInt = UInt(elem * CGFloat(0xff))
-			let element: String = String(colorLevel, radix: 16)
-			hexColor.append(element)
-		}// end foreach color element
-		if alpha != 1.0 {
-			let alphaLevel: UInt =  UInt(alpha * CGFloat(0xff))
-			let element: String = String(alphaLevel, radix: 16)
-			hexColor.append(element)
-		}// end if color have alpha element
-
-		return hexColor
+		return colorString
 	}// end rgbColorToHexColor
 
 		// MARK: - Delegates
