@@ -20,7 +20,7 @@ class NicoLiveUserTests: XCTestCase {
 		let image: NSImage = NSImage()
 		db.setDefaultThumbnails(defaultUser: image, anonymousUser: image, officialUser: image, cruiseUser: image)
     }
-    
+
     override func tearDown() {
         // Put teardown code here. This method is called after the invocation of each test method in the class.
         super.tearDown()
@@ -47,14 +47,14 @@ class NicoLiveUserTests: XCTestCase {
 		let user: NicoLiveUser = NicoLiveUser(user: usr, identifier: "6347612", nickname: usr.handle, premium: 0b01, anonymous: false, lang: UserLanguage.en)
 		XCTAssertEqual(user.friendship, Friendship.met, "user friendship incorrect")
 	}
-	
+
 	func test02_allocation_from_argument() {
 		let stateForOwner = db.start(owner: "6347612", cookies: [cookie!])
 		XCTAssertTrue(stateForOwner.comment, "Anonymous comment is not true")
 		XCTAssertFalse(stateForOwner.monitor, "enable monitor is not true")
 		do {
 			let user: NicoLiveUser = try db.activatteUser (identifier: "6347612", premium: 1, anonymous: false, Lang: UserLanguage.en, forOwner: "6347612")
-			
+
 			XCTAssertNotNil(user, "Single user can not initialize")
 			XCTAssertNotNil(user.name.nickname, "user nickname can not correct")
 			XCTAssertNotNil(user.name.nickname, "user handle can not correct")
@@ -69,7 +69,7 @@ class NicoLiveUserTests: XCTestCase {
 			print(error.localizedDescription)
 		}
 	}
-	
+
     func testPerformanceExample() {
         // This is an example of a performance test case.
         self.measure {

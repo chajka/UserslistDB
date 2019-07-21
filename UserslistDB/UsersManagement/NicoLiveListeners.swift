@@ -39,12 +39,12 @@ public final class NicoLiveListeners: NSObject {
 	private var currentUsers: Dictionary<String, NicoLiveUser>
 	private let ownerIdentifier: String
 	private var observer: NSObject?
-	
+
 	private var images: Images!
 	private let cookies: Array<HTTPCookie>
 	private let session: URLSession = URLSession(configuration: URLSessionConfiguration.default)
 	private var reqest: URLRequest
-	
+
 		// MARK: - Constructor/Destructor
 	public init (owner: String, for listeners: JSONizableUsers, user_session: [HTTPCookie], observer: NSObject? = nil) {
 		ownerIdentifier = owner
@@ -60,7 +60,7 @@ public final class NicoLiveListeners: NSObject {
 		self.owner = NicoLiveUser(owner: Owner, ownerEntry: ownerEntry, nickname: ownersNickname)
 		fetchThumbnail(user: self.owner, identifier: ownerIdentifier, anonymous: false)
 	}// end init
-	
+
 		// MARK: - Override
 		// MARK: - Public methods
 	public func finishProcess () {
@@ -72,13 +72,13 @@ public final class NicoLiveListeners: NSObject {
 	public func setDefaultThumbnails(images: Images) {
 		self.images = images
 	}// end setDefaultThumbnails
-	
+
 	public func user (identifier: String) throws -> NicoLiveUser {
 		guard let user: NicoLiveUser = currentUsers[identifier] else { throw UserslistError.inactiveListener }
-		
+
 		return user
 	}// end user
-	
+
 	public func activateUser (identifier: String, premium: Int, anonymous: Bool, lang: UserLanguage) -> NicoLiveUser {
 		var nickname: String = ""
 		if !anonymous || premium == 0b11 {
@@ -90,21 +90,21 @@ public final class NicoLiveListeners: NSObject {
 		} else if identifier == cruiseUserIdentifier { nickname = cruiseUserName }
 		else if identifier == informationUserIdentifier { nickname = informationUserName }
 		// end if user is not anonymous
-		
+
 		let usr: JSONizableUser = knownUsers.user(identifier: identifier)
 		let user: NicoLiveUser = NicoLiveUser(user: usr, identifier: identifier, nickname: nickname, premium: premium, anonymous: anonymous, lang: lang)
 		parse(user: user, id: identifier, premium: premium)
-		
+
 		fetchThumbnail(user: user, identifier: identifier, anonymous: anonymous)
 		currentUsers[identifier] = user
-		
+
 		return user
 	}// end func activateUser
 
 	public func set (commentAAnonymity anonymity: Bool) {
 		knownUsers.anonymousComment = anonymity
 	}// end set comment aonymity
-	
+
 		// MARK: - Internal methods
 		// MARK: - Private methods
 	private func parse (user usr: NicoLiveUser, id identifier: String, premium prem: Int) {
@@ -117,7 +117,7 @@ public final class NicoLiveListeners: NSObject {
 		else if (prem & (0x01 << 1)) != 0x00 { usr.privilege = Privilege.owner }
 		else if (prem & 0b11) == 0b11 { usr.privilege = Privilege.cruise }
 	}// end parse
-	
+
 	private func fetchNickname (identifier: String) -> String? {
 		guard let url = URL(string: NicknameAPIFormat + identifier) else { return "" }
 		let semaphore: DispatchSemaphore = DispatchSemaphore(value: 0)
@@ -140,10 +140,10 @@ public final class NicoLiveListeners: NSObject {
 		task.resume()
 		let result: DispatchTimeoutResult = semaphore.wait(timeout: DispatchTime.now() + 5)
 		if result == DispatchTimeoutResult.timedOut { return nil }
-		
+
 		return nickname
 	}// end func fetchNickname
-	
+
 	private func fetchNickname(fromVitaAPI identifier: String) -> String {
 		guard let url = URL(string: VitaAPIFormat + identifier) else { return "" }
 		let semaphoe: DispatchSemaphore = DispatchSemaphore(value: 0)
@@ -167,10 +167,10 @@ public final class NicoLiveListeners: NSObject {
 		}// end closure for recieve data
 		task.resume()
 		semaphoe.wait()
-		
+
 		return nickname
 	}// end fetchNickname fromVitaAPI
-	
+
 	private func fetchThumbnail (user: NicoLiveUser, identifier: String, anonymous: Bool) {
 		if identifier == cruiseUserIdentifier {
 			user.thumbnail = self.images.cruise
@@ -183,7 +183,7 @@ public final class NicoLiveListeners: NSObject {
 			if let observer = observer {
 				user.addObserver(observer, forKeyPath: "thumbnail", options: [], context: nil)
 			}// end if need observe thumbnail
-			
+
 			reqest.url = thumbURL
 			let task: URLSessionDataTask = session.dataTask(with: reqest) { (dat, resp, err) in
 				if let data = dat, let image: NSImage = NSImage(data: data) {
@@ -195,12 +195,12 @@ public final class NicoLiveListeners: NSObject {
 			task.resume()
 		}// end !anonymous
 	}// end fetchThumbnail
-	
+
 	private func thumbnailURL(identifier: String) -> URL {
 		let prefix: String = String(identifier.prefix(identifier.count - 4))
 		let urlString: String = String(format: ThumbnailAPIFormat, prefix, identifier)
 		let url: URL = URL(string: urlString) ?? URL(string: NoImageThumbnailURL)!
-		
+
 		return url
 	}// end func thumbnailURL
 		// MARK: - Delegates

@@ -12,17 +12,15 @@ public enum UserLanguage: String {
 	case ja = "ja-jp"
 	case zh = "zh-tw"
 	case en = "en-us"
-	
+
 	static func ~= (lhs: UserLanguage, rhs: String) -> Bool {
 		return lhs.rawValue == rhs ? true : false
 	}// end func ~=
-	
+
 	static func == (lhs: UserLanguage, rhs: String) -> Bool {
 		return lhs.rawValue == rhs ? true : false
 	}// end func ==
 }// end public enum UserLanguage
-
-
 
 class NicoLiveListenersTests: XCTestCase {
 	var allUser: JSONizableAllUsers!
@@ -40,7 +38,7 @@ class NicoLiveListenersTests: XCTestCase {
 			print(error)
 		}
     }
-    
+
     override func tearDown() {
         // Put teardown code here. This method is called after the invocation of each test method in the class.
         super.tearDown()
