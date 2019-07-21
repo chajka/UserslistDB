@@ -24,6 +24,17 @@ public enum Privilege {
 	case official
 }// end enum Privilege
 
+fileprivate let Radix: Int = 0x10
+fileprivate let OffsetRed: Int = 1
+fileprivate let OffsetGreen: Int = 3
+fileprivate let OffsetBlue: Int = 5
+fileprivate let OffsetAlpha: Int = 7
+fileprivate let ColorDigit: Int = 2
+fileprivate let MaxValue: CGFloat = 0xff
+fileprivate let RGBColorCount: Int = 7
+fileprivate let RGBAColorCount: Int = 9
+fileprivate let PaddingCharacter: Character = "0"
+
 public final class UserName {
 	public let identifier: String
 	public var nickname: String
