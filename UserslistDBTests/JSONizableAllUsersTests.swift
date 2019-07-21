@@ -36,7 +36,7 @@ class JSONizableAllUsersTests: XCTestCase {
 			} else {
 				XCTAssertNotNil(allUsers.onymoity(ofUserIdentifier: "6347612"), "user id 6347612 is not entried")
 			}
-			
+
 		} catch let error {
 			print(error.localizedDescription)
 			XCTAssert(true, "exception catched")
@@ -106,7 +106,6 @@ class JSONizableAllUsersTests: XCTestCase {
 //			print(error.localizedDescription)
 //		}
 //	}
-
 
     func testPerformanceExample() {
         // This is an example of a performance test case.

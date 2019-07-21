@@ -21,7 +21,7 @@ public final class JSONizableUser: NSObject, Codable {
 		same = self.voice == rhs.voice ? same && true : same && false
 		same = self.note == rhs.note ? same && true : same && false
 		same = self.lastMet == rhs.lastMet ? same && true : same && false
-		
+
 		return same
 	}// end override func isEqual
 
@@ -33,7 +33,7 @@ public final class JSONizableUser: NSObject, Codable {
 	public var voice: String?
 	public var note: String?
 	public var lastMet: String
-	
+
 		// MARK: - Member variables
 		// MARK: - Constructor/Destructor
 	public init (_ handle: String, _ known: Bool? = nil, _ lock: Bool? = nil, _ color: String? = nil, _ voice: String? = nil) {

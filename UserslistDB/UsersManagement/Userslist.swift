@@ -63,7 +63,7 @@ public final class Userslist: NSObject {
 		// MARK: - Member variables
 	private let allUsers: JSONizableAllUsers
 	private let encoder: JSONEncoder = JSONEncoder()
-	
+
 	private let databaseURL: URL
 	private var currentOwners: Dictionary<String, NicoLiveListeners>
 
@@ -72,11 +72,11 @@ public final class Userslist: NSObject {
 
 	private let queue: DispatchQueue = DispatchQueue(label: "tv.from.chajka.UserslistDatabase", qos: DispatchQoS.background)
 	private var images: Images!
-	
+
 		// MARK: - Constructor/Destructor
 	public init (databaseFolderPath jsonPath: String, databaseFileName: String = DatabaseFileName) {
 		currentOwners = Dictionary()
-		
+
 		let databaseFolderURL: URL = URL(fileURLWithPath: (jsonPath.prefix(1) == "~") ? NSHomeDirectory() + String(jsonPath.suffix(jsonPath.count - 1)) : jsonPath, isDirectory: true)
 		databaseURL = databaseFolderURL.appendingPathComponent(databaseFileName).appendingPathExtension(DatabaseExtension)
 		let fm: FileManager = FileManager.default
@@ -115,11 +115,11 @@ public final class Userslist: NSObject {
 		super.init()
 		cleanupOutdatedUser()
 	}// end init
-	
+
 	deinit {
 		let _ = updateDatabaseFile()
 	}// end deinit
-	
+
 		// MARK: - Override
 		// MARK: - Public methods
 	public func setDefaultThumbnails(defaultUser: NSImage, anonymousUser: NSImage, officialUser: NSImage, cruiseUser: NSImage) {
@@ -127,7 +127,7 @@ public final class Userslist: NSObject {
 		self.officialUser.thumbnail = officialUser
 		self.cruiseUser.thumbnail = cruiseUser
 	}// end setDefaultThumbnails
-	
+
 	public func updateDatabaseFile () -> Bool {
 		do {
 			let data: Data = try encoder.encode(allUsers)
@@ -139,45 +139,45 @@ public final class Userslist: NSObject {
 			return false
 		}// end
 	}// end updateDatabaseFile
-	
+
 	public func activeOwners () -> Array<String> {
 		var result: Array<String> = Array()
 		for key: String in currentOwners.keys {
 			result.append(key)
 		}// end foreach allkeys
-		
+
 		return result
 	}// end func activeOwners
-	
+
 	public func start (owner: String, anonymousCommentDefault: Bool = true, monitorhDefault: Bool = false, cookies: [HTTPCookie], observer: NSObject? = nil) -> (comment: Bool, monitor: Bool) {
 		let users: JSONizableUsers = allUsers.users(forOwner: owner, anonymousCommentDefault: anonymousCommentDefault, monitorhDefault: monitorhDefault)
 		let listeners: NicoLiveListeners = NicoLiveListeners(owner: owner, for: users, user_session: cookies, observer: observer)
-		
+
 		listeners.setDefaultThumbnails(images: images)
 		currentOwners[owner] = listeners
-		
+
 		return (users.anonymousComment, users.monitor)
 	}// end func start
-	
+
 	public func end (owner: String) -> Void {
 		guard let users: NicoLiveListeners = currentOwners[owner] else { return }
 		users.finishProcess()
 		currentOwners.removeValue(forKey: owner)
 	}// end func end
-	
+
 	public func user (identifier: String, premium: Int, for owner: String) throws -> NicoLiveUser {
 		if premium ^ 0b11 == 0 {
 			if let listeners: NicoLiveListeners = currentOwners[owner] {
 				return listeners.owner
 			}// end optional binding check for argumented owner is in currentOwners
 		}// end if premium is owner value
-		
+
 		guard let listeners: NicoLiveListeners = currentOwners[owner] else { throw UserslistError.inactiveOwnner }
 		let user: NicoLiveUser = try listeners.user(identifier: identifier)
 
 		return user
 	}// end func user
-	
+
 	public func activatteUser (identifier: String, premium: Int, anonymous: Bool, Lang: UserLanguage, forOwner owner: String) throws -> NicoLiveUser {
 		guard let users: NicoLiveListeners = currentOwners[owner] else { throw UserslistError.inactiveOwnner }
 		allUsers.addUser(identifier: identifier, onymity: !anonymous)
@@ -186,10 +186,10 @@ public final class Userslist: NSObject {
 		queue.async {
 			_ = self.updateDatabaseFile()
 		}// end background database file update
-		
+
 		return user
 	}// end fuc activate user
-	
+
 	public func userOnymity (identifier: String) throws -> Bool {
 		guard let onimity: Bool = allUsers.onymoity(ofUserIdentifier: identifier) else { throw UserslistError.unknownUser }
 		return onimity
