@@ -149,7 +149,7 @@ public final class Userslist: NSObject {
 		return result
 	}// end func activeOwners
 
-	public func start (owner: String, anonymousCommentDefault: Bool = true, monitorhDefault: Bool = false, cookies: [HTTPCookie], observer: NSObject? = nil) -> (comment: Bool, monitor: Bool) {
+	public func start (owner: String, anonymousCommentDefault: Bool = true, monitorhDefault: Bool = false, fetcher informationFetcher: NicoNicoInformationFetcher, observer: NSObject? = nil) -> (comment: Bool, monitor: Bool) {
 		let users: JSONizableUsers = allUsers.users(forOwner: owner, anonymousCommentDefault: anonymousCommentDefault, monitorhDefault: monitorhDefault)
 		let listeners: NicoLiveListeners = NicoLiveListeners(owner: owner, for: users, user_session: cookies, observer: observer)
 
