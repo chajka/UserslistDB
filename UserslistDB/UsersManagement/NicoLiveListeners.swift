@@ -44,15 +44,17 @@ public final class NicoLiveListeners: NSObject {
 		ownerIdentifier = owner
 		currentUsers = Dictionary()
 		knownUsers = listeners
-		cookies = user_session
-		self.observer = observer
-		reqest = URLRequest(url: URL(string: NicknameAPIFormat)!)
-		reqest.allHTTPHeaderFields = HTTPCookie.requestHeaderFields(with: cookies)
+		fetcher = informationFetcher
+		observer = observerInstance
 		super.init()
-		let ownersNickname: String = fetchNickname(identifier: owner) ?? fetchNickname(fromVitaAPI: owner)
+		var ownersNickname: String
+		if let fetcher: NicoNicoInformationFetcher = fetcher {
+			ownersNickname = fetcher.fetchNickName(forIdentifier: owner) ?? UnknownName
+		} else {
+			ownersNickname = UnknownName
+		}
 		let ownerEntry = knownUsers.user(identifier: Owner, userName: ownersNickname)
 		self.owner = NicoLiveUser(owner: Owner, ownerEntry: ownerEntry, nickname: ownersNickname)
-		fetchThumbnail(user: self.owner, identifier: ownerIdentifier, anonymous: false)
 	}// end init
 
 		// MARK: - Override
@@ -65,6 +67,7 @@ public final class NicoLiveListeners: NSObject {
 
 	public func setDefaultThumbnails(images: Images) {
 		self.images = images
+		self.owner.thumbnail = fetcher?.thumbnail(identifieer: ownerIdentifier, whenNoImage: images.noImageUser!)
 	}// end setDefaultThumbnails
 
 	public func user (identifier: String) throws -> NicoLiveUser {
