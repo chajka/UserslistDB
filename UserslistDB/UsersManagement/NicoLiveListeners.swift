@@ -18,12 +18,6 @@ public struct Images {
 
 public typealias thumbNailCompletionhandler = ( (NSImage) -> Void )
 
-private let ThumbnailAPIFormat: String = "https://secure-dcdn.cdn.nimg.jp/nicoaccount/usericon/%@/%@.jpg"
-private let NoImageThumbnailURL: String = "https://secure-dcdn.cdn.nimg.jp/nicoaccount/usericon/defaults/blank.jpg"
-private let NicknameAPIFormat: String = "http://seiga.nicovideo.jp/api/user/info?id="
-private let VitaAPIFormat: String = "http://api.ce.nicovideo.jp/api/v1/user.info?user_id="
-private let NicknameNodeName: String = "nickname"
-
 private let cruiseUserIdentifier: String = "394"
 private let cruiseUserName: String = "Cruise"
 private let informationUserIdentifier: String = "900000000"
