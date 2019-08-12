@@ -40,7 +40,7 @@ public final class NicoLiveListeners: NSObject {
 	private weak var fetcher: NicoNicoInformationFetcher?
 
 		// MARK: - Constructor/Destructor
-	public init (owner: String, for listeners: JSONizableUsers, user_session: [HTTPCookie], observer: NSObject? = nil) {
+	public init (owner: String, for listeners: JSONizableUsers, fetcher informationFetcher: NicoNicoInformationFetcher?, observer observerInstance: NSObject? = nil) {
 		ownerIdentifier = owner
 		currentUsers = Dictionary()
 		knownUsers = listeners
