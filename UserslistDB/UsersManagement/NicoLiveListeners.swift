@@ -79,14 +79,9 @@ public final class NicoLiveListeners: NSObject {
 	public func activateUser (identifier: String, premium: Int, anonymous: Bool, lang: UserLanguage) -> NicoLiveUser {
 		var nickname: String = ""
 		if !anonymous || premium == 0b11 {
-			if let nick: String = fetchNickname(identifier: identifier) {
-				nickname = nick
-			} else {
-				nickname = fetchNickname(fromVitaAPI: identifier)
-			}// end optional binding check for fetch nickname and failed, use vita api to get nickname
+			nickname = fetcher?.fetchNickName(forIdentifier: identifier) ?? UnknownName
 		} else if identifier == cruiseUserIdentifier { nickname = cruiseUserName }
 		else if identifier == informationUserIdentifier { nickname = informationUserName }
-		// end if user is not anonymous
 
 		let usr: JSONizableUser = knownUsers.user(identifier: identifier)
 		let user: NicoLiveUser = NicoLiveUser(user: usr, identifier: identifier, nickname: nickname, premium: premium, anonymous: anonymous, lang: lang)
