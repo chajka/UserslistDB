@@ -23,6 +23,8 @@ private let cruiseUserName: String = "Cruise"
 private let informationUserIdentifier: String = "900000000"
 private let informationUserName: String = "Information"
 
+fileprivate let UnknownName: String = "No Nickname (Charleston)"
+
 internal let Owner: String = "BroadcastOwner"
 
 public final class NicoLiveListeners: NSObject {
