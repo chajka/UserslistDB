@@ -37,6 +37,7 @@ public final class NicoLiveListeners: NSObject {
 	private var observer: NSObject?
 
 	private var images: Images!
+	private weak var fetcher: NicoNicoInformationFetcher?
 
 		// MARK: - Constructor/Destructor
 	public init (owner: String, for listeners: JSONizableUsers, user_session: [HTTPCookie], observer: NSObject? = nil) {
