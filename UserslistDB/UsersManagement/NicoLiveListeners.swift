@@ -37,10 +37,10 @@ public final class NicoLiveListeners: NSObject {
 	private var observer: NSObject?
 
 	private var images: Images!
-	private weak var fetcher: NicoNicoInformationFetcher?
+	private weak var fetcher: NicoInformationHandler?
 
 		// MARK: - Constructor/Destructor
-	public init (owner: String, for listeners: JSONizableUsers, fetcher informationFetcher: NicoNicoInformationFetcher?, observer observerInstance: NSObject? = nil) {
+	public init (owner: String, for listeners: JSONizableUsers, fetcher informationFetcher: NicoInformationHandler?, observer observerInstance: NSObject? = nil) {
 		ownerIdentifier = owner
 		currentUsers = Dictionary()
 		knownUsers = listeners
@@ -48,7 +48,7 @@ public final class NicoLiveListeners: NSObject {
 		observer = observerInstance
 		super.init()
 		var ownersNickname: String
-		if let fetcher: NicoNicoInformationFetcher = fetcher {
+		if let fetcher: NicoInformationHandler = fetcher {
 			ownersNickname = fetcher.fetchNickName(forIdentifier: owner) ?? UnknownName
 		} else {
 			ownersNickname = UnknownName
