@@ -87,7 +87,18 @@ public final class NicoLiveListeners: NSObject {
 		let user: NicoLiveUser = NicoLiveUser(user: usr, identifier: identifier, nickname: nickname, premium: premium, anonymous: anonymous, lang: lang)
 		parse(user: user, id: identifier, premium: premium)
 
-		fetchThumbnail(user: user, identifier: identifier, anonymous: anonymous)
+		if identifier == cruiseUserIdentifier {
+			user.thumbnail = self.images.cruise
+		} else if identifier == informationUserIdentifier {
+			user.thumbnail = self.images.offifical
+		} else if anonymous {
+			user.thumbnail = self.images.anonymous
+		} else {
+			if let observer = observer {
+				user.addObserver(observer, forKeyPath: "thumbnail", options: [], context: nil)
+			}// end if need observe thumbnail
+			user.thumbnail = fetcher?.thumbnail(identifieer: identifier, whenNoImage: self.images.noImageUser!)
+		}
 		currentUsers[identifier] = user
 
 		return user
