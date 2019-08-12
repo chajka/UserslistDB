@@ -121,37 +121,5 @@ public final class NicoLiveListeners: NSObject {
 		else if (prem & 0b11) == 0b11 { usr.privilege = Privilege.cruise }
 	}// end parse
 
-	private func fetchThumbnail (user: NicoLiveUser, identifier: String, anonymous: Bool) {
-		if identifier == cruiseUserIdentifier {
-			user.thumbnail = self.images.cruise
-		} else if identifier == informationUserIdentifier {
-			user.thumbnail = self.images.offifical
-		} else if anonymous {
-			user.thumbnail = self.images.anonymous
-		} else {
-			let thumbURL: URL = thumbnailURL(identifier: identifier)
-			if let observer = observer {
-				user.addObserver(observer, forKeyPath: "thumbnail", options: [], context: nil)
-			}// end if need observe thumbnail
-
-			reqest.url = thumbURL
-			let task: URLSessionDataTask = session.dataTask(with: reqest) { (dat, resp, err) in
-				if let data = dat, let image: NSImage = NSImage(data: data) {
-					user.thumbnail = image
-				} else {
-					user.thumbnail = self.images.noImageUser
-				}// end if data is valid
-			}// end closure when recieve data
-			task.resume()
-		}// end !anonymous
-	}// end fetchThumbnail
-
-	private func thumbnailURL(identifier: String) -> URL {
-		let prefix: String = String(identifier.prefix(identifier.count - 4))
-		let urlString: String = String(format: ThumbnailAPIFormat, prefix, identifier)
-		let url: URL = URL(string: urlString) ?? URL(string: NoImageThumbnailURL)!
-
-		return url
-	}// end func thumbnailURL
 		// MARK: - Delegates
 }// end class NicoLiveListeners
