@@ -37,9 +37,6 @@ public final class NicoLiveListeners: NSObject {
 	private var observer: NSObject?
 
 	private var images: Images!
-	private let cookies: Array<HTTPCookie>
-	private let session: URLSession = URLSession(configuration: URLSessionConfiguration.default)
-	private var reqest: URLRequest
 
 		// MARK: - Constructor/Destructor
 	public init (owner: String, for listeners: JSONizableUsers, user_session: [HTTPCookie], observer: NSObject? = nil) {
