@@ -121,32 +121,6 @@ public final class NicoLiveListeners: NSObject {
 		else if (prem & 0b11) == 0b11 { usr.privilege = Privilege.cruise }
 	}// end parse
 
-	private func fetchNickname (identifier: String) -> String? {
-		guard let url = URL(string: NicknameAPIFormat + identifier) else { return "" }
-		let semaphore: DispatchSemaphore = DispatchSemaphore(value: 0)
-		var nickname: String? = nil
-		reqest.url = url
-		let task:URLSessionDataTask = session.dataTask(with: reqest) { (dat, req, err) in
-			if let data:Data = dat {
-				do {
-					let resultXML: XMLDocument = try XMLDocument(data: data, options: XMLNode.Options.documentTidyXML)
-					guard let userNode = resultXML.children?.first?.children?.first else { throw NSError(domain: "could not parse", code: 0, userInfo: nil)}
-					for child: XMLNode in (userNode.children)! {
-						if child.name == NicknameNodeName { nickname = child.stringValue }
-					}// end foreach
-				} catch let error {
-					print(error.localizedDescription)
-				}// end try - catch parse XML document
-			}// end if data is there
-			semaphore.signal()
-		}// end closure for recieve data
-		task.resume()
-		let result: DispatchTimeoutResult = semaphore.wait(timeout: DispatchTime.now() + 5)
-		if result == DispatchTimeoutResult.timedOut { return nil }
-
-		return nickname
-	}// end func fetchNickname
-
 	private func fetchNickname(fromVitaAPI identifier: String) -> String {
 		guard let url = URL(string: VitaAPIFormat + identifier) else { return "" }
 		let semaphoe: DispatchSemaphore = DispatchSemaphore(value: 0)
