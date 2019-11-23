@@ -83,8 +83,8 @@ public final class NicoLiveListeners: NSObject {
 		} else if identifier == cruiseUserIdentifier { nickname = cruiseUserName }
 		else if identifier == informationUserIdentifier { nickname = informationUserName }
 
-		let usr: JSONizableUser = knownUsers.user(identifier: identifier)
 		let user: NicoLiveUser = NicoLiveUser(user: usr, identifier: identifier, nickname: nickname, premium: premium, anonymous: anonymous, lang: lang)
+		let userForIdentifier: (user: JSONizableUser, known: Bool) = knownUsers.user(identifier: identifier)
 		parse(user: user, id: identifier, premium: premium)
 
 		if identifier == cruiseUserIdentifier {
