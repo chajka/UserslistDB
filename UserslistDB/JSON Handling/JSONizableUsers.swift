@@ -30,14 +30,14 @@ public final class JSONizableUsers: NSObject, Codable {
 		// MARK: - Override
 		// MARK: - Actions
 		// MARK: - Public methods
-	public func user (identifier id: String, userName name: String? = nil) -> JSONizableUser {
+	public func user (identifier id: String, userName name: String? = nil) -> (user: JSONizableUser, known: Bool) {
 		if let user: JSONizableUser = listener[id] {
 			if let handle: String = name {
 				if user.handle != handle {
 					user.handle = handle
 				}// end optional binding check for argument of name
 			}// end optional binding check for argument identifiers user is entroied?
-			return user
+			return (user, true)
 		}// end optional bindiing check for argrument identifier user is in?
 
 		var user: JSONizableUser
@@ -48,7 +48,7 @@ public final class JSONizableUsers: NSObject, Codable {
 		}// end optional binding check for argument identifiers user is entroied?
 		addUser(identifier: id, with: user)
 
-		return user
+		return (user, false)
 	}// end func user of
 
 	public func addUser (identifier id: String, with user: JSONizableUser)  {
