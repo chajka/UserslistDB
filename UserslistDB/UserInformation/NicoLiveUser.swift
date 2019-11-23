@@ -141,7 +141,7 @@ public final class NicoLiveUser: NSObject {
 		handle = ownerNickname
 	}// end init owner user
 
-	public init (user: JSONizableUser, identifier: String, nickname: String, premium: Int, anonymous: Bool, lang: UserLanguage) {
+	public init (user: JSONizableUser, known: Bool, identifier: String, nickname: String, premium: Int, anonymous: Bool, lang: UserLanguage) {
 		entry = user
 		language = lang
 		let handlename: String = entry.handle
