@@ -109,7 +109,7 @@ public final class Userslist: NSObject {
 		}// end try - catch open data and parse json to dictionary
 		encoder.outputFormatting = JSONEncoder.OutputFormatting.prettyPrinted
 		officialEntry = JSONizableUser("Official", true, true)
-		officialUser = NicoLiveUser(user: officialEntry, identifier: officialEntry.handle, nickname: officialEntry.handle, premium: 0, anonymous: false, lang: UserLanguage.ja)
+		officialUser = NicoLiveUser(user: officialEntry, known: true, identifier: officialEntry.handle, nickname: officialEntry.handle, premium: 0, anonymous: false, lang: UserLanguage.ja)
 		cruiseEntry = JSONizableUser("Cruise", true, true)
 		cruiseUser = NicoLiveUser(user: cruiseEntry, identifier: cruiseEntry.handle, nickname: cruiseEntry.handle, premium: 0, anonymous: false, lang: UserLanguage.ja)
 		super.init()
