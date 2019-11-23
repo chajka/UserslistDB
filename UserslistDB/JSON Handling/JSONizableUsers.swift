@@ -37,7 +37,7 @@ public final class JSONizableUsers: NSObject, Codable {
 					user.handle = handle
 				}// end optional binding check for argument of name
 			}// end optional binding check for argument identifiers user is entroied?
-			return user
+			return (user, true)
 		}// end optional bindiing check for argrument identifier user is in?
 
 		var user: JSONizableUser
