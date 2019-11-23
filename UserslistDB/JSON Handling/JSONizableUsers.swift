@@ -30,7 +30,7 @@ public final class JSONizableUsers: NSObject, Codable {
 		// MARK: - Override
 		// MARK: - Actions
 		// MARK: - Public methods
-	public func user (identifier id: String, userName name: String? = nil) -> JSONizableUser {
+	public func user (identifier id: String, userName name: String? = nil) -> (user: JSONizableUser, known: Bool) {
 		if let user: JSONizableUser = listener[id] {
 			if let handle: String = name {
 				if user.handle != handle {
