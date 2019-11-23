@@ -153,8 +153,12 @@ public final class NicoLiveUser: NSObject {
 		else if premium ^ 0b110 == 0 { privilege = Privilege.official }
 		else { privilege = Privilege.listener }
 		self.anonymous = anonymous
-		if let known: Bool = entry.known { friendship = known ? Friendship.known : Friendship.met }
-		else { friendship = Friendship.metOther }
+		if known {
+			if let knownUser: Bool = entry.known { friendship = knownUser ? Friendship.known : Friendship.met }
+			else { friendship = Friendship.metOther }
+		} else {
+			friendship = Friendship.new
+		}// end if known or new user
 		if let lock: Bool = entry.lock { self.lock = lock }
 		// update time
 		let formatter: DateFormatter = DateFormatter()
