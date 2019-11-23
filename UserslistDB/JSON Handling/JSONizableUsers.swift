@@ -48,7 +48,7 @@ public final class JSONizableUsers: NSObject, Codable {
 		}// end optional binding check for argument identifiers user is entroied?
 		addUser(identifier: id, with: user)
 
-		return user
+		return (user, false)
 	}// end func user of
 
 	public func addUser (identifier id: String, with user: JSONizableUser)  {
