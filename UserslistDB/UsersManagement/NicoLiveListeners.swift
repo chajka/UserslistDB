@@ -53,7 +53,7 @@ public final class NicoLiveListeners: NSObject {
 		} else {
 			ownersNickname = UnknownName
 		}
-		let ownerEntry = knownUsers.user(identifier: Owner, userName: ownersNickname)
+		let ownerEntry = knownUsers.user(identifier: Owner, userName: ownersNickname).user
 		self.owner = NicoLiveUser(owner: Owner, ownerEntry: ownerEntry, nickname: ownersNickname)
 	}// end init
 
