@@ -16,7 +16,7 @@ public struct Images {
 	public let cruise: NSImage?
 }// end struct Images
 
-public typealias thumbNailCompletionhandler = ( (NSImage) -> Void )
+public typealias thumbNailCompletionhandler = ( (NicoLiveUser) -> Void )
 
 private let cruiseUserIdentifier: String = "394"
 private let cruiseUserName: String = "Cruise"
