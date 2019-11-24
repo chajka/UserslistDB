@@ -74,7 +74,7 @@ public final class NicoLiveListeners: NSObject {
 		return user
 	}// end user
 
-	public func activateUser (identifier: String, premium: Int, anonymous: Bool, lang: UserLanguage) -> NicoLiveUser {
+	public func activateUser (identifier: String, premium: Int, anonymous: Bool, lang: UserLanguage, handler: ThumbNailCompletionhandler?) -> NicoLiveUser {
 		var nickname: String = ""
 		if !anonymous || premium == 0b11 {
 			nickname = fetcher?.fetchNickName(forIdentifier: identifier) ?? UnknownName
