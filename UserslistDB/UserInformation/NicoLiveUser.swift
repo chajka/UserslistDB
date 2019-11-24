@@ -90,6 +90,7 @@ public final class NicoLiveUser: NSObject {
 			}// end switch case by friendship
 		}// end 
 	}// end property friendship
+	public var obserbation: NSKeyValueObservation?
 	@objc public dynamic var thumbnail: NSImage?
 	public var lock: Bool = false {
 		didSet {

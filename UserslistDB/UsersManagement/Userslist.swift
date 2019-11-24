@@ -151,7 +151,7 @@ public final class Userslist: NSObject {
 
 	public func start (owner: String, anonymousCommentDefault: Bool = true, monitorhDefault: Bool = false, fetcher informationFetcher: NicoInformationHandler, observer: NSObject? = nil) -> (comment: Bool, monitor: Bool) {
 		let users: JSONizableUsers = allUsers.users(forOwner: owner, anonymousCommentDefault: anonymousCommentDefault, monitorhDefault: monitorhDefault)
-		let listeners: NicoLiveListeners = NicoLiveListeners(owner: owner, for: users, fetcher: informationFetcher, observer: observer)
+		let listeners: NicoLiveListeners = NicoLiveListeners(owner: owner, for: users, fetcher: informationFetcher)
 
 		listeners.setDefaultThumbnails(images: images)
 		currentOwners[owner] = listeners
@@ -178,10 +178,10 @@ public final class Userslist: NSObject {
 		return user
 	}// end func user
 
-	public func activatteUser (identifier: String, premium: Int, anonymous: Bool, Lang: UserLanguage, forOwner owner: String) throws -> NicoLiveUser {
+	public func activatteUser (identifier: String, premium: Int, anonymous: Bool, Lang: UserLanguage, forOwner owner: String, thumbnailHandler: @escaping ThumbNailCompletionhandler) throws -> NicoLiveUser {
 		guard let users: NicoLiveListeners = currentOwners[owner] else { throw UserslistError.inactiveOwnner }
 		allUsers.addUser(identifier: identifier, onymity: !anonymous)
-		let user: NicoLiveUser = users.activateUser(identifier: identifier, premium: premium, anonymous: anonymous, lang: Lang)
+		let user: NicoLiveUser = users.activateUser(identifier: identifier, premium: premium, anonymous: anonymous, lang: Lang, handler: thumbnailHandler)
 		setUserOmymity(identifier: identifier, to: !anonymous)
 		queue.async {
 			_ = self.updateDatabaseFile()
