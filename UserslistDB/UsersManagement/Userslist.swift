@@ -178,7 +178,7 @@ public final class Userslist: NSObject {
 		return user
 	}// end func user
 
-	public func activatteUser (identifier: String, premium: Int, anonymous: Bool, Lang: UserLanguage, forOwner owner: String) throws -> NicoLiveUser {
+	public func activatteUser (identifier: String, premium: Int, anonymous: Bool, Lang: UserLanguage, forOwner owner: String, thumbnailHandler: @escaping ThumbNailCompletionhandler) throws -> NicoLiveUser {
 		guard let users: NicoLiveListeners = currentOwners[owner] else { throw UserslistError.inactiveOwnner }
 		allUsers.addUser(identifier: identifier, onymity: !anonymous)
 		let user: NicoLiveUser = users.activateUser(identifier: identifier, premium: premium, anonymous: anonymous, lang: Lang)
