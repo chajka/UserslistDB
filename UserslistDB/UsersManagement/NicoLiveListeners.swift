@@ -16,7 +16,7 @@ public struct Images {
 	public let cruise: NSImage?
 }// end struct Images
 
-public typealias thumbNailCompletionhandler = ( (NSImage) -> Void )
+public typealias ThumbNailCompletionhandler = ( (NicoLiveUser) -> Void )
 
 private let cruiseUserIdentifier: String = "394"
 private let cruiseUserName: String = "Cruise"
@@ -34,18 +34,16 @@ public final class NicoLiveListeners: NSObject {
 	private unowned var knownUsers: JSONizableUsers
 	private var currentUsers: Dictionary<String, NicoLiveUser>
 	private let ownerIdentifier: String
-	private var observer: NSObject?
 
 	private var images: Images!
 	private weak var fetcher: NicoInformationHandler?
 
 		// MARK: - Constructor/Destructor
-	public init (owner: String, for listeners: JSONizableUsers, fetcher informationFetcher: NicoInformationHandler?, observer observerInstance: NSObject? = nil) {
+	public init (owner: String, for listeners: JSONizableUsers, fetcher informationFetcher: NicoInformationHandler?) {
 		ownerIdentifier = owner
 		currentUsers = Dictionary()
 		knownUsers = listeners
 		fetcher = informationFetcher
-		observer = observerInstance
 		super.init()
 		var ownersNickname: String
 		if let fetcher: NicoInformationHandler = fetcher {
@@ -53,7 +51,7 @@ public final class NicoLiveListeners: NSObject {
 		} else {
 			ownersNickname = UnknownName
 		}
-		let ownerEntry = knownUsers.user(identifier: Owner, userName: ownersNickname)
+		let ownerEntry = knownUsers.user(identifier: Owner, userName: ownersNickname).user
 		self.owner = NicoLiveUser(owner: Owner, ownerEntry: ownerEntry, nickname: ownersNickname)
 	}// end init
 
@@ -76,15 +74,15 @@ public final class NicoLiveListeners: NSObject {
 		return user
 	}// end user
 
-	public func activateUser (identifier: String, premium: Int, anonymous: Bool, lang: UserLanguage) -> NicoLiveUser {
+	public func activateUser (identifier: String, premium: Int, anonymous: Bool, lang: UserLanguage, handler: ThumbNailCompletionhandler?) -> NicoLiveUser {
 		var nickname: String = ""
 		if !anonymous || premium == 0b11 {
 			nickname = fetcher?.fetchNickName(forIdentifier: identifier) ?? UnknownName
 		} else if identifier == cruiseUserIdentifier { nickname = cruiseUserName }
 		else if identifier == informationUserIdentifier { nickname = informationUserName }
 
-		let usr: JSONizableUser = knownUsers.user(identifier: identifier)
-		let user: NicoLiveUser = NicoLiveUser(user: usr, identifier: identifier, nickname: nickname, premium: premium, anonymous: anonymous, lang: lang)
+		let userForIdentifier: (user: JSONizableUser, known: Bool) = knownUsers.user(identifier: identifier)
+		let user: NicoLiveUser = NicoLiveUser(user: userForIdentifier.user, known: userForIdentifier.known, identifier: identifier, nickname: nickname, premium: premium, anonymous: anonymous, lang: lang)
 		parse(user: user, id: identifier, premium: premium)
 
 		if identifier == cruiseUserIdentifier {
@@ -94,11 +92,13 @@ public final class NicoLiveListeners: NSObject {
 		} else if anonymous {
 			user.thumbnail = self.images.anonymous
 		} else {
-			if let observer = observer {
-				user.addObserver(observer, forKeyPath: "thumbnail", options: [], context: nil)
+			if let handler: ThumbNailCompletionhandler = handler {
+				user.obserbation = user.observe(\.thumbnail, options: NSKeyValueObservingOptions.new, changeHandler: { (user: NicoLiveUser, new: NSKeyValueObservedChange<NSImage?>) in
+					handler(user)
+				})
 			}// end if need observe thumbnail
 			user.thumbnail = fetcher?.thumbnail(identifieer: identifier, whenNoImage: self.images.noImageUser!)
-		}
+		}// end if identifier
 		currentUsers[identifier] = user
 
 		return user

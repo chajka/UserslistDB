@@ -109,9 +109,9 @@ public final class Userslist: NSObject {
 		}// end try - catch open data and parse json to dictionary
 		encoder.outputFormatting = JSONEncoder.OutputFormatting.prettyPrinted
 		officialEntry = JSONizableUser("Official", true, true)
-		officialUser = NicoLiveUser(user: officialEntry, identifier: officialEntry.handle, nickname: officialEntry.handle, premium: 0, anonymous: false, lang: UserLanguage.ja)
+		officialUser = NicoLiveUser(user: officialEntry, known: true, identifier: officialEntry.handle, nickname: officialEntry.handle, premium: 0, anonymous: false, lang: UserLanguage.ja)
 		cruiseEntry = JSONizableUser("Cruise", true, true)
-		cruiseUser = NicoLiveUser(user: cruiseEntry, identifier: cruiseEntry.handle, nickname: cruiseEntry.handle, premium: 0, anonymous: false, lang: UserLanguage.ja)
+		cruiseUser = NicoLiveUser(user: cruiseEntry, known: true, identifier: cruiseEntry.handle, nickname: cruiseEntry.handle, premium: 0, anonymous: false, lang: UserLanguage.ja)
 		super.init()
 		cleanupOutdatedUser()
 	}// end init
@@ -151,7 +151,7 @@ public final class Userslist: NSObject {
 
 	public func start (owner: String, anonymousCommentDefault: Bool = true, monitorhDefault: Bool = false, fetcher informationFetcher: NicoInformationHandler, observer: NSObject? = nil) -> (comment: Bool, monitor: Bool) {
 		let users: JSONizableUsers = allUsers.users(forOwner: owner, anonymousCommentDefault: anonymousCommentDefault, monitorhDefault: monitorhDefault)
-		let listeners: NicoLiveListeners = NicoLiveListeners(owner: owner, for: users, fetcher: informationFetcher, observer: observer)
+		let listeners: NicoLiveListeners = NicoLiveListeners(owner: owner, for: users, fetcher: informationFetcher)
 
 		listeners.setDefaultThumbnails(images: images)
 		currentOwners[owner] = listeners
@@ -178,10 +178,10 @@ public final class Userslist: NSObject {
 		return user
 	}// end func user
 
-	public func activatteUser (identifier: String, premium: Int, anonymous: Bool, Lang: UserLanguage, forOwner owner: String) throws -> NicoLiveUser {
+	public func activatteUser (identifier: String, premium: Int, anonymous: Bool, Lang: UserLanguage, forOwner owner: String, thumbnailHandler: @escaping ThumbNailCompletionhandler) throws -> NicoLiveUser {
 		guard let users: NicoLiveListeners = currentOwners[owner] else { throw UserslistError.inactiveOwnner }
 		allUsers.addUser(identifier: identifier, onymity: !anonymous)
-		let user: NicoLiveUser = users.activateUser(identifier: identifier, premium: premium, anonymous: anonymous, lang: Lang)
+		let user: NicoLiveUser = users.activateUser(identifier: identifier, premium: premium, anonymous: anonymous, lang: Lang, handler: thumbnailHandler)
 		setUserOmymity(identifier: identifier, to: !anonymous)
 		queue.async {
 			_ = self.updateDatabaseFile()
