@@ -92,11 +92,13 @@ public final class NicoLiveListeners: NSObject {
 		} else if anonymous {
 			user.thumbnail = self.images.anonymous
 		} else {
-			if let observer = observer {
-				user.addObserver(observer, forKeyPath: "thumbnail", options: [], context: nil)
+			if let handler: ThumbNailCompletionhandler = handler {
+				user.obserbation = user.observe(\.thumbnail, options: NSKeyValueObservingOptions.new, changeHandler: { (user: NicoLiveUser, new: NSKeyValueObservedChange<NSImage?>) in
+					handler(user)
+				})
 			}// end if need observe thumbnail
 			user.thumbnail = fetcher?.thumbnail(identifieer: identifier, whenNoImage: self.images.noImageUser!)
-		}
+		}// end if identifier
 		currentUsers[identifier] = user
 
 		return user
