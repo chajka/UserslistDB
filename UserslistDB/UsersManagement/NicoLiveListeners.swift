@@ -48,6 +48,7 @@ public final class NicoLiveListeners: NSObject {
 		var ownersNickname: String
 		if let fetcher: NicoInformationHandler = fetcher {
 			ownersNickname = fetcher.fetchNickName(forIdentifier: owner) ?? UnknownName
+			knownUsers.ckeckUsers(fetcher: fetcher)
 		} else {
 			ownersNickname = UnknownName
 		}
