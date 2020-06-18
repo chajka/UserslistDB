@@ -7,6 +7,7 @@
 //
 
 import Cocoa
+import DeuxCheVaux
 
 public final class JSONizableUsers: NSObject, Codable {
 		// MARK: - Properties
@@ -54,6 +55,16 @@ public final class JSONizableUsers: NSObject, Codable {
 	public func addUser (identifier id: String, with user: JSONizableUser)  {
 		listener[id] = user
 	}// end func id
+
+	public func ckeckUsers (fetcher informationFetcher: NicoInformationHandler) {
+		for (identifier, user) in listener {
+			if user.handle == identifier {
+				if let handle: String = informationFetcher.fetchNickName(forIdentifier: identifier) {
+					user.handle = handle
+				}// end optional binding check for fetched handle
+			}// end if handle is sama to user identifier
+		}// end foreach known listeners
+	}// end ckeckUsers
 
 	public func cleanupOutdatedUser (before date: String, onymityDict: inout Dictionary<String, Bool>) {
 		for user in listener {
