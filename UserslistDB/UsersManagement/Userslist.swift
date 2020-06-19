@@ -81,6 +81,8 @@ public final class Userslist: NSObject {
 		databaseURL = databaseFolderURL.appendingPathComponent(databaseFileName).appendingPathExtension(DatabaseExtension)
 		let fm: FileManager = FileManager.default
 		if !fm.fileExists(atPath: databaseURL.path) {
+			let deuxCheVaux: DeuxCheVaux = DeuxCheVaux.shared
+			deuxCheVaux.setFirstLaucn()
 			let oldUserDatabaseURL: URL = databaseURL.deletingPathExtension().appendingPathExtension("xml")
 			if fm.fileExists(atPath: oldUserDatabaseURL.path) {
 				do {

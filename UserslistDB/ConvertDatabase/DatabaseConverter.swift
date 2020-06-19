@@ -7,6 +7,7 @@
 //
 
 import Cocoa
+import DeuxCheVaux
 
 private enum ElementName: String {
 	case user = "user"
@@ -99,6 +100,8 @@ public final class DatabaseConverter: NSObject , XMLParserDelegate {
 
 		// MARK: - Constructor/Destructor
 	public init (databasePath: String, databaseFile :String = "userslist") throws {
+		let deuxCheVaux: DeuxCheVaux = DeuxCheVaux.shared
+		deuxCheVaux.setFirstLaucn()
 		let databaseFullpath: String = databasePath.prefix(1) == "~" ? (NSHomeDirectory() + String(databasePath.suffix(databasePath.count - 1))) : databasePath
 		databaseFoldeerURL = URL(fileURLWithPath: databaseFullpath, isDirectory: true)
 		let databaseXMLURL: URL = databaseFoldeerURL.appendingPathComponent(databaseFile).appendingPathExtension("xml")
