@@ -206,6 +206,11 @@ public final class Userslist: NSObject {
 		listensers.set(commentAAnonymity: anonymity)
 	}// end func set comment anonymity
 
+	public func set (monitorState state: Bool, toOwner owner: String) {
+		guard let listeners: NicoLiveListeners = currentOwners[owner] else { return }
+		listeners.set(monitorState: state)
+	}// end set enable monitor or not
+
 		// MARK: - Internal methods
 		// MARK: - Private methods
 	private func cleanupOutdatedUser () {
