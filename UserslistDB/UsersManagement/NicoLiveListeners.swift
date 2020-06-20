@@ -109,6 +109,10 @@ public final class NicoLiveListeners: NSObject {
 		knownUsers.anonymousComment = anonymity
 	}// end set comment aonymity
 
+	public func set (monitorState state: Bool) {
+		knownUsers.monitor = state
+	}// end set monitor state
+
 		// MARK: - Internal methods
 		// MARK: - Private methods
 	private func parse (user usr: NicoLiveUser, id identifier: String, premium prem: Int) {
