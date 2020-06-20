@@ -58,7 +58,7 @@ public final class JSONizableUsers: NSObject, Codable {
 
 	public func ckeckUsers (fetcher informationFetcher: NicoInformationHandler) {
 		for (identifier, user) in listener {
-			if user.handle == identifier {
+			if user.handle == identifier && identifier.trimmingCharacters(in: CharacterSet.decimalDigits).count == 0 {
 				if let handle: String = informationFetcher.fetchNickName(forIdentifier: identifier) {
 					user.handle = handle
 				}// end optional binding check for fetched handle
