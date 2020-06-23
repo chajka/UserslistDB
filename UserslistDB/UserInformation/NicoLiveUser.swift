@@ -110,7 +110,7 @@ public final class NicoLiveUser: NSObject {
 		}// end willSet
 		didSet {
 			entry.voice = voice
-			update(friendship: .known)
+			if !anonymous { update(friendship: .known) }
 		}// end didSet
 	}// end side effect with stored property voice
 	public var note: String? {
