@@ -103,6 +103,9 @@ public final class NicoLiveUser: NSObject {
 		willSet {
 			if lock { return }
 		}// end willSet
+		didSet {
+			entry.color = color?.hexColor
+		}// end didSet
 	}// end side effect with stored property
 	public var voice: String? {
 		willSet {
