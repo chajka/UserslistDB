@@ -95,7 +95,7 @@ public final class NicoLiveUser: NSObject {
 	public var lock: Bool = false {
 		didSet {
 			entry.lock = lock
-			update(friendship: .known)
+			if !anonymous { update(friendship: .known) }
 		}// end didSet
 	}// end property lock
 	public let lastMet: Date
