@@ -95,7 +95,7 @@ public final class NicoLiveUser: NSObject {
 	public var lock: Bool = false {
 		didSet {
 			entry.lock = lock
-			update(friendship: .known)
+			if !anonymous { update(friendship: .known) }
 		}// end didSet
 	}// end property lock
 	public let lastMet: Date
@@ -103,6 +103,9 @@ public final class NicoLiveUser: NSObject {
 		willSet {
 			if lock { return }
 		}// end willSet
+		didSet {
+			entry.color = color?.hexColor
+		}// end didSet
 	}// end side effect with stored property
 	public var voice: String? {
 		willSet {
@@ -110,7 +113,7 @@ public final class NicoLiveUser: NSObject {
 		}// end willSet
 		didSet {
 			entry.voice = voice
-			update(friendship: .known)
+			if !anonymous { update(friendship: .known) }
 		}// end didSet
 	}// end side effect with stored property voice
 	public var note: String? {
