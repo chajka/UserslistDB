@@ -121,10 +121,9 @@ public final class NicoLiveListeners: NSObject {
 			usr.name.nickname = "Information"
 			usr.name.handle = "Information"
 		}
-		else if prem == 7 { usr.privilege = Privilege.owner }
+		else if (prem & 0b11) == 0b11 && identifier == informationUserIdentifier { usr.privilege = Privilege.cruise }
+		else if (prem & 0b11) == 0b11 { usr.privilege = Privilege.owner }
 		else if (prem & 0b110) == 0b110 { usr.privilege = Privilege.official }
-		else if (prem & (0x01 << 1)) != 0x00 { usr.privilege = Privilege.owner }
-		else if (prem & 0b11) == 0b11 { usr.privilege = Privilege.cruise }
 	}// end parse
 
 		// MARK: - Delegates
