@@ -192,9 +192,9 @@ public final class NicoLiveUser: NSObject {
 		update(friendship: .known)
 	}// end setColor
 
-	public func addEntryTo (listensers: NSMutableDictionary) {
+	public func addEntryTo (listeners: NSMutableDictionary) {
 		let identifier = name.identifier
-		listensers.setValue(entry, forKey: identifier)
+		listeners.setValue(entry, forKey: identifier)
 	}// end func addEntryTo
 
 	public func invert(lockStatus identifier: String) {
