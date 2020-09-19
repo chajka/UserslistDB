@@ -171,7 +171,7 @@ public final class DatabaseConverter: NSObject , XMLParserDelegate {
 					let users: JSONizableUsers = allUsers.users(forOwner: currentUserIdentifier)
 					users.anonymousComment = anonymousComment
 					users.monitor = monitor
-				}// end if have attribute coment or speech (update or make owner with current attribute)
+				}// end if have attribute comment or speech (update or make owner with current attribute)
 			}// end if not anonymous
 		case .handle:
 			guard let currentOwnerIdentifier = attributeDict[Attribute.handle.name.owner], onymous else { return }
