@@ -28,14 +28,14 @@ public final class JSONizableAllUsers: NSObject, Codable {
 
 		// MARK: - Actions
 		// MARK: - Public methods
-	public func users (forOwner owner: String, anonymousCommentDefault: Bool = true, monitorhDefault: Bool = false) -> JSONizableUsers {
+	public func users (forOwner owner: String, anonymousCommentDefault: Bool = true, monitorDefault: Bool = false) -> JSONizableUsers {
 		if let users: JSONizableUsers = knownOwners[owner] {
 			return users
 		}// end optional binding chek for owner identifier entry in owners dictionary
 
 		let users: JSONizableUsers = JSONizableUsers()
 		users.anonymousComment = anonymousCommentDefault
-		users.monitor = monitorhDefault
+		users.monitor = monitorDefault
 		return addUsers(forOwner: owner, to: users)
 	}// end func users
 
