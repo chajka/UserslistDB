@@ -79,7 +79,7 @@ public final class DatabaseConverter: NSObject , XMLParserDelegate {
 		// MARK: - Member variables
 	private let date: String
 	private let databaseJSONFileURL: URL
-	private let databaseFoldeerURL: URL
+	private let databaseFolderURL: URL
 	private var serializedData: Data!
 
 	private var currentUserIdentifier: String = String()
@@ -103,10 +103,10 @@ public final class DatabaseConverter: NSObject , XMLParserDelegate {
 		let deuxCheVaux: DeuxCheVaux = DeuxCheVaux.shared
 		deuxCheVaux.setFirstLaucn()
 		let databaseFullpath: String = databasePath.prefix(1) == "~" ? (NSHomeDirectory() + String(databasePath.suffix(databasePath.count - 1))) : databasePath
-		databaseFoldeerURL = URL(fileURLWithPath: databaseFullpath, isDirectory: true)
-		let databaseXMLURL: URL = databaseFoldeerURL.appendingPathComponent(databaseFile).appendingPathExtension("xml")
+		databaseFolderURL = URL(fileURLWithPath: databaseFullpath, isDirectory: true)
+		let databaseXMLURL: URL = databaseFolderURL.appendingPathComponent(databaseFile).appendingPathExtension("xml")
 		let data: Data = try Data(contentsOf: databaseXMLURL)
-		databaseJSONFileURL = databaseFoldeerURL.appendingPathComponent(databaseFile).appendingPathExtension("json")
+		databaseJSONFileURL = databaseFolderURL.appendingPathComponent(databaseFile).appendingPathExtension("json")
 		parser = XMLParser(data: data)
 		let dateFormatter: DateFormatter = DateFormatter()
 		dateFormatter.dateStyle = DateFormatter.Style.short
@@ -120,7 +120,7 @@ public final class DatabaseConverter: NSObject , XMLParserDelegate {
 		// MARK: - Actions
 		// MARK: - Public methods
 	public func parse() -> Bool {
-		let succcess: Bool = parser.parse()
+		let success: Bool = parser.parse()
 		do {
 			let encoder: JSONEncoder = JSONEncoder()
 			encoder.outputFormatting = JSONEncoder.OutputFormatting.prettyPrinted
@@ -128,7 +128,7 @@ public final class DatabaseConverter: NSObject , XMLParserDelegate {
 		} catch let error {
 			print("JSON serialization error \(error.localizedDescription)")
 		}
-		return succcess
+		return success
 	}// end func parse
 
 	public func writeJson() -> Bool {
@@ -171,7 +171,7 @@ public final class DatabaseConverter: NSObject , XMLParserDelegate {
 					let users: JSONizableUsers = allUsers.users(forOwner: currentUserIdentifier)
 					users.anonymousComment = anonymousComment
 					users.monitor = monitor
-				}// end if have attribute omment or speech (update or make owner witth current attribute)
+				}// end if have attribute coment or speech (update or make owner with current attribute)
 			}// end if not anonymous
 		case .handle:
 			guard let currentOwnerIdentifier = attributeDict[Attribute.handle.name.owner], onymous else { return }
@@ -220,7 +220,7 @@ public final class DatabaseConverter: NSObject , XMLParserDelegate {
 			usersFroCurrentOwner.addUser(identifier: currentUserIdentifier, with: user)
 		default:
 			break
-		}// end swith case by element name
+		}// end switch case by element name
 	}// end func parser didEndElement
 
 	public func parser(_ parser: XMLParser, foundCharacters string: String) {

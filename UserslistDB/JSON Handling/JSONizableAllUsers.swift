@@ -45,7 +45,7 @@ public final class JSONizableAllUsers: NSObject, Codable {
 		return users
 	}// end addOwner
 
-	public func onymoity (ofUserIdentifier identifier: String) -> Bool? {
+	public func onymity (ofUserIdentifier identifier: String) -> Bool? {
 		guard let anonymous: Bool = knownUsersOnymity[identifier] else { return nil }
 		return anonymous
 	}// end known user

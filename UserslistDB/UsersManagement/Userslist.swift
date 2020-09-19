@@ -125,7 +125,7 @@ public final class Userslist: NSObject {
 		// MARK: - Override
 		// MARK: - Public methods
 	public func setDefaultThumbnails(defaultUser: NSImage, anonymousUser: NSImage, officialUser: NSImage, cruiseUser: NSImage) {
-		images = Images(noImageUser: defaultUser, anonymous: anonymousUser, offifical: officialUser, cruise: cruiseUser)
+		images = Images(noImageUser: defaultUser, anonymous: anonymousUser, official: officialUser, cruise: cruiseUser)
 		self.officialUser.thumbnail = officialUser
 		self.cruiseUser.thumbnail = cruiseUser
 	}// end setDefaultThumbnails
@@ -180,11 +180,11 @@ public final class Userslist: NSObject {
 		return user
 	}// end func user
 
-	public func activatteUser (identifier: String, premium: Int, anonymous: Bool, Lang: UserLanguage, forOwner owner: String, thumbnailHandler: @escaping ThumbNailCompletionHandler) throws -> NicoLiveUser {
+	public func activateUser (identifier: String, premium: Int, anonymous: Bool, Lang: UserLanguage, forOwner owner: String, thumbnailHandler: @escaping ThumbNailCompletionHandler) throws -> NicoLiveUser {
 		guard let users: NicoLiveListeners = currentOwners[owner] else { throw UserslistError.inactiveOwnner }
 		allUsers.addUser(identifier: identifier, onymity: !anonymous)
 		let user: NicoLiveUser = users.activateUser(identifier: identifier, premium: premium, anonymous: anonymous, lang: Lang, handler: thumbnailHandler)
-		setUserOmymity(identifier: identifier, to: !anonymous)
+		setUserOnymity(identifier: identifier, to: !anonymous)
 		queue.async {
 			_ = self.updateDatabaseFile()
 		}// end background database file update
@@ -193,17 +193,17 @@ public final class Userslist: NSObject {
 	}// end fuc activate user
 
 	public func userOnymity (identifier: String) throws -> Bool {
-		guard let onimity: Bool = allUsers.onymoity(ofUserIdentifier: identifier) else { throw UserslistError.unknownUser }
-		return onimity
+		guard let onymity: Bool = allUsers.onymity(ofUserIdentifier: identifier) else { throw UserslistError.unknownUser }
+		return onymity
 	}// end func user
 
-	public func setUserOmymity (identifier user: String, to onymity: Bool) {
+	public func setUserOnymity (identifier user: String, to onymity: Bool) {
 		allUsers.addUser(identifier: user, onymity: onymity)
 	}// end set user onymity
 
 	public func set (commentAnonymity anonymity: Bool, toOwner owner: String) {
-		guard let listensers: NicoLiveListeners = currentOwners[owner] else { return }
-		listensers.set(commentAAnonymity: anonymity)
+		guard let listeners: NicoLiveListeners = currentOwners[owner] else { return }
+		listeners.set(commentAAnonymity: anonymity)
 	}// end func set comment anonymity
 
 	public func set (monitorState state: Bool, toOwner owner: String) {
@@ -217,9 +217,9 @@ public final class Userslist: NSObject {
 		let queue: DispatchQueue = DispatchQueue(label: "tv.from.chajka.UserslistDB", qos: DispatchQoS.background, attributes: DispatchQueue.Attributes.concurrent, autoreleaseFrequency: DispatchQueue.AutoreleaseFrequency.inherit)
 		queue.async { [weak self] in
 			guard let weakSelf = self else { return }
-			let calender: Calendar = Calendar.current
+			let calendar: Calendar = Calendar.current
 			let component: DateComponents = DateComponents(hour: 9, minute: 0, weekday: 5)
-			guard let lastThu: Date = calender.nextDate(after: Date(), matching: component, matchingPolicy: Calendar.MatchingPolicy.nextTime, direction: .backward) else { return }
+			guard let lastThu: Date = calendar.nextDate(after: Date(), matching: component, matchingPolicy: Calendar.MatchingPolicy.nextTime, direction: .backward) else { return }
 
 			let formatter:DateFormatter = DateFormatter()
 			formatter.dateStyle = DateFormatter.Style.short

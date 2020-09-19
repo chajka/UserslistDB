@@ -12,7 +12,7 @@ import DeuxCheVaux
 public struct Images {
 	public let noImageUser: NSImage?
 	public let anonymous: NSImage?
-	public let offifical: NSImage?
+	public let official: NSImage?
 	public let cruise: NSImage?
 }// end struct Images
 
@@ -48,7 +48,7 @@ public final class NicoLiveListeners: NSObject {
 		var ownersNickname: String
 		if let fetcher: NicoInformationHandler = fetcher {
 			ownersNickname = fetcher.fetchNickName(forIdentifier: owner) ?? UnknownName
-			knownUsers.ckeckUsers(fetcher: fetcher)
+			knownUsers.checkUsers(fetcher: fetcher)
 		} else {
 			ownersNickname = UnknownName
 		}
@@ -89,12 +89,12 @@ public final class NicoLiveListeners: NSObject {
 		if identifier == cruiseUserIdentifier {
 			user.thumbnail = self.images.cruise
 		} else if identifier == informationUserIdentifier {
-			user.thumbnail = self.images.offifical
+			user.thumbnail = self.images.official
 		} else if anonymous {
 			user.thumbnail = self.images.anonymous
 		} else {
 			if let handler: ThumbNailCompletionHandler = handler {
-				user.obserbation = user.observe(\.thumbnail, options: NSKeyValueObservingOptions.new, changeHandler: { (user: NicoLiveUser, new: NSKeyValueObservedChange<NSImage?>) in
+				user.observation = user.observe(\.thumbnail, options: NSKeyValueObservingOptions.new, changeHandler: { (user: NicoLiveUser, new: NSKeyValueObservedChange<NSImage?>) in
 					handler(user)
 				})
 			}// end if need observe thumbnail
