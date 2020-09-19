@@ -16,7 +16,7 @@ public struct Images {
 	public let cruise: NSImage?
 }// end struct Images
 
-public typealias ThumbNailCompletionhandler = ( (NicoLiveUser) -> Void )
+public typealias ThumbNailCompletionHandler = ( (NicoLiveUser) -> Void )
 
 private let cruiseUserIdentifier: String = "394"
 private let cruiseUserName: String = "Cruise"
@@ -75,7 +75,7 @@ public final class NicoLiveListeners: NSObject {
 		return user
 	}// end user
 
-	public func activateUser (identifier: String, premium: Int, anonymous: Bool, lang: UserLanguage, handler: ThumbNailCompletionhandler?) -> NicoLiveUser {
+	public func activateUser (identifier: String, premium: Int, anonymous: Bool, lang: UserLanguage, handler: ThumbNailCompletionHandler?) -> NicoLiveUser {
 		var nickname: String = ""
 		if !anonymous || premium == 0b11 {
 			nickname = fetcher?.fetchNickName(forIdentifier: identifier) ?? UnknownName
@@ -93,7 +93,7 @@ public final class NicoLiveListeners: NSObject {
 		} else if anonymous {
 			user.thumbnail = self.images.anonymous
 		} else {
-			if let handler: ThumbNailCompletionhandler = handler {
+			if let handler: ThumbNailCompletionHandler = handler {
 				user.obserbation = user.observe(\.thumbnail, options: NSKeyValueObservingOptions.new, changeHandler: { (user: NicoLiveUser, new: NSKeyValueObservedChange<NSImage?>) in
 					handler(user)
 				})
