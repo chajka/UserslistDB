@@ -90,7 +90,7 @@ public final class NicoLiveUser: NSObject {
 			}// end switch case by friendship
 		}// end 
 	}// end property friendship
-	public var obserbation: NSKeyValueObservation?
+	public var observation: NSKeyValueObservation?
 	@objc public dynamic var thumbnail: NSImage?
 	public var lock: Bool = false {
 		didSet {
@@ -139,7 +139,7 @@ public final class NicoLiveUser: NSObject {
 		if let lock: Bool = entry.lock { self.lock = lock }
 		lastMet = Date()
 		super.init()
-		if let colorString: String = entry.color { color = hexcClorToColor(hexColor: colorString) }
+		if let colorString: String = entry.color { color = hexColorToColor(hexColor: colorString) }
 		if let voiceName: String = entry.voice { voice = voiceName }
 		if let noteString: String = entry.note { note = noteString }
 		handle = ownerNickname
@@ -172,7 +172,7 @@ public final class NicoLiveUser: NSObject {
 		else { lastMet = Date() }
 		entry.lastMet = formatter.string(from: Date())
 		super.init()
-		if let colorString: String = entry.color { color = hexcClorToColor(hexColor: colorString) }
+		if let colorString: String = entry.color { color = hexColorToColor(hexColor: colorString) }
 		if let voiceName: String = entry.voice { voice = voiceName }
 		if let noteString: String = entry.note { note = noteString }
 	}// end init from entry
@@ -181,7 +181,7 @@ public final class NicoLiveUser: NSObject {
 		// MARK: - Actions
 		// MARK: - Public methods
 	public func setColor (hexColor: String) -> Void {
-		color = hexcClorToColor(hexColor: hexColor)
+		color = hexColorToColor(hexColor: hexColor)
 		entry.setValue(hexColor, forKey: JSONKey.user.color.rawValue)
 		update(friendship: .known)
 	}// end setColor
@@ -192,9 +192,9 @@ public final class NicoLiveUser: NSObject {
 		update(friendship: .known)
 	}// end setColor
 
-	public func addEntryTo (listensers: NSMutableDictionary) {
+	public func addEntryTo (listeners: NSMutableDictionary) {
 		let identifier = name.identifier
-		listensers.setValue(entry, forKey: identifier)
+		listeners.setValue(entry, forKey: identifier)
 	}// end func addEntryTo
 
 	public func invert(lockStatus identifier: String) {
@@ -206,7 +206,7 @@ public final class NicoLiveUser: NSObject {
 	}// end update friendship
 
 		// MARK: - Private methods
-	private func hexcClorToColor (hexColor colorString: String) -> NSColor {
+	private func hexColorToColor (hexColor colorString: String) -> NSColor {
 		let capableLength: Set = Set(arrayLiteral: RGBColorCount, RGBAColorCount)
 		if capableLength.contains(colorString.count) && String(colorString.prefix(1)) == "#" {
 			var red: CGFloat = 0

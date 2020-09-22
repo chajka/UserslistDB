@@ -12,11 +12,11 @@ import DeuxCheVaux
 public struct Images {
 	public let noImageUser: NSImage?
 	public let anonymous: NSImage?
-	public let offifical: NSImage?
+	public let official: NSImage?
 	public let cruise: NSImage?
 }// end struct Images
 
-public typealias ThumbNailCompletionhandler = ( (NicoLiveUser) -> Void )
+public typealias ThumbNailCompletionHandler = ( (NicoLiveUser) -> Void )
 
 private let cruiseUserIdentifier: String = "394"
 private let cruiseUserName: String = "Cruise"
@@ -48,7 +48,7 @@ public final class NicoLiveListeners: NSObject {
 		var ownersNickname: String
 		if let fetcher: NicoInformationHandler = fetcher {
 			ownersNickname = fetcher.fetchNickName(forIdentifier: owner) ?? UnknownName
-			knownUsers.ckeckUsers(fetcher: fetcher)
+			knownUsers.checkUsers(fetcher: fetcher)
 		} else {
 			ownersNickname = UnknownName
 		}
@@ -66,7 +66,7 @@ public final class NicoLiveListeners: NSObject {
 
 	public func setDefaultThumbnails(images: Images) {
 		self.images = images
-		self.owner.thumbnail = fetcher?.thumbnail(identifieer: ownerIdentifier, whenNoImage: images.noImageUser!)
+		self.owner.thumbnail = fetcher?.thumbnail(identifier: ownerIdentifier, whenNoImage: images.noImageUser!)
 	}// end setDefaultThumbnails
 
 	public func user (identifier: String) throws -> NicoLiveUser {
@@ -75,7 +75,7 @@ public final class NicoLiveListeners: NSObject {
 		return user
 	}// end user
 
-	public func activateUser (identifier: String, premium: Int, anonymous: Bool, lang: UserLanguage, handler: ThumbNailCompletionhandler?) -> NicoLiveUser {
+	public func activateUser (identifier: String, premium: Int, anonymous: Bool, lang: UserLanguage, handler: ThumbNailCompletionHandler?) -> NicoLiveUser {
 		var nickname: String = ""
 		if !anonymous || premium == 0b11 {
 			nickname = fetcher?.fetchNickName(forIdentifier: identifier) ?? UnknownName
@@ -89,16 +89,16 @@ public final class NicoLiveListeners: NSObject {
 		if identifier == cruiseUserIdentifier {
 			user.thumbnail = self.images.cruise
 		} else if identifier == informationUserIdentifier {
-			user.thumbnail = self.images.offifical
+			user.thumbnail = self.images.official
 		} else if anonymous {
 			user.thumbnail = self.images.anonymous
 		} else {
-			if let handler: ThumbNailCompletionhandler = handler {
-				user.obserbation = user.observe(\.thumbnail, options: NSKeyValueObservingOptions.new, changeHandler: { (user: NicoLiveUser, new: NSKeyValueObservedChange<NSImage?>) in
+			if let handler: ThumbNailCompletionHandler = handler {
+				user.observation = user.observe(\.thumbnail, options: NSKeyValueObservingOptions.new, changeHandler: { (user: NicoLiveUser, new: NSKeyValueObservedChange<NSImage?>) in
 					handler(user)
 				})
 			}// end if need observe thumbnail
-			user.thumbnail = fetcher?.thumbnail(identifieer: identifier, whenNoImage: self.images.noImageUser!)
+			user.thumbnail = fetcher?.thumbnail(identifier: identifier, whenNoImage: self.images.noImageUser!)
 		}// end if identifier
 		currentUsers[identifier] = user
 
