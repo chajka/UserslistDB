@@ -100,21 +100,19 @@ public final class NicoLiveUser: NSObject {
 	}// end property lock
 	public let lastMet: Date
 	public var color: NSColor? {
-		willSet {
+		get { return entry.color?.color }
+		set (newColor) {
 			if lock { return }
-		}// end willSet
-		didSet {
-			entry.color = color?.hexColor
-		}// end didSet
+			entry.color = newColor?.hexColor
+		}// end set
 	}// end side effect with stored property
 	public var voice: String? {
-		willSet {
+		get { return entry.voice }
+		set (newVoice) {
 			if lock { return }
-		}// end willSet
-		didSet {
-			entry.voice = voice
+			entry.voice = newVoice
 			if !anonymous { update(friendship: .known) }
-		}// end didSet
+		}// end set
 	}// end side effect with stored property voice
 	public var note: String? {
 		didSet {
