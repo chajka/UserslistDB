@@ -107,13 +107,12 @@ public final class NicoLiveUser: NSObject {
 		}// end set
 	}// end side effect with stored property
 	public var voice: String? {
-		willSet {
+		get { return entry.voice }
+		set (newVoice) {
 			if lock { return }
-		}// end willSet
-		didSet {
-			entry.voice = voice
+			entry.voice = newVoice
 			if !anonymous { update(friendship: .known) }
-		}// end didSet
+		}// end set
 	}// end side effect with stored property voice
 	public var note: String? {
 		didSet {
