@@ -100,12 +100,11 @@ public final class NicoLiveUser: NSObject {
 	}// end property lock
 	public let lastMet: Date
 	public var color: NSColor? {
-		willSet {
+		get { return entry.color?.color }
+		set (newColor) {
 			if lock { return }
-		}// end willSet
-		didSet {
-			entry.color = color?.hexColor
-		}// end didSet
+			entry.color = newColor?.hexColor
+		}// end set
 	}// end side effect with stored property
 	public var voice: String? {
 		willSet {
