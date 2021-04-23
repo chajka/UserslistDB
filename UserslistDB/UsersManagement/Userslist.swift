@@ -60,6 +60,7 @@ public final class Userslist: NSObject {
 		// MARK: - Properties
 	public let officialUser: NicoLiveUser
 	public let cruiseUser: NicoLiveUser
+	public let guideUser: NicoLiveUser
 		// MARK: - Member variables
 	private let allUsers: JSONizableAllUsers
 	private let encoder: JSONEncoder = JSONEncoder()
@@ -69,6 +70,7 @@ public final class Userslist: NSObject {
 
 	private let officialEntry: JSONizableUser
 	private let cruiseEntry: JSONizableUser
+	private let guideEntry: JSONizableUser
 
 	private let queue: DispatchQueue = DispatchQueue(label: "tv.from.chajka.UserslistDatabase", qos: DispatchQoS.background)
 	private var images: Images!
@@ -114,6 +116,8 @@ public final class Userslist: NSObject {
 		officialUser = NicoLiveUser(user: officialEntry, known: true, identifier: officialEntry.handle, nickname: officialEntry.handle, premium: 0b110, anonymous: false, lang: UserLanguage.ja)
 		cruiseEntry = JSONizableUser("Cruise", true, true)
 		cruiseUser = NicoLiveUser(user: cruiseEntry, known: true, identifier: cruiseEntry.handle, nickname: cruiseEntry.handle, premium: 0b10, anonymous: false, lang: UserLanguage.ja)
+		guideEntry = JSONizableUser("Guide", true, true)
+		guideUser = NicoLiveUser(user: guideEntry, known: true, identifier: "900000000", nickname: guideEntry.handle, premium: 0b110, anonymous: false, lang: UserLanguage.ja)
 		super.init()
 		cleanupOutdatedUser()
 	}// end init
