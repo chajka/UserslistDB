@@ -60,6 +60,7 @@ public final class Userslist: NSObject {
 		// MARK: - Properties
 	public let officialUser: NicoLiveUser
 	public let cruiseUser: NicoLiveUser
+	public let guideUser: NicoLiveUser
 		// MARK: - Member variables
 	private let allUsers: JSONizableAllUsers
 	private let encoder: JSONEncoder = JSONEncoder()
