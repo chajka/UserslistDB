@@ -70,6 +70,7 @@ public final class Userslist: NSObject {
 
 	private let officialEntry: JSONizableUser
 	private let cruiseEntry: JSONizableUser
+	private let guideEntry: JSONizableUser
 
 	private let queue: DispatchQueue = DispatchQueue(label: "tv.from.chajka.UserslistDatabase", qos: DispatchQoS.background)
 	private var images: Images!
