@@ -117,7 +117,7 @@ public final class Userslist: NSObject {
 		cruiseEntry = JSONizableUser("Cruise", true, true)
 		cruiseUser = NicoLiveUser(user: cruiseEntry, known: true, identifier: cruiseEntry.handle, nickname: cruiseEntry.handle, premium: 0b10, anonymous: false, lang: UserLanguage.ja)
 		guideEntry = JSONizableUser("Guide", true, true)
-		guideUser = NicoLiveUser(user: guideEntry, known: true, identifier: "900000000", nickname: guideEntry.handle, premium: 0b110, anonymous: false, lang: UserLanguage.ja)
+		guideUser = NicoLiveUser(user: guideEntry, known: true, identifier: "900000000", nickname: guideEntry.handle, premium: 0b111, anonymous: false, lang: UserLanguage.ja)
 		super.init()
 		cleanupOutdatedUser()
 	}// end init
@@ -128,10 +128,11 @@ public final class Userslist: NSObject {
 
 		// MARK: - Override
 		// MARK: - Public methods
-	public func setDefaultThumbnails(defaultUser: NSImage, anonymousUser: NSImage, officialUser: NSImage, cruiseUser: NSImage) {
+	public func setDefaultThumbnails(defaultUser: NSImage, anonymousUser: NSImage, officialUser: NSImage, cruiseUser: NSImage, guideUser: NSImage) {
 		images = Images(noImageUser: defaultUser, anonymous: anonymousUser, official: officialUser, cruise: cruiseUser)
 		self.officialUser.thumbnail = officialUser
 		self.cruiseUser.thumbnail = cruiseUser
+		self.guideUser.thumbnail = guideUser
 	}// end setDefaultThumbnails
 
 	public func updateDatabaseFile () -> Bool {
