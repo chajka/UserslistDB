@@ -153,6 +153,7 @@ public final class NicoLiveUser: NSObject {
 		if premium ^ 0b11 == 0 { privilege = Privilege.owner }
 		else if premium ^ 0b10 == 0 { privilege = Privilege.cruise }
 		else if premium ^ 0b110 == 0 { privilege = Privilege.official }
+		else if premium ^ 0b111 == 0 { privilege = Privilege.guide }
 		else { privilege = Privilege.listener }
 		self.anonymous = anonymous
 		if known {
