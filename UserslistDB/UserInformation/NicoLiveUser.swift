@@ -84,6 +84,10 @@ public final class NicoLiveUser: NSObject {
 		didSet {
 			switch friendship {
 			case .known:
+                if !name.isValidHandle {
+                    name.handle = name.nickname
+                    entry.handle = name.nickname
+                }// end if is not valid handle
 				entry.known = true
 			default:
 				entry.known = nil
