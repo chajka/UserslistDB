@@ -100,7 +100,9 @@ public final class NicoLiveListeners: NSObject {
 					handler(user)
 				})
 			}// end if need observe thumbnail
-			user.thumbnail = fetcher?.thumbnail(identifier: identifier, whenNoImage: self.images.noImageUser!)
+			Task {
+				user.thumbnail = await fetcher?.thumbnail(identifier: identifier) ?? images.noImageUser
+			}
 		}// end if identifier
 		currentUsers[identifier] = user
 
