@@ -66,7 +66,9 @@ public final class NicoLiveListeners: NSObject {
 
 	public func setDefaultThumbnails(images: Images) {
 		self.images = images
-		self.owner.thumbnail = fetcher?.thumbnail(identifier: ownerIdentifier, whenNoImage: images.noImageUser!)
+		Task {
+			self.owner.thumbnail = await fetcher?.thumbnail(identifier: ownerIdentifier) ?? images.noImageUser
+		}
 	}// end setDefaultThumbnails
 
 	public func user (identifier: String) throws -> NicoLiveUser {
@@ -98,7 +100,9 @@ public final class NicoLiveListeners: NSObject {
 					handler(user)
 				})
 			}// end if need observe thumbnail
-			user.thumbnail = fetcher?.thumbnail(identifier: identifier, whenNoImage: self.images.noImageUser!)
+			Task {
+				user.thumbnail = await fetcher?.thumbnail(identifier: identifier) ?? images.noImageUser
+			}
 		}// end if identifier
 		currentUsers[identifier] = user
 
