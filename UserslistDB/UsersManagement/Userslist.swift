@@ -7,6 +7,7 @@
 //
 
 import Cocoa
+import AppKit
 import DeuxCheVaux
 
 public enum UserslistError: Error {
