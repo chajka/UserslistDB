@@ -68,7 +68,11 @@ public final class NicoLiveListeners: NSObject {
 	public func setDefaultThumbnails(images: Images) {
 		self.images = images
 		Task {
-			self.owner.thumbnail = await fetcher?.thumbnail(identifier: ownerIdentifier) ?? images.noImageUser
+			if let data: Data = await fetcher?.thumbnailData(identifier: ownerIdentifier) {
+				self.owner.thumbnail = NSImage(data: data)
+			} else {
+				self.owner.thumbnail = images.noImageUser
+			}// end if thumbnail is present
 		}
 	}// end setDefaultThumbnails
 
